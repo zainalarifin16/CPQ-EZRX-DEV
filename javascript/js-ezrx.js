@@ -65,6 +65,22 @@
 
     */
 
+    var check_nationality = function (nationality) {
+        var countryEle = document.getElementById('userSalesOrg_t');
+        if (countryEle == null) { //this is for material page.
+            countryEle = $('input[name="userSalesOrg_PL"]').val();
+            countryCode = countryEle;
+        } else {
+            var countryCode = parseInt(countryEle.value);
+        }
+        var valid = false;
+        if (nationality == countryCode) {
+            valid = true;
+        }
+
+        return valid;
+    }
+
 
     var $stripParent;
     var resizeHandler = null,
@@ -4598,6 +4614,27 @@
             scrollTop: 0
         }, "slow");
         adjust_tooltip();
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 19 March 2018
+            Task          :- Hide recommended section in shipping cart for both desktop and Mobile UI for SG
+            Page          :- Global
+            File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
+            Layout        :- Both Dekstop
+        */
+
+        if (check_nationality(2600)) {
+            var FavRecFreqSection = $("#attribute-pastOrders").parent().parent().parent().parent().parent().parent('.column-1');
+            $(FavRecFreqSection.children()[1]).hide();
+        }
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 19 March 2018
+            Task          :- Hide recommended section in shipping cart for both desktop and Mobile UI for SG
+            Page          :- Global
+            File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
+            Layout        :- Both Dekstop
+        */
 
     }
 

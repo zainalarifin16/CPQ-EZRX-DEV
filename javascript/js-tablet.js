@@ -485,12 +485,39 @@ $(document).ready(function() {
 								
 								$( $(elementToMove[1]) ).appendTo("#swipe-sidebar-content");
 
-								var sg_nationalty = check_nationality(2600);
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 19 March 2018
+									Task          :- Hide Recomended Material in SG
+									Page          :- Global
+									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Layout        :- Desktop
+								*/
+
+								var userSalesOrg_t = (($("#userSalesOrg_t").length == 0) ? false : true);
+								var userSalesOrg_PL = (($('input[name="userSalesOrg_PL"]').length == 0) ? false : true);
+
+								var sg_nationalty = false;
+								if (!userSalesOrg_t && !userSalesOrg_PL) {
+									//if it's from SG check validy true
+									sg_nationalty = true;
+								} else {
+									sg_nationalty = check_nationality(2600)
+								}
+
 								if(sg_nationalty){
 									$($(elementToMove[2])).hide();
 								}else{
 									$( $(elementToMove[2]) ).appendTo("#swipe-sidebar-content");
 								}
+
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 19 March 2018
+									Task          :- Hide Recomended Material in SG
+									Page          :- Global
+									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Layout        :- Desktop
+								*/
+
 								$( $(elementToMove[3]) ).appendTo("#swipe-sidebar-content");
 								
 								$("#swipe-sidebar-content").find(".ui-collapsible-heading-toggle").each(function(index, data){
@@ -575,6 +602,9 @@ $(document).ready(function() {
 						File Location :- $BASE_PATH$/javascript/js-tablet.js
 						Layout        :- Desktop
 					*/
+
+					var redColor = "rgb(255, 0, 0)";
+					var blackColor = "#000000";
 
 					 function setListenOverridePrice() {
 						 setTimeout(function () {

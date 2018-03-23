@@ -81,6 +81,10 @@
         return valid;
     }
 
+    var isLoadingDone = function () {
+        return $("#jg-overlay").css("display") == "none" ? true : false;
+    }
+
 
     var $stripParent;
     var resizeHandler = null,
@@ -6172,6 +6176,53 @@
 
 
         });
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 21 March 2018
+            Task          :- highlight on Override Price on Mobile Device
+            Page          :- Model Configuration
+            File Location :- $BASE_PATH$/javascript/js-tablet.js
+            Layout        :- Desktop
+        */
+
+        var redColor = "rgb(255, 0, 0)";
+        var blackColor = "#000000";
+
+        function setListenOverridePrice() {
+            setTimeout(function () {
+                if (isLoadingDone()) {
+                    console.log("LISTEN OVERRIDE PRICE");
+                    $("input[name='overridePrice']").on("click focus", function () {
+
+                        $(this).css("color", redColor);
+
+                    });
+
+                    $("input[name='overridePrice']").on("blur", function () {
+
+                        if ($(this).val() == "0.0") {
+                            $(this).css("color", blackColor);
+                        }else{
+                            $(this).css("color", redColor);
+                        }
+
+                    });
+                } else {
+                    setListenOverridePrice();
+                }
+            }, 1000)
+        }
+
+        setListenOverridePrice();
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 21 March 2018
+            Task          :- highlight on Override Price on Mobile Device
+            Page          :- Model Configuration
+            File Location :- $BASE_PATH$/javascript/js-tablet.js
+            Layout        :- Desktop
+        */
+
     }
     /*
         End : 06 Nov 2017

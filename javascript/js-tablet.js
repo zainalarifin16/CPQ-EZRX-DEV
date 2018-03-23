@@ -2,6 +2,22 @@ console.log("js-tablet1");
 $(document).ready(function() {
 	console.log("js-tablet2");
 	
+	var check_nationality = function (nationality) {
+		var countryEle = document.getElementById('userSalesOrg_t');
+		if (countryEle == null) { //this is for material page.
+			countryEle = $('input[name="userSalesOrg_PL"]').val();
+			countryCode = countryEle;
+		} else {
+			var countryCode = parseInt(countryEle.value);
+		}
+		var valid = false;
+		if (nationality == countryCode) {
+			valid = true;
+		}
+
+		return valid;
+	}
+
 	function applyOrderPageChanges(){
 		setTimeout(function(){
 			if($('#jg-overlay').css("display") == "none"){
@@ -464,7 +480,13 @@ $(document).ready(function() {
 								var elementToMove = $(".ui-collapsible-inset");
 								
 								$( $(elementToMove[1]) ).appendTo("#swipe-sidebar-content");
-								$( $(elementToMove[2]) ).appendTo("#swipe-sidebar-content");
+
+								var sg_nationalty = check_nationality(2600);
+								if(sg_nationalty){
+									$($(elementToMove[2])).hide();
+								}else{
+									$( $(elementToMove[2]) ).appendTo("#swipe-sidebar-content");
+								}
 								$( $(elementToMove[3]) ).appendTo("#swipe-sidebar-content");
 								
 								$("#swipe-sidebar-content").find(".ui-collapsible-heading-toggle").each(function(index, data){
@@ -492,6 +514,32 @@ $(document).ready(function() {
 								$("#attribute-overrideBonusQty").css("width", "70px");
 								*/
 								// $('#jg-overlay').hide();
+
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 19 March 2018
+									Task          :- Hide button bar if slide shown up
+									Page          :- Global
+									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Layout        :- Desktop
+								*/
+
+								$(".sidebar-handle").on("click", function () {
+									var isSliderShow = $("#swipe-sidebar").hasClass("sidebar-state-1");
+									if (isSliderShow) {
+										$("#button-bar").show();
+									} else {
+										$("#button-bar").hide();
+									}
+								});
+
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 19 March 2018
+									Task          :- Hide button bar if slide shown up
+									Page          :- Global
+									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Layout        :- Desktop
+								*/
+
 								if($("#swipe-sidebar-content").html().length == 0){
 									reposition_content();
 								}

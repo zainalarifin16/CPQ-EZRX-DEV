@@ -18,6 +18,10 @@ $(document).ready(function() {
 		return valid;
 	}
 
+	var isLoadingDone = function () {
+		return $("#jg-overlay").css("display") == "none" ? true : false;
+	}
+
 	function applyOrderPageChanges(){
 		setTimeout(function(){
 			if($('#jg-overlay').css("display") == "none"){
@@ -563,6 +567,46 @@ $(document).ready(function() {
 						
 						// END UPDATE 19-01-2018
 
+
+					 /* 
+						Created By    :- Created By Zainal Arifin, Date : 21 March 2018
+						Task          :- highlight on Override Price on Mobile Device
+						Page          :- Model Configuration
+						File Location :- $BASE_PATH$/javascript/js-tablet.js
+						Layout        :- Desktop
+					*/
+
+					 function setListenOverridePrice() {
+						 setTimeout(function () {
+							 if (isLoadingDone()) {
+								 $("input[name='overridePrice']").on("click focus", function () {
+
+									 $(this).css("color", redColor);
+
+								 });
+
+								 $("input[name='overridePrice']").on("blur", function () {
+
+									 if ($(this).val() == "0.0") {
+										 $(this).css("color", blackColor);
+									 }
+
+								 });
+							 } else {
+								 setListenOverridePrice();
+							 }
+						 }, 1000)
+					 }
+
+					 setListenOverridePrice();
+
+					 /* 
+						Created By    :- Created By Zainal Arifin, Date : 21 March 2018
+						Task          :- highlight on Override Price on Mobile Device
+						Page          :- Model Configuration
+						File Location :- $BASE_PATH$/javascript/js-tablet.js
+						Layout        :- Desktop
+					*/
 
 						
 				}else if(pageTitle == "order page"){

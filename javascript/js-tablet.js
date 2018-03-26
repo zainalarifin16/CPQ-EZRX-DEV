@@ -22,6 +22,17 @@ $(document).ready(function() {
 		return $("#jg-overlay").css("display") == "none" ? true : false;
 	}
 
+	var userSalesOrg_t = (($("#userSalesOrg_t").length == 0) ? false : true);
+	var userSalesOrg_PL = (($('input[name="userSalesOrg_PL"]').length == 0) ? false : true);
+
+	var sg_nationalty = false;
+	if (!userSalesOrg_t && !userSalesOrg_PL) {
+		//if it's from SG check validy true
+		sg_nationalty = true;
+	} else {
+		sg_nationalty = check_nationality(2600)
+	}
+
 	function applyOrderPageChanges(){
 		setTimeout(function(){
 			if($('#jg-overlay').css("display") == "none"){
@@ -493,17 +504,6 @@ $(document).ready(function() {
 									Layout        :- Desktop
 								*/
 
-								var userSalesOrg_t = (($("#userSalesOrg_t").length == 0) ? false : true);
-								var userSalesOrg_PL = (($('input[name="userSalesOrg_PL"]').length == 0) ? false : true);
-
-								var sg_nationalty = false;
-								if (!userSalesOrg_t && !userSalesOrg_PL) {
-									//if it's from SG check validy true
-									sg_nationalty = true;
-								} else {
-									sg_nationalty = check_nationality(2600)
-								}
-
 								if(sg_nationalty){
 									$($(elementToMove[2])).hide();
 								}else{
@@ -523,6 +523,12 @@ $(document).ready(function() {
 								$("#swipe-sidebar-content").find(".ui-collapsible-heading-toggle").each(function(index, data){
 									$(data).css({ "background-color": "#afc008","border-radius": "0","color": "#fff", "border-color": "transparent"});
 								});
+
+								/* 8-03-2018 move button add and delete in My Favourite */
+								$("#AddCustFav").closest("span").css({ "position": "fixed", "bottom": "9%" });
+								var parent = $("#AddCustFav").closest(".ui-field-contain");
+								$("#AddCustFav").closest("span").appendTo($(parent).find(".messages"));
+								/* 8-03-2018 move button add and delete in My Favourite */
 								
 								$("#swipe-sidebar-content").siblings(".sidebar-handle").show();	
 								// END SLIDER CONTENT
@@ -594,6 +600,68 @@ $(document).ready(function() {
 						
 						// END UPDATE 19-01-2018
 
+
+					 /* 
+						 Created By    :- Created By Zainal Arifin, Date : 15 March 2018
+						 Task          :- highlight on QTY material in additional bonus for SG
+						 Page          :- Model Configuration
+						 File Location :- $BASE_PATH$/javascript/js-tablet.js
+						 Layout        :- Desktop
+					 */
+
+					 if (sg_nationalty) {
+						 var listEditedField = {};
+
+						 $("input[name='additionalMaterialQty']:not(input[type='hidden'])").map(function (index, data) {
+							 if ($(data).length > 0) {
+								 var id = $(data).attr("id").replace("additionalMaterialQty", "");
+								 if ($(data).val() != 0) {
+									 $("#additionalMaterialQty" + id).css("color", redColor);
+								 }
+							 }
+						 });
+
+						 $("input[name='additionalMaterialQty']").on("click focus starttouch", function () {
+
+							 var id = $(this).attr("id").replace("additionalMaterialQty", "");
+							 if (!listEditedField.hasOwnProperty(id)) {
+								 listEditedField[id] = { before: $(this).val(), after: 0 };
+							 }
+
+							 if ($(this).val() != 0) {
+								 $("#additionalMaterialQty" + id).css("color", redColor);
+							 }
+
+						 });
+
+						 $("input[name='additionalMaterialQty']").on("keyup blur change", function () {
+
+							 var id = $(this).attr("id").replace("additionalMaterialQty", "");
+							 listEditedField[id]["after"] = $(this).val();
+
+							 var isShowMessage = false;
+							 $.each(listEditedField, function (index, data) {
+								 if (!isShowMessage) {
+									 if (data.before != data.after) {
+										 $("#additionalMaterialQty" + index).css("color", redColor);
+									 }
+								 }
+							 });
+
+							 if (listEditedField[id]["after"] == 0) {
+								 $("#additionalMaterialQty" + id).css("color", blackColor);
+							 }
+
+						 });
+					 }
+
+					/* 
+						Created By    :- Created By Zainal Arifin, Date : 15 March 2018
+						Task          :- highlight on QTY material in additional bonus for SG
+						Page          :- Model Configuration
+						File Location :- $BASE_PATH$/javascript/js-tablet.js
+						Layout        :- Tablet
+					*/
 
 					 /* 
 						Created By    :- Created By Zainal Arifin, Date : 21 March 2018

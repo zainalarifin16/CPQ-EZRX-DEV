@@ -525,11 +525,26 @@ $(document).ready(function() {
 								});
 
 								/* 8-03-2018 move button add and delete in My Favourite */
-								$("#AddCustFav").closest("span").css({ "position": "fixed", "bottom": "9%" });
-								var parent = $("#AddCustFav").closest(".ui-field-contain");
-								$("#AddCustFav").closest("span").appendTo($(parent).find(".messages"));
+								$("#AddCustFav").closest("span").css({"width": "100%", "background": "#ffffff"});
+								$("#AddCustFav").css({"margin": "10px", "float":"right"});
+								$("#DeleteCustFav").css({"margin": "10px", "float":"right"});
+								var parent = $("#AddCustFav").closest(".ui-collapsible-inset");
+								var buttonAddDelete = $("#AddCustFav").closest("span");
+								$("#DeleteCustFav").prependTo($(buttonAddDelete));
+								$(buttonAddDelete).appendTo($(parent).find(".ui-collapsible-heading"));
 								/* 8-03-2018 move button add and delete in My Favourite */
-								
+								if($(parent).hasClass("ui-collapsible-collapsed")){
+									$(buttonAddDelete).hide();
+								}
+								var buttonHeadingFav = $("#AddCustFav").closest(".ui-collapsible-inset").find(".ui-collapsible-heading-toggle");
+								$(buttonHeadingFav).on("click", function(){
+									if ($(parent).hasClass("ui-collapsible-collapsed")) {
+										$(buttonAddDelete).show();
+									}else{
+										$(buttonAddDelete).hide();
+									}
+								});
+
 								$("#swipe-sidebar-content").siblings(".sidebar-handle").show();	
 								// END SLIDER CONTENT
 	
@@ -611,48 +626,58 @@ $(document).ready(function() {
 
 					 if (sg_nationalty) {
 						 var listEditedField = {};
+						 var listenQtyAdditionalBonus = function () {
+							 setTimeout(function(){
+								 if (isLoadingDone()) {
+									 $("input[name='additionalMaterialQty']:not(input[type='hidden'])").map(function (index, data) {
+										 if ($(data).length > 0) {
+											 var id = $(data).attr("id").replace("additionalMaterialQty", "");
+											 if ($(data).val() != 0) {
+												 $("#additionalMaterialQty" + id).css("color", redColor);
+											 }
+										 }
+									 });
 
-						 $("input[name='additionalMaterialQty']:not(input[type='hidden'])").map(function (index, data) {
-							 if ($(data).length > 0) {
-								 var id = $(data).attr("id").replace("additionalMaterialQty", "");
-								 if ($(data).val() != 0) {
-									 $("#additionalMaterialQty" + id).css("color", redColor);
+									 $("input[name='additionalMaterialQty']").on("click focus starttouch", function () {
+
+										 var id = $(this).attr("id").replace("additionalMaterialQty", "");
+										 if (!listEditedField.hasOwnProperty(id)) {
+											 listEditedField[id] = { before: $(this).val(), after: 0 };
+										 }
+
+										 if ($(this).val() != 0) {
+											 $("#additionalMaterialQty" + id).css("color", redColor);
+										 }
+
+									 });
+
+									 $("input[name='additionalMaterialQty']").on("keyup blur change", function () {
+
+										 var id = $(this).attr("id").replace("additionalMaterialQty", "");
+										 listEditedField[id]["after"] = $(this).val();
+
+										 var isShowMessage = false;
+										 $.each(listEditedField, function (index, data) {
+											 if (!isShowMessage) {
+												 if (data.before != data.after) {
+													 $("#additionalMaterialQty" + index).css("color", redColor);
+												 }
+											 }
+										 });
+
+										 if (listEditedField[id]["after"] == 0) {
+											 $("#additionalMaterialQty" + id).css("color", blackColor);
+										 }
+
+									 });
+								 } else {
+									 listenQtyAdditionalBonus();
 								 }
-							 }
-						 });
+							 }, 500);
+						 }
 
-						 $("input[name='additionalMaterialQty']").on("click focus starttouch", function () {
+						 listenQtyAdditionalBonus();
 
-							 var id = $(this).attr("id").replace("additionalMaterialQty", "");
-							 if (!listEditedField.hasOwnProperty(id)) {
-								 listEditedField[id] = { before: $(this).val(), after: 0 };
-							 }
-
-							 if ($(this).val() != 0) {
-								 $("#additionalMaterialQty" + id).css("color", redColor);
-							 }
-
-						 });
-
-						 $("input[name='additionalMaterialQty']").on("keyup blur change", function () {
-
-							 var id = $(this).attr("id").replace("additionalMaterialQty", "");
-							 listEditedField[id]["after"] = $(this).val();
-
-							 var isShowMessage = false;
-							 $.each(listEditedField, function (index, data) {
-								 if (!isShowMessage) {
-									 if (data.before != data.after) {
-										 $("#additionalMaterialQty" + index).css("color", redColor);
-									 }
-								 }
-							 });
-
-							 if (listEditedField[id]["after"] == 0) {
-								 $("#additionalMaterialQty" + id).css("color", blackColor);
-							 }
-
-						 });
 					 }
 
 					/* 

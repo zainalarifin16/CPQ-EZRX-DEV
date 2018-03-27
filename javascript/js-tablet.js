@@ -356,26 +356,58 @@ $(document).ready(function() {
 								$("#config-form").submit();
 							},2000);
 						});
+
+						/* 
+							Created By    :- Created By Zainal Arifin, Date : 27 March 2018
+							Task          :- Hide button bar if slide shown up
+							Page          :- Global
+							File Location :- $BASE_PATH$/javascript/js-tablet.js
+							Layout        :- Desktop
+						*/
 						
+						var hideAndShowBtnBottom = function(){
+							setTimeout(function () {
+								var isSliderShow = $("#swipe-sidebar").hasClass("sidebar-state-1");
+								if (!isSliderShow) {
+									$("#button-bar").slideDown();
+									$("#swipe-sidebar").css("height", "auto");
+								} else {
+									$("#button-bar").slideUp();
+									$("#swipe-sidebar").css("height", "calc( 100% - 54px )");
+								}
+							}, 500);
+						}
+
+						/* 
+						Created By    :- Created By Zainal Arifin, Date : 27 March 2018
+						Task          :- Hide button bar if slide shown up
+						Page          :- Global
+						File Location :- $BASE_PATH$/javascript/js-tablet.js
+						Layout        :- Desktop
+					*/
+
 						$("body").on("click touchend","#showFavdetails",function(e){
-									e.preventDefault();		
-									$("#swipe-sidebar-content").css("display", "block");									
-									$(".sidebar-handle-icon").trigger("swipeleft");
+							e.preventDefault();		
+							$("#swipe-sidebar-content").css("display", "block");									
+							$(".sidebar-handle-icon").trigger("swipeleft");
+
 						});
 						$("body").on("click touchend","#showMaterialSearch",function(e){
-									e.preventDefault();								
-									$(".sidebar-handle-icon").trigger("swiperight");
+							e.preventDefault();								
+							$(".sidebar-handle-icon").trigger("swiperight");
 						});
 						$("body").on("click tochend swipeleft swiperight","#swipe-sidebar",function(e){
-								if($(this).hasClass("sidebar-state-1")){
-									$("#showFavdetails").hide();
-									$("#showMaterialSearch").show();
-									//$("#attribute-currentCustFav").addClass("myFavMobile");
-									$('#attribute-currentCustFav').attr('style', 'height: 400px !important');
-								}else{
-									$("#showFavdetails").show();
-									$("#showMaterialSearch").hide();
-								}
+							if($(this).hasClass("sidebar-state-1")){
+								$("#showFavdetails").hide();
+								$("#showMaterialSearch").show();
+								//$("#attribute-currentCustFav").addClass("myFavMobile");
+								$('#attribute-currentCustFav').attr('style', 'height: 400px !important');
+							}else{
+								$("#showFavdetails").show();
+								$("#showMaterialSearch").hide();
+							}
+							hideAndShowBtnBottom();							
+								
 						});
 						$("body").on("click touchend","#duplicatefooter .cancelButton",function(e){
 						
@@ -574,15 +606,15 @@ $(document).ready(function() {
 									File Location :- $BASE_PATH$/javascript/js-tablet.js
 									Layout        :- Desktop
 								*/
-
-								$(".sidebar-handle").on("click", function () {
+								
+								/* $(".sidebar-handle").on("click touchend", function () {
 									var isSliderShow = $("#swipe-sidebar").hasClass("sidebar-state-1");
 									if (isSliderShow) {
-										$("#button-bar").show();
-									} else {
 										$("#button-bar").hide();
+									} else {
+										$("#button-bar").show();
 									}
-								});
+								}); */
 
 								/* 
 									Created By    :- Created By Zainal Arifin, Date : 19 March 2018

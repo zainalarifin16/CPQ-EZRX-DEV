@@ -2142,12 +2142,11 @@
             var $child = $(this).children('td');
             var $stock = $child.find('input[name*="inStock_l"]');
             var stockval = $stock.val();
-            
+
             var $qty_text = $child.find('input[name*="qty_l"]');
 
             if (stockval == 'No') {
-                $child.eq(5).css('color', 'red');
-                // $child.eq(6).css('color','red');
+                $($qty_text.siblings()[0]).css("color", "red");
                 $stock.parent().parent().parent().css('color', 'red');
                 $qty_text.parent().parent().parent().css('color', 'red');
             }
@@ -2155,11 +2154,11 @@
             var $overridePrice = $child.find('input[name*="isPriceOverride"]');
 
             if ($overridePrice.val() == 'true') {
-                $child.eq(6).css('color', 'red');
+                $($child.find("input[name*=_unitPrice_l]").siblings()[0]).css('color', 'red');
             }
 
             var $overrideBonusQty = $child.find('input[name*="bonusOverideFlag_l"]');
-            if( $overrideBonusQty.val() == "true" ){
+            if ($overrideBonusQty.val() == "true") {
                 // Qty Text in row of bonus
                 $qty_text.parent().parent().parent().css('color', 'red');
             }

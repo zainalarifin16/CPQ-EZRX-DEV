@@ -559,6 +559,14 @@ $(document).ready(function() {
 
 								$( $(elementToMove[3]) ).appendTo("#swipe-sidebar-content");
 								
+								js2("#CurrentCustFav").DataTable({
+									"bLengthChange": false,
+									"searching": false,
+									"pageLength": 5,
+								});
+
+								$("#CurrentCustFav").css({ "height": "auto" });								
+
 								$("#swipe-sidebar-content").find(".ui-collapsible-heading-toggle").each(function(index, data){
 									$(data).css({ "background-color": "#afc008","border-radius": "0","color": "#fff", "border-color": "transparent"});
 								});

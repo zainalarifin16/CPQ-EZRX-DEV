@@ -1082,13 +1082,20 @@
         //console.info(materialSearchStr);
         var searchStr = materialSearchStr.trim();
         var dataSet2 = [];
-        var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
-        var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
 
-        if($('input[name="userSalesOrg_PL"]').val()=="2800"){
-            ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v3/customMaterial_Master";
-            var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material:asc";
-        }
+        var salesOrg = $('input[name="userSalesOrg_PL"]').val();        
+        ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
+        var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&salesorg=" + salesOrg + "&orderby=material:asc";
+
+        // var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
+        // var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
+
+        // if($('input[name="userSalesOrg_PL"]').val()=="2800"){
+            // ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
+            // var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&salesorg=" + salesOrg + "&orderby=material:asc";            
+            /* ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v3/customMaterial_Master";
+            var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material:asc"; */
+        // }
         if (searchStr.slice(-1) === '%') {
             //console.log(searchStr);
             searchStr = searchStr.substring(0, searchStr.length - 1);
@@ -1309,12 +1316,18 @@
         if (userType === 'CSTeam' && enableOldMaterialSearch == "false") {
             //console.info('material search ajax call');
 
-            var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
-            var ajaxData = "orderby=material_desc:asc";
-            if($('input[name="userSalesOrg_PL"]').val()=="2800"){
-                ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v3/customMaterial_Master";
-                ajaxData = "orderby=material:asc";
-            }    
+            var salesOrg = $('input[name="userSalesOrg_PL"]').val();
+            ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
+            ajaxData = "q=\{\"sales_org\":\"" + salesOrg + "\"}&orderby=material:asc";
+
+            // var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
+            // var ajaxData = "orderby=material_desc:asc";
+            // if($('input[name="userSalesOrg_PL"]').val()=="2800"){
+                // ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
+                // ajaxData = "q=\{\"sales_org\":\"2800\"}&orderby=material:asc";
+                /* ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v3/customMaterial_Master";
+                ajaxData = "orderby=material:asc"; */
+            // }    
 
             $.ajax({
                 url: ajaxURL,

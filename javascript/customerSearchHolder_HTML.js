@@ -4,6 +4,21 @@ var pagetitle;
  
 $(document).ready(function(js2){
 
+	var check_nationality = function (nationality) {
+		var countryEle = document.getElementById('userSalesOrg_t');
+		if (countryEle == null) { //this is for material page.
+			countryEle = $('input[name="userSalesOrg_PL"]').val();
+			countryCode = countryEle;
+		} else {
+			var countryCode = parseInt(countryEle.value);
+		}
+		var valid = false;
+		if (nationality == countryCode) {
+			valid = true;
+		}
+
+		return valid;
+	}
 
 	// debugger;
 	// $.noConflict();
@@ -94,67 +109,79 @@ $(document).ready(function(js2){
 		*/
 
 		var zPUserType = $('#zPUserType').val();
+		var fileAttachmentBSID_t = $('#fileAttachmentBSID_t').val();
+		// localStorage.setItem("fileAttachmentBSID_t", fileAttachmentBSID_t);
+
 		if (zPUserType === 'CSTeam') {
 			//loadAjax();
 			searchCustomerList();
 
 		} else {
 
-			if( $('#customerMasterString_t').length ){
-				//var customerDetails = $("#actualMasterString").html();
-				var customerDetails = $("#customerMasterString_t").val();
-                 //console.log('customerDetails  PR 1.0  =====>>>>>>> ', customerDetails);
-				if(customerDetails === "" && $('#fileAttachmentBSID_t').val() == "") {
-					return true;
-				} else {
-						
-					//var transactionId = $("input[name='id']","form[name='bmDocForm']").val();
-					//setCookie(transactionId+"custData",customerDetails);
-					//var custData = getCookie(transactionId+"custData");
-					//if(custData !=undefined || custData !=null || custData != ""){
-					//}
-					var seachCustomer;
-					customer_master_string = customerDetails;
-					//$("#customerMasterString_t").val("");
+			/* 
+				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
+				Task          :- Search Customer from customerDetails.txt From URL
+				Page          :- Shopping Cart
+				File Location :- $BASE_PATH$/javascript/customerSearchHolder_HTML.js
+				Layout        :- Global
+			*/
 
-					// searchCustomerList();
+			var isPHCountry = check_nationality(2500);
+			// var isSGCountry = check_nationality(2600);
+			var usernameGetCustomer = "CPQAPIUser";
+			var passwordGetCustomer = "csC(#15^14";
 
-					searchCustList(customerDetails, seachCustomer);
-				    searchCustomerList(seachCustomer);
-					/*if($('#fileAttachmentBSID_t').length > 0){
-						if($('#fileAttachmentBSID_t').val() != ""){
-							$.ajax({
-								
-								type: "GET",
-								url: "/rest/v1/commerceProcesses/oraclecpqo/transactions/"+$('#fileAttachmentBSID_t').val()+"/attachments/importMaterials?docId=36244074&docNum=1",
-								dataType: "text"
-								
-							}).done(function(response) {
-								//$("#customerMasterString_t").val(data);
-								//$("#document-form").append("<div id ='ajaxdata'>"+data+"</div>");
-								customerDetails = response;
-								console.log("--------executed-----------"+response);
-							}).always(function(response){
-								searchCustList(customerDetails, seachCustomer);
-								searchCustomerList(seachCustomer);
+			/* if (isPHCountry){
 
-							});
-						}else{
+				// var isCPQAPIUSER = (window._BM_USER_LOGIN == "CPQAPIUser")? true : false;
+
+				// if (isCPQAPIUSER){
+				setTimeout(function(){
+					$.ajax({
+						header: { "Authorization": "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer) },
+						type: "GET",
+						url: "/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentBSID_t + "/attachments/customerDetails?docId=36244074&docNum=1",
+						dataType: "text",
+						success: function (customerDetails) {
+							// console.log(response);
 							searchCustList(customerDetails, seachCustomer);
 							searchCustomerList(seachCustomer);
+							$('.search-cust_wrapper').hide();
+
 						}
-						
-					}else{
-							searchCustList(customerDetails, seachCustomer);
-							searchCustomerList(seachCustomer);
-					}*/
-					
-					
-					$('.search-cust_wrapper').hide();
-					// console.log('customerDetails', customerDetails);
-				}
+						// ,
+						// beforeSend: function (xhr) {
+						// 	xhr.setRequestHeader("Authorization", "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer));
+						// }
+					});
+				}, 5000);
 
-			}
+			}else{ */
+				if ($('#customerMasterString_t').length > 0) {
+					var customerDetails = $("#customerMasterString_t").val();
+					// if (customerDetails === "" && $('#fileAttachmentBSID_t').val() == "") {
+					if (customerDetails === "") {
+						return true;
+					} else {
+						var seachCustomer;
+						customer_master_string = customerDetails;
+						searchCustList(customerDetails, seachCustomer);
+						searchCustomerList(seachCustomer);
+
+						$('.search-cust_wrapper').hide();
+					}
+
+				}
+			// }
+
+			/* 
+				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
+				Task          :- Search Customer from customerDetails.txt From URL
+				Page          :- Shopping Cart
+				File Location :- $BASE_PATH$/javascript/customerSearchHolder_HTML.js
+				Layout        :- Global
+			*/
+
 		}
 
 
@@ -876,7 +903,10 @@ var showCustomerList = function(customerDetails) {
 			if(userDetectFunc() == 'PH')
 			{
 				subDataSet = ['', colArr[2], colArr[0], colArr[1], colArr[3]];
-			}else{
+			}else if (userDetectFunc() === 'TW') {
+				subDataSet = ['', colArr[0], colArr[1], colArr[2], colArr[3], colArr[4]];
+			}
+			else{
 				subDataSet = ['', colArr[0], colArr[1],"",""];
 			}
 		}
@@ -936,6 +966,7 @@ var showCustomerList = function(customerDetails) {
 						}else if(userCountry === 'TW'){
 							 //console.log(' 88 TW ======>>>> ',full[2]+ '$$' + full[4] + '$$' +full[6]);
 								//FORMAT soldtoid$$shiptoid$$billtoid
+							console.log(full);
 							data = '<input type="radio" name="topCust" id= "topCust" value="' + full[1]+ '$$' + full[3] + '$$' +full[5] +'" >';			
 														
 						}else{

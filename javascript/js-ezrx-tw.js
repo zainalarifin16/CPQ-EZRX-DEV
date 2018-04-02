@@ -262,6 +262,31 @@ $(document).ready(function(){
               Created By    :- Created By Zainal Arifin, Date : 19 Feb 2018
               Task          :- TW-07 Address set layout correction.
               Page          :- Global
+              File Location :- $BASE_PATH$/javascript/js-ezrx-ph.js
+              Layout        :- Desktop
+            */
+
+            $("#readonly_1__shipTo_t_company_name").css({ "white-space": "normal" });
+            $("#readonly_1__soldTo_t_address").css({ "white-space": "normal" });
+            $("#readonly_1__soldTo_t_address_2").css({ "white-space": "normal" });
+            $("#readonly_1_soldToAddress3").css({ "white-space": "normal" });
+            $("#readonly_1_soldToAddress4").css({ "white-space": "normal" });
+            //ship to address
+            $("#readonly_1__shipTo_t_address_2").css({ "white-space": "normal" });
+            $("#readonly_1_customerAddressLine4").css({ "white-space": "normal" });
+
+            /* 
+              Created By    :- Created By Zainal Arifin, Date : 15 March 2018
+              Task          :- Remove Duplicate input field
+              Page          :- Global
+              File Location :- $BASE_PATH$/javascript/js-ezrx-ph.js
+              Layout        :- Desktop
+            */
+
+            /* 
+              Created By    :- Created By Zainal Arifin, Date : 19 Feb 2018
+              Task          :- TW-07 Address set layout correction.
+              Page          :- Global
               File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
               Layout        :- Both (Desktop/Mobile)
             */
@@ -326,7 +351,7 @@ $(document).ready(function(){
             */
 
             /* TW-05 and TW-13 Override Invoice Price */
-            override_redcolor();
+            // override_redcolor();
             /* TW-05 and TW-13 Override Invoice Price */
 
             /* TW-03 Price hover table columns to be corrected for TW - Quantity, Invoice Price, Unit Price.  */

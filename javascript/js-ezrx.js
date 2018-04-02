@@ -85,6 +85,16 @@
         return $("#jg-overlay").css("display") == "none" ? true : false;
     }
 
+    var isMobile = function () {
+        return (navigator.userAgent.match(/Android/i) ||
+            navigator.userAgent.match(/webOS/i) ||
+            navigator.userAgent.match(/iPhone/i) ||
+            navigator.userAgent.match(/iPad/i) ||
+            navigator.userAgent.match(/iPod/i) ||
+            navigator.userAgent.match(/BlackBerry/i) ||
+            navigator.userAgent.match(/Windows Phone/i)) ? true : false;
+
+    }
 
     var $stripParent;
     var resizeHandler = null,
@@ -371,7 +381,7 @@
                     bonusQtyTooltip($this);
                 });
 
-                $('.cell-overrideBonusQty input[type="checkbox"]').on('change', function() {
+                $('.cell-overrideBonusQty input[type="checkbox"]').on('click change', function() {
                     var $this = $(this);
                     bonusQtyOverride($this);
                 });
@@ -936,14 +946,15 @@
     */
     var bonusQtyOverride = function($this) {
         // var $this = $(this);
-        var qtyField = $this.parent().parent().parent().parent().prev().find('input[name="qty_text"]');
+        var qtyField = $($this).closest('tr').find('input[name="qty_text"]');
 
-        // console.log( '$this', qtyField );
-        if ($this.prop("checked") === true) {
-            // console.log('checked');
+        console.log( '$this', qtyField );
+        if ($this.prop("checked") == true) {
+            console.log('checked');
+            qtyField.css("color", "red");
             qtyField.prop('readonly', false);
         } else {
-            // console.log('unchecked');
+            console.log('unchecked');
             qtyField.prop('readonly', true);
         }
     };
@@ -2162,6 +2173,7 @@
         $('#line-item-grid .lig-side-scroller>table tr.lig-row.child').each(function() {
             var $child = $(this).children('td');
             var $stock = $child.find('input[name*="inStock_l"]');
+            var $invoiceOverridePrice = $child.find('input[name*="invoicePrice_l"]');
             var stockval = $stock.val();
 
             var $qty_text = $child.find('input[name*="qty_l"]');
@@ -2176,6 +2188,11 @@
 
             if ($overridePrice.val() == 'true') {
                 $($child.find("input[name*=_unitPrice_l]").siblings()[0]).css('color', 'red');
+            }
+
+            var textInvoiceOverridePrice = $($invoiceOverridePrice).find("span[data-varname='invoicePrice_l']");
+            if ($(textInvoiceOverridePrice).text().trim() != "NT$0.00"){
+                $(textInvoiceOverridePrice).css("color", "red");
             }
 
             var $overrideBonusQty = $child.find('input[name*="bonusOverideFlag_l"]');
@@ -6129,6 +6146,9 @@
         */
 
     }
+
+
+
     /*
         Start : 06 Nov 2017
         Task  : Edited fields should be in red font in both Order page and Shopping cart
@@ -6138,6 +6158,249 @@
     */
     function textColorQty() {
         console.log('textColorQty');
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 30 March 2018
+            Task          :- highlight on Shopping Cart
+            Page          :- Shopping Cart
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Global
+        */
+
+        var var_qty = ($("td.cell-qty_text").length > 0) ? "td.cell-qty_text" : "td.cell-qty";
+        var var_netpricedisc = ($("td.cell-netPriceDiscount").length > 0) ? "td.cell-netPriceDiscount" : "td.cell-netPriceDiscount";
+        var var_Invoiceoverrideprice = ($("td.cell-overrideInvoicePrice").length > 0) ? "td.cell-overrideInvoicePrice" : "td.cell-overrideInvoicePrice";
+        var var_overrideprice = ($("td.cell-overridePrice").length > 0) ? "td.cell-overridePrice" : "td.cell-overridePrice_currency";
+        var var_comments = ($("td.cell-comments").length > 0) ? "td.cell-comments" : "td.cell-comments";
+        var var_qtyBonus = ($("td.cell-additionalMaterialQty").length > 0) ? "td.cell-additionalMaterialQty" : "td.cell-additionalMaterialQty";
+        var var_bonusOverride = ($("td.cell-overrideBonusQty").length > 0) ? "td.cell-overrideBonusQty" : "td.cell-overrideBonusQty";
+
+        var redColor = "rgb(255, 0, 0)";
+        var blackColor = "rgb(0, 0, 0)";
+
+        var listEditedField = {};
+        console.log("APPLY check_user_change_value");
+        var var_find_text = (isMobile()) ? ".form-field" : ".text-field";
+
+        $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_Invoiceoverrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).map(function (index, data) {
+
+            if (!isMobile()) {
+                if ($(this).closest(var_qty.replace("td", "")).length > 0) {
+                    id = $(this).attr("id").replace(var_qty.replace("td.cell-", "") + "-", "");
+                    if ($(this).val() > $("#stockQty-" + id).val()) {
+                        $(this).css("color", redColor);
+                    }
+                    if ($("#inStock-"+id).val().toLowerCase() == "no" ){
+                        listEditedField['qty_'+id] = { stock: 'no' };                        
+                        $(this).css("color", redColor);
+                    }else{
+                        listEditedField['qty_'+id] = { stock: 'yes' };
+                    }
+                }
+
+                var basic_value = 0;
+
+                if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
+                    id = $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                    if (parseInt( $(this).val() ) != basic_value) {
+                        console.log("#" + var_qty.replace("td.cell-", "") + "-" + id );                        
+                        $(this).css("color", redColor);
+                        $("#overrideInvoicePrice-" + id + "-display").css("color", redColor);                        
+                        $("#" + var_qty.replace("td.cell-", "") +"-" + id).css("color", redColor);
+                    }
+                }
+
+                if ($(this).closest(var_qtyBonus.replace("td", "")).length > 0) {
+                    // id = $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", "") + "-", "");
+                    if( $(this).val() != basic_value ){
+                        $(this).css("color", redColor);
+                    }
+                }
+                
+                basic_value = "";                
+                if ($(this).closest(var_Invoiceoverrideprice.replace("td", "")).length > 0) {
+                    id = $(this).attr("id").replace(var_Invoiceoverrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                    if ($(this).val() != basic_value) {
+                        $(this).css("color", redColor);
+                        $("#overridePrice-" + id ).css("color", redColor);                        
+                        // $("#" + var_qty.replace("td.cell-", "") +"-" + id).css("color", redColor);
+                    }
+                }
+
+            }
+
+        });
+
+        $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_Invoiceoverrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).on("click focus focusin", function () {
+
+            var id = "";
+            if ($(this).closest(var_qty.replace("td", "")).length > 0) {
+                id = "qty_" + $(this).attr("id").replace(var_qty.replace("td.cell-", ""), "");
+                $(this).css("color", redColor);
+            }
+
+            console.log( $(this).closest(var_overrideprice.replace("td", "")).length );
+            if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
+                if (isMobile()) {
+                    id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                } else {
+                    id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                }
+
+                console.log("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("op_", ""));
+                $("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("op_", "")).css("color", redColor);
+                $("#overrideInvoicePrice-" + id.replace("op_", "") + "-display").css("color", redColor);                
+                $(this).css("color", redColor);
+            }
+
+            if ($(this).closest(var_Invoiceoverrideprice.replace("td", "")).length > 0) {
+                id = "iop_" + $(this).attr("id").replace(var_Invoiceoverrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                $("#overridePrice-" + id.replace("iop_", "")).css("color", redColor);  
+                $("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("iop_", "")).css("color", redColor);                              
+                $(this).css("color", redColor);
+            }
+
+            if ($(this).closest(var_netpricedisc.replace("td", "")).length > 0) {
+                id = "oip_" + $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", ""), "");
+                $(this).css("color", redColor);
+            }
+
+            if ($(this).closest(var_comments.replace("td", "")).length > 0) {
+                id = "cmt_" + $(this).attr("id").replace(var_comments.replace("td.cell-", ""), "");
+                $(this).css("color", redColor);
+            }
+
+            if ($(this).closest(var_qtyBonus.replace("td", "")).length > 0) {
+                id = "qtyb_" + $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", "") + "-", "");
+                $(this).css("color", redColor);
+            }
+
+
+
+            if (!listEditedField.hasOwnProperty(id)) {
+                listEditedField[id] = { before: $(this).val() };
+            }else{
+                listEditedField[id]['before'] = $(this).val();
+            }
+
+        });
+
+        $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_Invoiceoverrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).on("keyup blur", function () {
+
+            var id = "";
+            if ($(this).closest(var_qty.replace("td", "")).length > 0) {
+                id = "qty_" + $(this).attr("id").replace(var_qty.replace("td.cell-", "")+"-", "");
+            }
+
+            if (isMobile()) {
+                if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
+                    id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                }
+            }
+            else {
+                if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
+                    id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                }
+            }
+
+            if ($(this).closest(var_Invoiceoverrideprice.replace("td", "")).length > 0) {
+                id = "iop_" + $(this).attr("id").replace(var_Invoiceoverrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+            }
+
+            if ($(this).closest(var_netpricedisc.replace("td", "")).length > 0) {
+                id = "oip_" + $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", ""), "");
+            }
+
+            if ($(this).closest(var_comments.replace("td", "")).length > 0) {
+                id = "cmt_" + $(this).attr("id").replace(var_comments.replace("td.cell-", ""), "");
+            }
+
+            if ($(this).closest(var_qtyBonus.replace("td", "")).length > 0) {
+                id = "qtyb_" + $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", "") + "-", "");
+            }
+
+            listEditedField[id]["after"] = $(this).val();
+            var currentObject = $(this);
+            // var isShowMessage = false;
+            console.log(listEditedField);
+            $.each(listEditedField, function (index, data) {
+
+                if (index == id) {
+                    if (data.before == data.after) {
+                        $(currentObject).css("color", blackColor);
+                        if (id.indexOf("op_") != -1) {
+                            $("#overrideInvoicePrice-" + id.replace("op_", "") + "-display").css("color", blackColor);             
+                            if (typeof (data.stock) != undefined && data.stock == "yes") {
+                                $("#" + var_qty.replace("td.cell-", "") +"-" + id.replace("op_", "")).css("color", blackColor);
+                            }                                           
+                        } else if (id.indexOf("iop_") != -1){
+                            $("#overridePrice-" + id.replace("iop_", "") + "-display").css("color", blackColor);
+                            if (typeof (data.stock) != undefined && data.stock == "yes" ){
+                                $("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("iop_", "")).css("color", blackColor);
+                            }
+                        }
+                    } else {
+                        $(currentObject).css("color", redColor);
+                        if (id.indexOf("op_") != -1) {
+                            $("#overrideInvoicePrice-" + id.replace("op_", "") + "-display").css("color", redColor);                            
+                            $("#" + var_qty.replace("td.cell-", "") +"-" + id.replace("op_", "")).css("color", redColor);
+                        } else if (id.indexOf("iop_") != -1) {
+                            $("#overridePrice-" + id.replace("iop_", "") + "-display").css("color", redColor);
+                            $("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("iop_", "")).css("color", redColor);
+                        }
+                    }
+                }
+
+                /* if (!isShowMessage) {
+                    if (data.before != data.after) {
+                        isShowMessage = true;
+                    }
+                } else {
+                    return false;
+                } */
+            });
+
+            /* if (isShowMessage) {
+                disabled_btn_save_show_alert();
+            } else {
+                enabled_btn_save_remove_alert();
+            } */
+
+        });
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 30 March 2018
+            Task          :- highlight on Shopping Cart
+            Page          :- Shopping Cart
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Global
+        */
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+            Task          :- highlight Invoice Override Price on Order Page
+            Page          :- Order Page
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Global
+        */
+
+        $('#line-item-grid').find('tr.child-line-item').each(function (index, data) {
+            var textInvoiceOverridePrice = $(data).find("span[data-varname='invoicePrice_l']");
+            if ($(textInvoiceOverridePrice).text().trim() != "NT$0.00") {
+                $(textInvoiceOverridePrice).css("color", "red");
+            }
+        });
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+            Task          :- highlight Invoice Override Price on Order Page
+            Page          :- Order Page
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Global
+        */
+
+
+
         $qtySel = $('.cell-qty_text input[name="qty_text"] , .cell-overridePrice input[name="overridePrice"]');
 
 
@@ -6150,7 +6413,7 @@
          */
         
             var $overrideInvPrice = $('.cell-overrideInvoicePrice input[name="overrideInvoicePrice-display"]');
-			$overrideInvPrice.off();
+			// $overrideInvPrice.off();
             $overrideInvPrice.bind('keydown keyup change focus',function(){
                 if($('input[name="userSalesOrg_PL"]').val()=="2800"){
                     //parseFloat($('.cell-overrideInvoicePrice input[name="overrideInvoicePrice-display"]').val().replace(/\D/g,''));
@@ -6173,7 +6436,7 @@
 
         $outofstock = false;
 		
-		$qtySel.off();
+		// $qtySel.off();
         $qtySel.bind('focus keydown', function() {
 
             $(this).css('color', '#ff0000');
@@ -6654,6 +6917,9 @@
 
                replace css for displaying material description, this need word wrap view text.
             */
+            if (i == 0) {
+                return true;
+            }
             $(data).css("white-space", "normal");
             /* add css white-space then give value normal */
             /* Start : 17 March 2017 */
@@ -6676,10 +6942,15 @@
                     */
 
                     if($('input[name="userSalesOrg_PL"]').val()=="2800" || (document.getElementById('userSalesOrg_t').value == '2800')){
-                        var trNo = parseInt($(this).parent().parent().parent().parent().attr('data-sequence-number-field-index'));
+                        /* var trNo = parseInt($(this).parent().parent().parent().parent().attr('data-sequence-number-field-index'));
                         console.log(trNo);
                         var chineseTxt = $('span[data-varname="chineseDescription_l"]').eq(trNo).text().trim();
-                        console.warn(chineseTxt.length);
+                        console.warn(chineseTxt.length); */
+
+                        var parent = $(this).closest(".line-item");
+                        var chineseChild = $(parent).find("td[id*='_chineseDescription_l_']");
+                        chineseTxt = $(chineseChild).find('span[data-varname="chineseDescription_l"]').text().trim();
+
                         if(chineseTxt.length > 0){
                             input_val = chineseTxt;
                             console.log(input_val);

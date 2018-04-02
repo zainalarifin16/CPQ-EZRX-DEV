@@ -1212,8 +1212,54 @@
 		var custArr = null;
 		var totalRecs = null;
 		var userType = $('input[name="zPUserType"]').val();
-		if (userType !== 'CSTeam'){
-			customerDetails = $("#actualMasterString").html();
+        if (userType !== 'CSTeam'){
+
+            /* 
+				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
+				Task          :- Search Customer from customerDetails.txt From URL
+				Page          :- Shopping Cart
+				File Location :- $BASE_PATH$/javascript/js-ezrx.js
+				Layout        :- Global
+            */
+
+            var isPHCountry = check_nationality(2500);
+            // var isSGCountry = check_nationality(2600);
+            var usernameGetCustomer = "CPQAPIUser";
+            var passwordGetCustomer = "csC(#15^14";
+
+            // if (isPHCountry) {
+
+            // var isCPQAPIUSER = (window._BM_USER_LOGIN == "CPQAPIUser") ? true : false;
+
+            // if(isCPQAPIUSER){
+            /* var fileAttachmentBSID_t = localStorage.getItem("fileAttachmentBSID_t");
+            $.ajax({
+                type: "GET",
+                url: "/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentBSID_t + "/attachments/materialDetails?docId=36244074&docNum=1",
+                dataType: "text",
+                success: function (actualMasterString) {
+                    customerDetails = actualMasterString;
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer));
+                }
+            }); */
+            /*}else{
+                customerDetails = $("#actualMasterString").html();
+            }*/
+
+            // } else {
+            customerDetails = $("#actualMasterString").html();
+            // }
+
+            /* 
+				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
+				Task          :- Search Material from MaterialDetails.txt From URL
+				Page          :- Shopping Cart
+				File Location :- $BASE_PATH$/javascript/js-ezrx.js
+				Layout        :- Global
+			*/
+
             custArr = customerDetails.split("##");
 			totalRecs = custArr.length;
 		}

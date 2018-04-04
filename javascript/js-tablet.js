@@ -1,4 +1,5 @@
 console.log("js-tablet1");
+var js2 = jQuery.noConflict();
 $(document).ready(function() {
 	console.log("js-tablet2");
 	
@@ -18,8 +19,8 @@ $(document).ready(function() {
 		return valid;
 	}
 
-	var isLoadingDone = function () {
-		return $("#jg-overlay").css("display") == "none" ? true : false;
+	var isLoadingDone = function(){
+		return $("#jg-overlay").css("display") == "none"? true : false;
 	}
 
 	var userSalesOrg_t = (($("#userSalesOrg_t").length == 0) ? false : true);
@@ -287,28 +288,6 @@ $(document).ready(function() {
 				 if($("#line-item-grid").length > 0){
 					 pageTitle = "order page";
 
-					 /* 
-				       Created By    :- Created By Zainal Arifin, Date : 21 Feb 2018
-				       Task          :- SG-04 In Tablet when typing on the Ordering requst Number field, cursor moves out sometine automatically
-				       Page          :- Order Page
-				       File Location :- $BASE_PATH$/javascript/js-tablet.js
-				       Layout        :- Mobile
-				     */
-
-					 $(".form-field").on("blur", function(){
-						var cur_pos = $(window).scrollTop();
-						setTimeout(function(){
-							window.scrollTo(0, cur_pos);
-						}, 500);
-					});
-
-					/* 
-				       Created By    :- Created By Zainal Arifin, Date : 21 Feb 2018
-				       Task          :- SG-04 In Tablet when typing on the Ordering requst Number field, cursor moves out sometine automatically
-				       Page          :- Order Page
-				       File Location :- $BASE_PATH$/javascript/js-tablet.js
-				       Layout        :- Mobile
-				     */
 				 }
 				 
 				 if(pageTitle == "model configuration"){
@@ -365,7 +344,7 @@ $(document).ready(function() {
 							Layout        :- Desktop
 						*/
 						
-						var hideAndShowBtnBottom = function(){
+						var hideAndShowBtnBottom = function () {
 							setTimeout(function () {
 								var isSliderShow = $("#swipe-sidebar").hasClass("sidebar-state-1");
 								if (!isSliderShow) {
@@ -390,7 +369,6 @@ $(document).ready(function() {
 							e.preventDefault();		
 							$("#swipe-sidebar-content").css("display", "block");									
 							$(".sidebar-handle-icon").trigger("swipeleft");
-
 						});
 						$("body").on("click touchend","#showMaterialSearch",function(e){
 							e.preventDefault();								
@@ -406,8 +384,7 @@ $(document).ready(function() {
 								$("#showFavdetails").show();
 								$("#showMaterialSearch").hide();
 							}
-							hideAndShowBtnBottom();							
-								
+							hideAndShowBtnBottom();									
 						});
 						$("body").on("click touchend","#duplicatefooter .cancelButton",function(e){
 						
@@ -517,6 +494,7 @@ $(document).ready(function() {
 						// START SLIDER CONTENT
 
 						$("#swipe-sidebar-content").css("display", "block");
+
 						//$("#swipe-sidebar-content").html("");					
 						function reposition_content(){
 							// $('#jg-overlay').show();
@@ -526,6 +504,7 @@ $(document).ready(function() {
 								
 								var elementToMove = $(".ui-collapsible-inset");
 								
+								$(elementToMove[1]).show();
 								$( $(elementToMove[1]) ).appendTo("#swipe-sidebar-content");
 
 								js2("#PastOrders").DataTable({
@@ -557,6 +536,15 @@ $(document).ready(function() {
 									Layout        :- Desktop
 								*/
 
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 27 March 2018
+									Task          :- Add paggination on favorite table
+									Page          :- Global
+									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Layout        :- Desktop
+								*/
+
+								$(elementToMove[3]).show();
 								$( $(elementToMove[3]) ).appendTo("#swipe-sidebar-content");
 								
 								js2("#CurrentCustFav").DataTable({
@@ -565,7 +553,15 @@ $(document).ready(function() {
 									"pageLength": 5,
 								});
 
-								$("#CurrentCustFav").css({ "height": "auto" });								
+								$("#CurrentCustFav").css({"height":"auto"});								
+
+																/* 
+									Created By    :- Created By Zainal Arifin, Date : 27 March 2018
+									Task          :- Add paggination on favorite table
+									Page          :- Global
+									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Layout        :- Desktop
+								*/
 
 								$("#swipe-sidebar-content").find(".ui-collapsible-heading-toggle").each(function(index, data){
 									$(data).css({ "background-color": "#afc008","border-radius": "0","color": "#fff", "border-color": "transparent"});
@@ -639,7 +635,7 @@ $(document).ready(function() {
 									Layout        :- Desktop
 								*/
 
-								if($("#swipe-sidebar-content").html().length == 0){
+								if ($("#swipe-sidebar-content").children(":not('.sidebar-content-inner')").length == 0){
 									reposition_content();
 								}
 							}, 1000);

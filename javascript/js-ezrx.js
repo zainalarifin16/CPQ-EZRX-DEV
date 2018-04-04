@@ -5096,14 +5096,17 @@ if ( $('#customerMasterString_t').length > 0 ) {
 
         if( flag == "rightnow" ){
            var desktopMenu =  document.querySelector('.jg-box-sidenav');
+            var target_button = "home";
            if(desktopMenu !== null){
               desktopMenu.style.display = "none";
            }
            if(layout == 'Desktop'){
 
-            $("#close").closest(".button-middle").show();
-
-            $("#close").on("click", function(){
+            $("#" + target_button).off();
+            $("#home").closest("table").removeAttr("onclick").css("margin", "0px 10px");
+            $("#" + target_button).closest(".button-middle").show();
+            $("#" + target_button).on("click", function (e) {
+                e.preventDefault();
                 localStorage.removeItem("flag");
                 window.close();
             });
@@ -5114,25 +5117,15 @@ if ( $('#customerMasterString_t').length > 0 ) {
              }
            }
            if(layout == 'Tablet'){
-                if($($(".action.action-type-modify")[1]).text().trim().toLowerCase() == "close"){
-
-                    $( $(".action.action-type-modify")[1] ).on("click", function(){
-                        localStorage.removeItem("flag");
-                        window.close();
-                    });
-
-                }else{
-
-                    $($(".action.action-type-modify")[2]).show();
-
-                    $( $(".action.action-type-modify")[2] ).on("click", function(){
-                        localStorage.removeItem("flag");
-                        window.close();
-                    });
-
-                }
-
-
+                
+                $(".action.action-type-modify").each(function (index, data) {
+                   if ($(data).text().trim().toLowerCase() == "home") {
+                       $(data).on("click", function () {
+                           localStorage.removeItem("flag");
+                           window.close();
+                       });
+                   }
+                });
 
                 var menu_mobile = document.querySelector('#menu_mobile');
                 if(menu_mobile !== null){
@@ -6424,6 +6417,20 @@ if ( $('#customerMasterString_t').length > 0 ) {
             Layout        :- Global
         */
 
+        function disabled_btn_save_show_alert() {
+            if ($("#update-alert").length == 0) {
+                var updateMsg = "<div id='update-alert' class='updateMsg'>Please click 'update' to proceed.</div>";
+                $('#materialArrayset').after(updateMsg);
+                $("#update-alert").css("padding-bottom", "30px");
+                $("#btn-cart-save").attr("disabled", true).css({ "background-color": "grey" });
+            }
+        }
+
+        function enabled_btn_save_remove_alert() {
+            $("#update-alert").remove();
+            $("#btn-cart-save").attr("disabled", false).css({ "background-color": "#0C727A" });
+        }
+
         var var_qty = ($("td.cell-qty_text").length > 0) ? "td.cell-qty_text" : "td.cell-qty";
         var var_netpricedisc = ($("td.cell-netPriceDiscount").length > 0) ? "td.cell-netPriceDiscount" : "td.cell-netPriceDiscount";
         var var_Invoiceoverrideprice = ($("td.cell-overrideInvoicePrice").length > 0) ? "td.cell-overrideInvoicePrice" : "td.cell-overrideInvoicePrice";
@@ -6608,20 +6615,24 @@ if ( $('#customerMasterString_t').length > 0 ) {
                     }
                 }
 
-                /* if (!isShowMessage) {
+            });
+
+            var isShowMessage = false;
+            $.each(listEditedField, function (index, data) {
+                if (!isShowMessage) {
                     if (data.before != data.after) {
                         isShowMessage = true;
                     }
                 } else {
                     return false;
-                } */
+                }
             });
 
-            /* if (isShowMessage) {
+            if (isShowMessage) {
                 disabled_btn_save_show_alert();
             } else {
                 enabled_btn_save_remove_alert();
-            } */
+            }
 
         });
 

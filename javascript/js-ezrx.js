@@ -5402,7 +5402,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
                     mobile_orderpage();
                     mobile_customerSearch();
                     if ($('#frequentlyAccessedCustomers_t').length) {
-                        var customerDetails = $("#frequentlyAccessedCustomers_t").val();
+                        var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
                         if (customerDetails == "") {
                             return true;
                         } else {
@@ -5810,7 +5810,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
                 mobile_customerSearch();
 
                 if ($('#frequentlyAccessedCustomers_t').length) {
-                    var customerDetails = $("#frequentlyAccessedCustomers_t").val();
+                    var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
                     if (customerDetails == "") {
                         return true;
                     } else {

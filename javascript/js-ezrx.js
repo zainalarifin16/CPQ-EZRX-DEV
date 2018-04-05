@@ -3087,7 +3087,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
                         */
 
                     }
-
+                    mobile_pricingChange();
                     transform_newcopypage();
                 } else if (pagetitle == 'model configuration') {
                     /*
@@ -6183,7 +6183,8 @@ if ( $('#customerMasterString_t').length > 0 ) {
 					//}
 					mobile_checkItemOnCart();
 					order_page_stock_color();
-					mobile_rowBgColor();
+                    mobile_rowBgColor();
+                    mobile_pricingChange();
 					// Delete Line Item Action
 					mobile_deleteLineItem();
 					mobile_redirect_materialpage();
@@ -6422,13 +6423,21 @@ if ( $('#customerMasterString_t').length > 0 ) {
                 var updateMsg = "<div id='update-alert' class='updateMsg'>Please click 'update' to proceed.</div>";
                 $('#materialArrayset').after(updateMsg);
                 $("#update-alert").css("padding-bottom", "30px");
-                $("#btn-cart-save").attr("disabled", true).css({ "background-color": "grey" });
+                if ($("#btn-cart-save").length > 0) {
+                    $("#btn-cart-save").attr("disabled", true).css({ "background-color": "grey" });
+                } else {
+                    $("#btn-cart-addtoorder").attr("disabled", true).css({ "background-color": "grey" });
+                }
             }
         }
 
         function enabled_btn_save_remove_alert() {
             $("#update-alert").remove();
-            $("#btn-cart-save").attr("disabled", false).css({ "background-color": "#0C727A" });
+            if ($("#btn-cart-save").length > 0) {
+                $("#btn-cart-save").attr("disabled", false).css({ "background-color": "#0C727A" });
+            } else {
+                $("#btn-cart-addtoorder").attr("disabled", false).css({ "background-color": "#0C727A" });
+            }
         }
 
         var var_qty = ($("td.cell-qty_text").length > 0) ? "td.cell-qty_text" : "td.cell-qty";

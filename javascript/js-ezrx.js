@@ -946,17 +946,18 @@
     */
     var bonusQtyOverride = function($this) {
         // var $this = $(this);
-        var qtyField = $($this).closest('tr').find('input[name="qty_text"]');
+        // console.log($($this).closest('tr') );
+        // var qtyField = $($($this).closest('tr')).find('input[name="qty_text"]');
 
-        console.log( '$this', qtyField );
-        if ($this.prop("checked") == true) {
-            console.log('checked');
-            qtyField.css("color", "red");
-            qtyField.prop('readonly', false);
-        } else {
-            console.log('unchecked');
-            qtyField.prop('readonly', true);
-        }
+        //     console.log( '$this', qtyField );
+        // if ($this.prop("checked") == true) {
+        //     console.log('checked');
+        //     qtyField.css("color", "red");
+        //     qtyField.prop('readonly', false);
+        // } else {
+        //     console.log('unchecked');
+        //     qtyField.prop('readonly', true);
+        // }
     };
     /*
         End : 10 Nov 2017
@@ -1097,9 +1098,9 @@
         var salesOrg = $('input[name="userSalesOrg_PL"]').val();
         ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
         var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
-
+        
         if (salesOrg != 2600 && typeof salesOrg != 'undefined' ) {
-            ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
+            ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";            
         // if (typeof salesOrg != 'undefined') {
             ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&salesorg=" + salesOrg + "&orderby=material:asc";
         }
@@ -1214,7 +1215,7 @@
 		var custArr = null;
 		var totalRecs = null;
 		var userType = $('input[name="zPUserType"]').val();
-        if (userType !== 'CSTeam'){
+		if (userType !== 'CSTeam'){
 
             /* 
 				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
@@ -1223,7 +1224,7 @@
 				File Location :- $BASE_PATH$/javascript/js-ezrx.js
 				Layout        :- Global
             */
-
+            
             var isPHCountry = check_nationality(2500);
             // var isSGCountry = check_nationality(2600);
             var usernameGetCustomer = "CPQAPIUser";
@@ -1231,27 +1232,27 @@
 
             // if (isPHCountry) {
 
-            // var isCPQAPIUSER = (window._BM_USER_LOGIN == "CPQAPIUser") ? true : false;
+                // var isCPQAPIUSER = (window._BM_USER_LOGIN == "CPQAPIUser") ? true : false;
 
-            // if(isCPQAPIUSER){
-            /* var fileAttachmentBSID_t = localStorage.getItem("fileAttachmentBSID_t");
-            $.ajax({
-                type: "GET",
-                url: "/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentBSID_t + "/attachments/materialDetails?docId=36244074&docNum=1",
-                dataType: "text",
-                success: function (actualMasterString) {
-                    customerDetails = actualMasterString;
-                },
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer));
-                }
-            }); */
-            /*}else{
-                customerDetails = $("#actualMasterString").html();
-            }*/
+                // if(isCPQAPIUSER){
+                    /* var fileAttachmentBSID_t = localStorage.getItem("fileAttachmentBSID_t");
+                    $.ajax({
+                        type: "GET",
+                        url: "/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentBSID_t + "/attachments/materialDetails?docId=36244074&docNum=1",
+                        dataType: "text",
+                        success: function (actualMasterString) {
+                            customerDetails = actualMasterString;
+                        },
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("Authorization", "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer));
+                        }
+                    }); */
+                /*}else{
+                    customerDetails = $("#actualMasterString").html();
+                }*/
 
             // } else {
-            customerDetails = $("#actualMasterString").html();
+                customerDetails = $("#actualMasterString").html();
             // }
 
             /* 
@@ -1382,14 +1383,14 @@
             var salesOrg = $('input[name="userSalesOrg_PL"]').val();
             ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
             var ajaxData = "orderby=material_desc:asc";
-
+            
             if (salesOrg != 2600 && typeof salesOrg != 'undefined') {
                 ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
             // if (typeof salesOrg != 'undefined') {
                 ajaxData = "q=\{\"sales_org\":\"" + salesOrg + "\"}&orderby=material:asc";
             }
 
-            // var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
+             // var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
             // var ajaxData = "orderby=material_desc:asc";
             // if($('input[name="userSalesOrg_PL"]').val()=="2800"){
                 // ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
@@ -1637,9 +1638,9 @@
             var data = response.items;
             $.each(data, function(i, item) {
                 var subDataSet = [
-                    "",
-                    item.customer_soldto_id, item.customer_shipto_id, item.customer_name, item.customer_corp_group, item.cust_shpto_add1, item.cust_shpto_addr2, item.customer_ship_phone, item.customer_shpto_pcode
-                ];
+                                    "", 
+                                    item.customer_soldto_id, item.customer_shipto_id, item.customer_name, item.customer_corp_group, item.cust_shpto_add1, item.cust_shpto_addr2, item.customer_ship_phone, item.customer_shpto_pcode
+                                ];
 
                 /*if(userCountry === 'PH'){
                     subDataSet = ["", item.customer_soldto_id, item.customer_name, item.customer_corp_group, item.cust_shpto_add1, item.cust_shpto_addr2, item.customer_ship_phone, item.customer_shpto_pcode];
@@ -1687,16 +1688,16 @@
                         colArr[14],
                     ];
                 }else{
-                    subDataSet = [  '',
-                        colArr[0],
-                        colArr[1],
-                        colArr[2],
-                        colArr[3],
-                        colArr[4],
-                        colArr[5],
-                        colArr[6],
-                        colArr[7]
-                    ];
+                    subDataSet = [  '', 
+                                    colArr[0], 
+                                    colArr[1], 
+                                    colArr[2], 
+                                    colArr[3], 
+                                    colArr[4], 
+                                    colArr[5], 
+                                    colArr[6], 
+                                    colArr[7]
+                                ];
                 }
                 dataSet.push(subDataSet);
             }
@@ -1715,7 +1716,7 @@
         var userColumn = [];
 
         if (check_nationality(2500)) {
-
+            
             userColumn.push({ title: "" });
 
             coloumn = $("#applicableColumnsForCustomerSearch").val().split("$$");
@@ -1783,7 +1784,7 @@
                                 disabled = "disabled";
                             }
                             console.log(full);
-                            data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '" data-suspended="'+full[13]+'" '+disabled+' >';
+							data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '" data-suspended="'+full[13]+'" '+disabled+' >';
 						} else{
 							data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '">';
 						}
@@ -1859,7 +1860,7 @@
                         // console.log('full', full[2]);
                         if (type === 'display') {
                            // data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '">';
-                                                      if (check_nationality(2500)) {
+                            if (check_nationality(2500)) {
 
                                 var disabled = '';
 
@@ -2205,7 +2206,7 @@
             e.preventDefault();
             e.stopPropagation();
         });
-
+        
         var var_qty = ($("td.cell-qty_text").length > 0) ? "td.cell-qty_text" : "td.cell-qty";
 
         $('.cell-overrideBonusQty').has('div').find(".ui-flipswitch").on("swipe", function () {
@@ -2225,7 +2226,7 @@
 
             var selectedOverrideBonus = $(this).parent().parent().next().find('select[name=overrideBonusQty]');
             $qtyVal = $(selectedOverrideBonus).val();
-
+            
             if ($qtyVal == 'false') {
                 $("#" + var_qty.replace("td.cell-", "") + $(selectedOverrideBonus).attr("id").replace("overrideBonusQty", "")).prop("readonly", "readonly");
                 $('#overrideMsg').show(600);
@@ -2347,7 +2348,6 @@
             var $stock = $child.find('input[name*="inStock_l"]');
             var $invoiceOverridePrice = $child.find('input[name*="invoicePrice_l"]');
             var stockval = $stock.val();
-
             var $qty_text = $child.find('input[name*="qty_l"]');
 
             if (stockval == 'No') {
@@ -2724,7 +2724,7 @@
 
             dataSet.push(subDataSet);
         }
-        
+
         if ( check_nationality(2500) ){
             columnTopCustList = [
                 { title: "" },
@@ -2767,7 +2767,7 @@
                     // console.log('full', full[1]);
                     if (type === 'display') {
                        // data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '">';
-                       if (check_nationality(2500) ){
+                        if (check_nationality(2500) ){
                         data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '">';
                         } else{
                             data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '">';
@@ -2818,9 +2818,8 @@
 
         } else {
 
-if ( $('#customerMasterString_t').length > 0 ) {
+            if ( $('#customerMasterString_t').length > 0 ) {
                 var customerDetails = $("#customerMasterString_t").val();
-                $("#attribute-customerSearchHolder_HTML").removeClass("hidden");
                 if (customerDetails === "") {
                     return true;
                 } else {
@@ -2828,7 +2827,6 @@ if ( $('#customerMasterString_t').length > 0 ) {
                     var seachCustomer;
                     customer_master_string = customerDetails;
                     $("#customerMasterString_t").val("");
-
                     searchCustList(customerDetails, seachCustomer);
                     searchCustomerList(seachCustomer);
 
@@ -2934,7 +2932,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
         File Location : $BASE_PATH$/image/javascript/js-ezrx.js
         Layout : Desktop
     */
-   
+
     function clearStorageOrderItem(){
         for (var i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i).indexOf("orderItem_ZP") != -1) {
@@ -2971,6 +2969,52 @@ if ( $('#customerMasterString_t').length > 0 ) {
                     $('#jg-mainmenu-orders').addClass('active');
                     $('#jg-submenu-myorders').addClass('active');
                     transform_orderspage();
+
+                    var hideMenuForCreditControlUser = function(){
+                        $('#jg-overlay').show();
+
+                        var userName = window._BM_USER_LOGIN;
+                        var fullUrl = window.location.host;
+                        var parts = fullUrl.split('.');
+                        var instanceName = parts[0];
+                        var identificationUser = "https://" + instanceName + ".bigmachines.com/rest/v4/customBU_Identification";
+                        var datauser = "q={%22login_id%22:%20%22" + userName + "%22}";
+
+                        $.ajax({
+                            url: identificationUser,
+                            data: datauser,
+                            contentType: "application/json; charset=utf-8",
+                            type: 'GET'
+                        }).done(function (resultIdentification) {
+                            if (resultIdentification.items.length > 0) {
+                                var user = resultIdentification.items[0];
+                                if (user.sales_org == "2800") {
+                                    var urlProfileUser = 'https://' + instanceName + '.bigmachines.com/rest/v4/customTW_User_Hierarchy';
+                                    var dataUser = 'q={"user":"' + userName + '"}';
+                                    $.ajax({
+                                        url: urlProfileUser,
+                                        data: dataUser,
+                                        contentType: "application/json; charset=utf-8",
+                                        type: 'GET'
+                                    }).done(function (resultProfileUser) {
+                                        if (resultProfileUser.items.length > 0) {
+                                            var detailUser = resultProfileUser.items[0];
+                                            if (detailUser.role.toLowerCase() == "credit control rep") {
+                                                $(".jg-linkbtn.new_order").hide();
+                                                $(".jg-linkbtn.copy_order").hide();
+                                            }
+                                        }
+                                        $('#jg-overlay').hide();
+                                    });
+                                }
+                            }
+                            $('#jg-overlay').hide();
+                        });
+                    }
+
+                    hideMenuForCreditControlUser();
+                    clearStorageOrderItem();
+
                 } else if (pagetitle == 'transaction') {
                     /*
                         if user access transaction page, set element id of readonly_1_visualWorkflow has child image to vi_shoppping_cart_ready_active.png
@@ -3087,7 +3131,50 @@ if ( $('#customerMasterString_t').length > 0 ) {
                         */
 
                     }
+
+                    /* 
+                        Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+                        Task          :- remove existing bonus item in Bonus select
+                        Page          :- Order Page
+                        File Location :- $BASE_PATH$/javascript/js-ezrx.js
+                        Layout        :- Desktop
+                    */
+                    
+                    $("#add_to_favourites").closest("a[name='_line_items']").hide();
+                    $("#refresh_order_from_sap").closest("table").hide();                    
+                    
+                    /* 
+                        Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+                        Task          :- remove existing bonus item in Bonus select
+                        Page          :- Order Page
+                        File Location :- $BASE_PATH$/javascript/js-ezrx.js
+                        Layout        :- Desktop
+                    */
+
+                    /* 
+                        Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+                        Task          :- Hide All Order button on order page for non CSTeam users
+                        Page          :- Order Page
+                        File Location :- $BASE_PATH$/javascript/js-ezrx.js
+                        Layout        :- Desktop
+                    */
+
+                    if ($("#zPUserType").length > 0 ){
+                        if ($("#zPUserType").val().toLowerCase() != "csteam"){
+                            $("#order-allorders").hide();
+                        }
+                    }
+
+                    /* 
+                        Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+                        Task          :- Hide All Order button on order page for non CSTeam users
+                        Page          :- Order Page
+                        File Location :- $BASE_PATH$/javascript/js-ezrx.js
+                        Layout        :- Desktop
+                    */
+
                     mobile_pricingChange();
+
                     transform_newcopypage();
                 } else if (pagetitle == 'model configuration') {
                     /*
@@ -3106,7 +3193,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
                         showLoadingDialog();
                     });
                     $('#jg-submenu-copyorder').parent().remove();
-
+                    $("#pipeline-viewer-opener").hide(); //hide pipeline-viewer-opener
                     transform_modelconfig();
                 } else if (pagetitle == "report manager") {
                     /*
@@ -3170,6 +3257,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
                     File Location : $BASE_PATH$/image/javascript/js-ezrx.js
                     Layout : Desktop
                 */
+
             }
         }
 
@@ -3873,12 +3961,12 @@ if ( $('#customerMasterString_t').length > 0 ) {
         });
 
         /* 
-    Created By    :- Created By Zainal Arifin, Date : 08-03-2018
-    Task          :- Hide My Templates Button from Commerce Management
-    Page          :- Commerce Management
-    File Location :- $BASE_PATH$/javascript/js-ezrx.js
-    Layout        :- Desktop
-*/
+            Created By    :- Created By Zainal Arifin, Date : 08-03-2018
+            Task          :- Hide My Templates Button from Commerce Management
+            Page          :- Commerce Management
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Desktop
+        */
 
         $(".jg-list-tool").children().map(function (index, data) {
             var isExist = ($(data).find(".default").length > 0) ? true : false;
@@ -4132,9 +4220,13 @@ if ( $('#customerMasterString_t').length > 0 ) {
             var refNo = $(this).attr("id").split("attr_wrapper");
             var object_span = $("#readonly" + refNo[1]);
             if (object_span.text() == "True") {
-                var idqty = $(object_span).attr("id").split("bonusOverideFlag_l");
-                var qty_span = $("#"+idqty+"qty");
+                console.log( $(object_span) );
+                var parent = $( object_span ).closest(".line-item");
+                var qty_span = $(parent).find("span[id*='qty_int_l']");
                 $(qty_span).css("color", "red");
+
+                // var idqty = $(object_span).attr("id").split("bonusOverideFlag_l");
+                // var qty_span = $("#"+idqty+"qty");
                 // var line = $(this).parent();
                 // var qty = $(line).find("td[id*='qty_l']");
                 // var remove_attr = $(qty).attr("id").split("attr_wrapper");
@@ -4255,6 +4347,42 @@ if ( $('#customerMasterString_t').length > 0 ) {
 
             $('#save').click();
         });
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+            Task          :- Open Shopping Cart after open order
+            Page          :- Order Page
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Desktop
+        */
+        if(check_nationality(2600))
+        {
+            var trans_id = $("#readonly_1_transactionID_t").text();
+            var isUserHaveModifySC = localStorage.getItem("orderItem_" + trans_id);
+            if (typeof isUserHaveModifySC == 'undefined') {
+                isUserHaveModifySC = false;
+                localStorage.setItem("orderItem_" + trans_id, isUserHaveModifySC);
+            }
+
+            if ($("#zPUserType").val().toLowerCase() != "csteam") {
+                if ( $("#line-item-grid").find(".line-item-show:not(.parent-line-item)").length > 0 ){
+                    if(!isUserHaveModifySC){
+                        setTimeout(function(){
+                            $("#edit_shopping_cart").click();
+                        }, 1000);
+                    }
+                }
+            }
+        }
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+            Task          :- Open Shopping Cart after open order
+            Page          :- Order Page
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Desktop
+        */
+
     }
 
     function transform_modelconfig() {
@@ -4284,9 +4412,9 @@ if ( $('#customerMasterString_t').length > 0 ) {
             /* add button Start over when add material page has element start_over */
             /* add button add to order when add material page has element start over */
             $('.jg-list-tool')
-                .append($("<li class='jg-item-tool'>")
-                    .append($("<button id='btn-cart-startover' class='jg-btn jg-btn-icon cart-startover'>Start Over</button>"))
-                )
+                // .append($("<li class='jg-item-tool'>")
+                //     .append($("<button id='btn-cart-startover' class='jg-btn jg-btn-icon cart-startover'>Start Over</button>"))
+                // )
                 .append($("<li class='jg-item-tool'>")
                     .append($("<button id='btn-cart-addtoorder' class='jg-btn jg-btn-icon cart-addtoorder'>Add to Order</button>"))
                 );
@@ -4774,6 +4902,27 @@ if ( $('#customerMasterString_t').length > 0 ) {
             Layout : Desktop
         */
 
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 19 March 2018
+            Task          :- Hide recommended section in shipping cart for both desktop and Mobile UI for SG
+            Page          :- Global
+            File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
+            Layout        :- Both Dekstop
+        */
+
+        if(check_nationality(2600)){
+            var FavRecFreqSection = $("#attribute-pastOrders").parent().parent().parent().parent().parent().parent('.column-1');
+            $(FavRecFreqSection.children()[1]).hide();
+        }
+
+        /* 
+            Created By    :- Created By Zainal Arifin, Date : 19 March 2018
+            Task          :- Hide recommended section in shipping cart for both desktop and Mobile UI for SG
+            Page          :- Global
+            File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
+            Layout        :- Both Dekstop
+        */
+
         /*  Start : 1 April 2017
             Task  : Change style of content material search
             Page  : Add Material Page
@@ -4913,26 +5062,69 @@ if ( $('#customerMasterString_t').length > 0 ) {
         adjust_tooltip();
 
         /* 
-            Created By    :- Created By Zainal Arifin, Date : 19 March 2018
-            Task          :- Hide recommended section in shipping cart for both desktop and Mobile UI for SG
-            Page          :- Global
-            File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
-            Layout        :- Both Dekstop
+            Created By    :- Created By Zainal Arifin, Date : 15 March 2018
+            Task          :- highlight on QTY material in additional bonus for SG
+            Page          :- Model Configuration
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Desktop
         */
+        if(check_nationality(2600)){
 
-        if (check_nationality(2600)) {
-            var FavRecFreqSection = $("#attribute-pastOrders").parent().parent().parent().parent().parent().parent('.column-1');
-            $(FavRecFreqSection.children()[1]).hide();
+            var redColor = "rgb(255, 0, 0)";            
+            var blackColor = "#000000";            
+            var listEditedField = {};
+
+            $("input[name='additionalMaterialQty']:not(input[type='hidden'])").map(function (index, data) {
+                var id = $(data).attr("id").replace("additionalMaterialQty", "");
+                if ($(data).val() != 0) {
+                    $("#additionalMaterialQty" + id).css("color", redColor);
+                }
+            });
+
+            $("input[name='additionalMaterialQty']").on("click focus", function () {
+
+                var id = $(this).attr("id").replace("additionalMaterialQty","");
+                if (!listEditedField.hasOwnProperty(id)) {
+                    listEditedField[id] = { before: $(this).val() };
+                }
+
+            });
+
+            $("input[name='additionalMaterialQty']").on("keyup blur", function () {
+                
+                var id = $(this).attr("id").replace("additionalMaterialQty", "");
+                listEditedField[id]["after"] = $(this).val();
+
+                var isShowMessage = false;
+                $.each(listEditedField, function (index, data) {
+                    if (!isShowMessage) {
+                        if (data.before != data.after) {
+                            $("#additionalMaterialQty" + index).css("color", redColor);                            
+                        }
+                    }
+
+                });
+
+                if (listEditedField[id]["after"] == 0 ){
+                    $("#additionalMaterialQty" + id).css("color", blackColor);                    
+                }
+
+            });
         }
 
         /* 
-            Created By    :- Created By Zainal Arifin, Date : 19 March 2018
-            Task          :- Hide recommended section in shipping cart for both desktop and Mobile UI for SG
-            Page          :- Global
-            File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
-            Layout        :- Both Dekstop
+            Created By    :- Created By Zainal Arifin, Date : 15 March 2018
+            Task          :- highlight on QTY material in additional bonus for SG
+            Page          :- Model Configuration
+            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+            Layout        :- Desktop
         */
+        trans_id = $("#orderNumber_ML").val();
+        $('.cart-addtoorder, .cart-save').on("click", function(){
+            localStorage.setItem("orderItem_" + trans_id, true);
+        });
 
+        //END OF transfrom_config
     }
 
     function transform_reportpage() {
@@ -5095,17 +5287,17 @@ if ( $('#customerMasterString_t').length > 0 ) {
         var flag = localStorage.getItem("flag");
 
         if( flag == "rightnow" ){
-           var desktopMenu =  document.querySelector('.jg-box-sidenav');
+            var desktopMenu =  document.querySelector('.jg-box-sidenav');
             var target_button = "home";
-           if(desktopMenu !== null){
-              desktopMenu.style.display = "none";
-           }
+            if(desktopMenu !== null){
+                desktopMenu.style.display = "none";
+            }
            if(layout == 'Desktop'){
 
-            $("#" + target_button).off();
+            $("#"+target_button).off();
             $("#home").closest("table").removeAttr("onclick").css("margin", "0px 10px");
-            $("#" + target_button).closest(".button-middle").show();
-            $("#" + target_button).on("click", function (e) {
+            $("#"+target_button).closest(".button-middle").show();
+            $("#"+target_button).on("click", function(e){
                 e.preventDefault();
                 localStorage.removeItem("flag");
                 window.close();
@@ -5119,8 +5311,8 @@ if ( $('#customerMasterString_t').length > 0 ) {
            if(layout == 'Tablet'){
                 
                 $(".action.action-type-modify").each(function (index, data) {
-                   if ($(data).text().trim().toLowerCase() == "home") {
-                       $(data).on("click", function () {
+                   if ($(data).text().trim().toLowerCase() == "home" ){
+                       $(data).on("click", function(){
                            localStorage.removeItem("flag");
                            window.close();
                        });
@@ -5690,7 +5882,8 @@ if ( $('#customerMasterString_t').length > 0 ) {
                     $('#attribute-currentCustFav').parent().parent().parent().removeClass('ui-collapsible-collapsed');
                 }
 				//commented by suresh as the all materials should be expanded always for mobile version
-                /*if (allMaterialState ==='collapsed') {
+				// uncommented by pratap as per sakthi requirement that for mobile also it will colapse 
+                if (allMaterialState ==='collapsed') {
                     console.log('collapse material', $('#attribute-materialSearch').parent().parent());
                     $('#attribute-materialSearch').parent().parent().addClass('ui-collapsible-content-collapsed');
                     $('#attribute-materialSearch').parent().parent().prev().addClass('ui-collapsible-heading-collapsed');
@@ -5701,7 +5894,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
                     $('#attribute-materialSearch').parent().parent().prev().removeClass('ui-collapsible-heading-collapsed');
                     $('#attribute-materialSearch').parent().parent().prev().children().removeClass('ui-icon-plus').addClass('ui-icon-minus');
                     $('#attribute-materialSearch').parent().parent().parent().removeClass('ui-collapsible-collapsed');
-                }*/
+                }
 				//end
                 /*if ($('.jg-mobilelayout #error-messages ul.constraint-messages').is(':visible')) {
                     $("#config footer").append("<div id='duplicatefooter'><button class='updateButton'>Update</button><button class='saveButton'>Save</button></div>");
@@ -6064,6 +6257,34 @@ if ( $('#customerMasterString_t').length > 0 ) {
 
         */
 
+        /* 
+          Created By    :- Created By Zainal Arifin, Date : 08-03-2018
+          Task          :- Hide My Templates Button from Commerce Management
+          Page          :- Commerce Management
+          File Location :- $BASE_PATH$/javascript/js-ezrx.js
+          Layout        :- Mobile
+        */
+
+        $(".jg-list-tool").children().map(function(index,data){
+            var isExist = ( $(data).find(".default").length > 0 )? true : false;
+            if(isExist){
+                var currentBtn = $(data).find(".default");
+                var btnString = $(currentBtn).html();
+                if(btnString.toLowerCase() == "my templates"){
+                    $(currentBtn).hide();
+                }
+            }
+        });
+
+        /* 
+          Created By    :- Created By Zainal Arifin, Date : 08-03-2018
+          Task          :- Hide My Templates Button from Commerce Management
+          Page          :- Commerce Management
+          File Location :- $BASE_PATH$/javascript/js-ezrx.js
+          Layout        :- Mobile
+        */
+
+
     }
 
     function mobile_orderpage() {
@@ -6100,7 +6321,6 @@ if ( $('#customerMasterString_t').length > 0 ) {
                         if(currentPage != "1"){
                             $(".content").prepend($(documentNumber2));
                         }
-                        $("#attribute-customerSearchHolder_HTML").removeClass("hidden");                                                
                         mobile_checkItemOnCart();
                         order_page_stock_color();
                         mobile_rowBgColor();
@@ -6110,6 +6330,10 @@ if ( $('#customerMasterString_t').length > 0 ) {
 						mobile_pricingChange();
 						//mobile_checkItemOnCart();
 						$("label[for='customerPORef_t']").css("color", "red");
+                        
+                        /* 8-03-2017 | add red color on submitted and In Process Order */
+                        $("#attribute-customerPORef_t").find("legend").css("color", "red");
+                        /* 8-03-2017 | add red color on submitted and In Process Order */
 
                         // $("#lig-sticky-actions").find(".action-type-reconfigure").prop("disabled", false);
                     //}, 2000);
@@ -6124,7 +6348,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
                 }
 				if(docNum != undefined){
 					currentModelNumber = docNum;
-				}
+                }
 				$("#line-item-grid table tr.parent").find("input[name=_line_item_list]").hide();
 				console.log("docNum===="+currentModelNumber+"----"+docNum);
             }, 1000);
@@ -6172,14 +6396,14 @@ if ( $('#customerMasterString_t').length > 0 ) {
 				console.log(">>>>"+isLineGirdOpen);
 				if(isLineGirdOpen){
 					//if( $("#line-item-grid table tr.parent").legth > 0){
-						//documentNumber2 = $("#line-item-grid table tr.parent").clone();//$("tr[data-document-number='2']").clone();
+                        //documentNumber2 = $("#line-item-grid table tr.parent").clone();//$("tr[data-document-number='2']").clone();
                     if ($("#line-item-grid table tr.parent").length > 0 ){
 						currentModelNumber = $("#line-item-grid table tr.parent").find("input[name=_line_item_list]").val();
                     }else{
 						currentModelNumber = $("#line-item-grid table").find("input[name=_line_item_list]").val();
                     }
-                    $("#line-item-grid table tr.parent").find("input[name=_line_item_list]").hide();
-					console.log(">>>>"+currentModelNumber);
+						$("#line-item-grid table tr.parent").find("input[name=_line_item_list]").hide();
+						console.log(">>>>"+currentModelNumber);
 					//}
 					mobile_checkItemOnCart();
 					order_page_stock_color();
@@ -6423,9 +6647,9 @@ if ( $('#customerMasterString_t').length > 0 ) {
                 var updateMsg = "<div id='update-alert' class='updateMsg'>Please click 'update' to proceed.</div>";
                 $('#materialArrayset').after(updateMsg);
                 $("#update-alert").css("padding-bottom", "30px");
-                if ($("#btn-cart-save").length > 0) {
+                if ($("#btn-cart-save").length > 0){
                     $("#btn-cart-save").attr("disabled", true).css({ "background-color": "grey" });
-                } else {
+                }else{
                     $("#btn-cart-addtoorder").attr("disabled", true).css({ "background-color": "grey" });
                 }
             }
@@ -6435,8 +6659,8 @@ if ( $('#customerMasterString_t').length > 0 ) {
             $("#update-alert").remove();
             if ($("#btn-cart-save").length > 0) {
                 $("#btn-cart-save").attr("disabled", false).css({ "background-color": "#0C727A" });
-            } else {
-                $("#btn-cart-addtoorder").attr("disabled", false).css({ "background-color": "#0C727A" });
+            }else{
+                $("#btn-cart-addtoorder").attr("disabled", false).css({ "background-color": "#0C727A" });                
             }
         }
 
@@ -6451,53 +6675,108 @@ if ( $('#customerMasterString_t').length > 0 ) {
         var redColor = "rgb(255, 0, 0)";
         var blackColor = "rgb(0, 0, 0)";
 
+        var basic_value = 0.0;        
         var listEditedField = {};
-        console.log("APPLY check_user_change_value");
         var var_find_text = (isMobile()) ? ".form-field" : ".text-field";
 
-        $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_Invoiceoverrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).map(function (index, data) {
+        function check_qty_and_stock(data, id) {
+            if ($(data).val() > $("#stockQty-" + id).val()) {
+                // qty color become red highlight if val is greater than stock
+                $(data).css("color", redColor);
+            }
+        }
 
-            if (!isMobile()) {
+        function isOverridePrice(id){
+            id = Math.abs(id);
+            var overridePriceVal = $("#overridePrice_currency-" + id + "-display").val();
+            var overridePriceValue = (overridePriceVal != "") ? parseFloat(overridePriceVal.replace(/[a-z]/gi, "")) : 0.0;
+            if (overridePriceValue != basic_value) {
+                $("#overridePrice_currency-" + id + "-display").css("color", redColor);                
+                $("#totalPrice_currency-" + id ).css("color", redColor);
+                // $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);                
+            }else{
+                $("#overridePrice_currency-" + id + "-display").css("color", blackColor);
+            }
+            
+        }
+        
+        function isOverrideDiscount(id){
+            console.log("isOverrideDiscount", id);
+            id = Math.abs(id);
+            var overrideDiscountVal = $("#netPriceDiscount-" + id ).val();
+            var overrideDiscountValue = (overrideDiscountVal != "") ? parseFloat(overrideDiscountVal.replace(/[a-z]/gi, "")) : 0.0;
+            if (overrideDiscountValue != basic_value) {
+                $("#netPriceDiscount-" + id ).css("color", redColor);
+                $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").css("color", redColor);                
+                // $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);                
+            } else {
+                $("#netPriceDiscount-" + id).css("color", blackColor);
+                isOverridePrice(id);
+            }
+        }
+
+        function override_price(data, id){
+            var overridePriceValue = ($(data).val() != "") ? parseFloat($(data).val().replace(/[a-z]/gi, "")) : 0.0;
+            if (overridePriceValue != basic_value) {
+                $(data).css("color", redColor);
+                $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").css("color", redColor);                                
+                // $("#"+var_qty.replace("td.cell-", "")+"-" + id).css("color", redColor);
+            }
+        }
+
+        function netprice_disc(data, id){
+            var var_netpricediscValue = ($(data).val() != "") ? parseFloat($(data).val().replace(/[a-z]/gi, "")) : 0.0;
+            if (var_netpricediscValue != basic_value) {
+                $(data).css("color", redColor);
+                $("#overridePrice_currency-" + id + "-display").css("color", redColor);
+                $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").css("color", redColor);                                
+            }
+        }
+
+        $(var_bonusOverride).find("input[type='checkbox']").map(function (index, data) {
+            id = $(data).attr("id").replace("overrideBonusQty_", "");
+            console.log( "overrideBonusQty_", id, $(data).is("checked") );
+            if ($(data).is(":checked")) {
+                $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);
+                $("#" + var_qty.replace("td.cell-", "") + "-" + id).removeAttr("readonly");
+            } else {
+                console.log("#" + var_qty.replace("td.cell-", "") + "-" + id );
+                $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", blackColor);
+                $("#" + var_qty.replace("td.cell-", "") + "-" + id).attr("readonly", "readonly");
+            }
+
+            console.log( "#" + var_qty.replace("td.cell-", "") + "-" + id, $("#" + var_qty.replace("td.cell-", "") + "-" + id).attr("readonly") );
+
+            $(data).on("click change", function(){
+                console.log( "click change" , $(this).is(":checked") );
+                if ($(this).is(":checked")) {
+                    $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);
+                    $("#" + var_qty.replace("td.cell-", "") + "-" + id).removeAttr("readonly");
+                } else {
+                    $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", blackColor);
+                    $("#" + var_qty.replace("td.cell-", "") + "-" + id).attr("readonly", "readonly");
+                }
+            });
+        });
+
+        $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_Invoiceoverrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).map(function(index, data){
+            
+            if (!isMobile()){
                 if ($(this).closest(var_qty.replace("td", "")).length > 0) {
                     id = $(this).attr("id").replace(var_qty.replace("td.cell-", "") + "-", "");
-                    if ($(this).val() > $("#stockQty-" + id).val()) {
-                        $(this).css("color", redColor);
-                    }
-                    if ($("#inStock-"+id).val().toLowerCase() == "no" ){
-                        listEditedField['qty_'+id] = { stock: 'no' };                        
-                        $(this).css("color", redColor);
-                    }else{
-                        listEditedField['qty_'+id] = { stock: 'yes' };
+                    if(!check_nationality(2500)){
+                        check_qty_and_stock(this, id);
                     }
                 }
-
-                var basic_value = 0;
 
                 if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
                     id = $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
-                    if (parseInt( $(this).val() ) != basic_value) {
-                        console.log("#" + var_qty.replace("td.cell-", "") + "-" + id );                        
-                        $(this).css("color", redColor);
-                        $("#overrideInvoicePrice-" + id + "-display").css("color", redColor);                        
-                        $("#" + var_qty.replace("td.cell-", "") +"-" + id).css("color", redColor);
-                    }
-                }
-
-                if ($(this).closest(var_qtyBonus.replace("td", "")).length > 0) {
-                    // id = $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", "") + "-", "");
-                    if( $(this).val() != basic_value ){
-                        $(this).css("color", redColor);
-                    }
+                    override_price(this, id);
                 }
                 
-                basic_value = "";                
-                if ($(this).closest(var_Invoiceoverrideprice.replace("td", "")).length > 0) {
-                    id = $(this).attr("id").replace(var_Invoiceoverrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
-                    if ($(this).val() != basic_value) {
-                        $(this).css("color", redColor);
-                        $("#overridePrice-" + id ).css("color", redColor);                        
-                        // $("#" + var_qty.replace("td.cell-", "") +"-" + id).css("color", redColor);
-                    }
+                if ($(this).closest(var_netpricedisc.replace("td", "")).length > 0) {
+                    id = $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", "") + "-", "").replace("-display", "");
+                    netprice_disc(this, id);
                 }
 
             }
@@ -6512,27 +6791,23 @@ if ( $('#customerMasterString_t').length > 0 ) {
                 $(this).css("color", redColor);
             }
 
-            console.log( $(this).closest(var_overrideprice.replace("td", "")).length );
             if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
                 if (isMobile()) {
-                    id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
-                } else {
+                    id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-" , "").replace("-display", "");
+                }else{
                     id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
                 }
-
-                console.log("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("op_", ""));
-                $("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("op_", "")).css("color", redColor);
-                $("#overrideInvoicePrice-" + id.replace("op_", "") + "-display").css("color", redColor);                
-                $(this).css("color", redColor);
+                if(!check_nationality(2500)){
+                    $("#qty-" + id.replace("op_", "") ).css("color", redColor);
+                }
+                $(this).css("color", redColor);                    
             }
 
             if ($(this).closest(var_Invoiceoverrideprice.replace("td", "")).length > 0) {
                 id = "iop_" + $(this).attr("id").replace(var_Invoiceoverrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
-                $("#overridePrice-" + id.replace("iop_", "")).css("color", redColor);  
-                $("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("iop_", "")).css("color", redColor);                              
                 $(this).css("color", redColor);
             }
-
+            
             if ($(this).closest(var_netpricedisc.replace("td", "")).length > 0) {
                 id = "oip_" + $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", ""), "");
                 $(this).css("color", redColor);
@@ -6544,7 +6819,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
             }
 
             if ($(this).closest(var_qtyBonus.replace("td", "")).length > 0) {
-                id = "qtyb_" + $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", "") + "-", "");
+                id = "qtyb_" + $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", ""), "");
                 $(this).css("color", redColor);
             }
 
@@ -6552,8 +6827,6 @@ if ( $('#customerMasterString_t').length > 0 ) {
 
             if (!listEditedField.hasOwnProperty(id)) {
                 listEditedField[id] = { before: $(this).val() };
-            }else{
-                listEditedField[id]['before'] = $(this).val();
             }
 
         });
@@ -6562,17 +6835,17 @@ if ( $('#customerMasterString_t').length > 0 ) {
 
             var id = "";
             if ($(this).closest(var_qty.replace("td", "")).length > 0) {
-                id = "qty_" + $(this).attr("id").replace(var_qty.replace("td.cell-", "")+"-", "");
+                id = "qty_" + $(this).attr("id").replace(var_qty.replace("td.cell-", ""), "");
             }
 
-            if (isMobile()) {
+            if(isMobile()){
                 if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
                     id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
                 }
             }
-            else {
+            else{
                 if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
-                    id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                    id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");                    
                 }
             }
 
@@ -6589,37 +6862,51 @@ if ( $('#customerMasterString_t').length > 0 ) {
             }
 
             if ($(this).closest(var_qtyBonus.replace("td", "")).length > 0) {
-                id = "qtyb_" + $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", "") + "-", "");
+                id = "qtyb_" + $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", ""), "");                
             }
 
             listEditedField[id]["after"] = $(this).val();
             var currentObject = $(this);
             // var isShowMessage = false;
-            console.log(listEditedField);
+            // console.log(listEditedField);
             $.each(listEditedField, function (index, data) {
-
-                if (index == id) {
-                    if (data.before == data.after) {
+                
+                if(index == id){
+                    if(data.before == data.after){
                         $(currentObject).css("color", blackColor);
-                        if (id.indexOf("op_") != -1) {
-                            $("#overrideInvoicePrice-" + id.replace("op_", "") + "-display").css("color", blackColor);             
-                            if (typeof (data.stock) != undefined && data.stock == "yes") {
-                                $("#" + var_qty.replace("td.cell-", "") +"-" + id.replace("op_", "")).css("color", blackColor);
-                            }                                           
-                        } else if (id.indexOf("iop_") != -1){
-                            $("#overridePrice-" + id.replace("iop_", "") + "-display").css("color", blackColor);
-                            if (typeof (data.stock) != undefined && data.stock == "yes" ){
-                                $("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("iop_", "")).css("color", blackColor);
-                            }
+                        
+                        if(id.indexOf("op_") != -1){
+                            current_id = parseInt(id.replace("op_", ""));
+                            // $("#qty-" + id.replace("op_", "") ).css("color", blackColor);
+                            isOverridePrice(current_id);
+                            isOverrideDiscount(current_id);
                         }
-                    } else {
+                        
+                        if(id.indexOf("oip_") != -1){
+                            current_id = parseInt(id.replace("oip_", ""));
+                            isOverrideDiscount(current_id);
+                        }
+                        
+                        if (id.indexOf("qty_") != -1) {
+                            current_id = parseInt(id.replace("qty_", ""));
+                            if (!check_nationality(2500)) {
+                                check_qty_and_stock($(var_qty.replace("td.cell-", "")), current_id);
+                            }                            
+                        }
+                    }else{
                         $(currentObject).css("color", redColor);
+                        
                         if (id.indexOf("op_") != -1) {
-                            $("#overrideInvoicePrice-" + id.replace("op_", "") + "-display").css("color", redColor);                            
-                            $("#" + var_qty.replace("td.cell-", "") +"-" + id.replace("op_", "")).css("color", redColor);
-                        } else if (id.indexOf("iop_") != -1) {
-                            $("#overridePrice-" + id.replace("iop_", "") + "-display").css("color", redColor);
-                            $("#" + var_qty.replace("td.cell-", "") + "-" + id.replace("iop_", "")).css("color", redColor);
+                            current_id = parseInt(id.replace("op_", ""));
+                            $("#qty-" + id.replace("op_", "") ).css("color", redColor);
+                            isOverridePrice(current_id);
+                            isOverrideDiscount(current_id);                            
+                        }
+                        if(id.indexOf("qty_") != -1){
+                            current_id = parseInt(id.replace("qty_", ""));
+                            if (!check_nationality(2500)) {
+                                check_qty_and_stock($(var_qty.replace("td.cell-", "")), current_id);
+                            }                            
                         }
                     }
                 }
@@ -6653,32 +6940,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
             Layout        :- Global
         */
 
-        /* 
-            Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-            Task          :- highlight Invoice Override Price on Order Page
-            Page          :- Order Page
-            File Location :- $BASE_PATH$/javascript/js-ezrx.js
-            Layout        :- Global
-        */
-
-        $('#line-item-grid').find('tr.child-line-item').each(function (index, data) {
-            var textInvoiceOverridePrice = $(data).find("span[data-varname='invoicePrice_l']");
-            if ($(textInvoiceOverridePrice).text().trim() != "NT$0.00") {
-                $(textInvoiceOverridePrice).css("color", "red");
-            }
-        });
-
-        /* 
-            Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-            Task          :- highlight Invoice Override Price on Order Page
-            Page          :- Order Page
-            File Location :- $BASE_PATH$/javascript/js-ezrx.js
-            Layout        :- Global
-        */
-
-
-
-        $qtySel = $('.cell-qty_text input[name="qty_text"] , .cell-overridePrice input[name="overridePrice"]');
+        // $qtySel = $('.cell-qty_text input[name="qty_text"] , .cell-overridePrice input[name="overridePrice"]');
 
 
         /*
@@ -6689,19 +6951,19 @@ if ( $('#customerMasterString_t').length > 0 ) {
         Layout : Desktop
          */
         
-            var $overrideInvPrice = $('.cell-overrideInvoicePrice input[name="overrideInvoicePrice-display"]');
-			// $overrideInvPrice.off();
-            $overrideInvPrice.bind('keydown keyup change focus',function(){
-                if($('input[name="userSalesOrg_PL"]').val()=="2800"){
-                    //parseFloat($('.cell-overrideInvoicePrice input[name="overrideInvoicePrice-display"]').val().replace(/\D/g,''));
-                    $ovp = parseFloat($(this).val().replace(/[^0-9.]/g, ''));
-                    if($ovp>0){
-                        $(this).css('color', '#ff0000');
-                    } else{
-                        $(this).css('color', 'inherit');
-                    }
-                }
-            });
+        // var $overrideInvPrice = $('.cell-overrideInvoicePrice input[name="overrideInvoicePrice-display"]');
+        // $overrideInvPrice.off();
+        // $overrideInvPrice.bind('keydown keyup change focus',function(){
+        //     if($('input[name="userSalesOrg_PL"]').val()=="2800"){
+        //         //parseFloat($('.cell-overrideInvoicePrice input[name="overrideInvoicePrice-display"]').val().replace(/\D/g,''));
+        //         $ovp = parseFloat($(this).val().replace(/[^0-9.]/g, ''));
+        //         if($ovp>0){
+        //             $(this).css('color', '#ff0000');
+        //         } else{
+        //             $(this).css('color', 'inherit');
+        //         }
+        //     }
+        // });
         
         /*
         End : 22 Jan 2018
@@ -6711,55 +6973,58 @@ if ( $('#customerMasterString_t').length > 0 ) {
         Layout : Desktop
          */
 
-        $outofstock = false;
+        // $outofstock = false;
 		
-		// $qtySel.off();
-        $qtySel.bind('focus keydown', function() {
-
-            $(this).css('color', '#ff0000');
-
-            var oldVal = $(this).val();
-            var modify = $(this).attr('data-oldVal-changed');
-
-            if (modify == undefined) {
-                $(this).attr('data-oldVal', oldVal);
-            }
-        });
-
-        $qtySel.bind('change', function() {
-            $(this).attr('data-oldVal-changed', 1);
-        });
-
-        $qtySel.bind('blur', function() {
-
-            var oldVal = $(this).attr('data-oldVal');
-            var newVal = $(this).val();
-            var modify = $(this).attr('data-oldVal-changed');
-
-            ///check mobile out of stock start
-            // $('.cell-qty_text input[name="qty_text"]').length
-            if ($('html').hasClass('jg-mobilelayout')) {
-                var stock = $(this).parent().parent().parent().find('input[name="stockQty"]').val();
-                if (stock == 0) {
-                    $outofstock = true;
-                    console.log(stock);
-                } else {
-                    if (oldVal === newVal) {
-                        $(this).css('color', 'inherit');
-                    }
-                }
-            }
-            ///check mobile out of stock end
-
-            if (oldVal === newVal && ($outofstock === false)) {
-                $(this).css('color', 'inherit');
-            } else {
-
-            }
+        // $qtySel.off();
+        
 
 
+        // $qtySel.bind('focus keydown', function() {
 
-        });
+        //     $(this).css('color', '#ff0000');
+
+        //     var oldVal = $(this).val();
+        //     var modify = $(this).attr('data-oldVal-changed');
+
+        //     if (modify == undefined) {
+        //         $(this).attr('data-oldVal', oldVal);
+        //     }
+        // });
+
+        // $qtySel.bind('change', function() {
+        //     $(this).attr('data-oldVal-changed', 1);
+        // });
+
+        // $qtySel.bind('blur', function() {
+
+        //     var oldVal = $(this).attr('data-oldVal');
+        //     var newVal = $(this).val();
+        //     var modify = $(this).attr('data-oldVal-changed');
+
+        //     ///check mobile out of stock start
+        //     // $('.cell-qty_text input[name="qty_text"]').length
+        //     if ($('html').hasClass('jg-mobilelayout')) {
+        //         var stock = $(this).parent().parent().parent().find('input[name="stockQty"]').val();
+        //         if (stock == 0) {
+        //             $outofstock = true;
+        //             console.log(stock);
+        //         } else {
+        //             if (oldVal === newVal) {
+        //                 $(this).css('color', 'inherit');
+        //             }
+        //         }
+        //     }
+        //     ///check mobile out of stock end
+
+        //     if (oldVal === newVal && ($outofstock === false)) {
+        //         $(this).css('color', 'inherit');
+        //     } else {
+
+        //     }
+
+
+
+        // });
 
         /* 
             Created By    :- Created By Zainal Arifin, Date : 21 March 2018
@@ -6769,13 +7034,20 @@ if ( $('#customerMasterString_t').length > 0 ) {
             Layout        :- Desktop
         */
 
-        var redColor = "rgb(255, 0, 0)";
+        /* var redColor = "rgb(255, 0, 0)";
         var blackColor = "#000000";
 
         function setListenOverridePrice() {
             setTimeout(function () {
                 if (isLoadingDone()) {
-                    console.log("LISTEN OVERRIDE PRICE");
+                    
+                    $('input[name="stockQty"]').map(function(index, data){
+                        if($(data).val() == 0){
+                            var id = $(data).attr("id").replace("stockQty-", "");
+                            $("#qty_text-"+id).css("color", redColor);
+                        }
+                    });
+
                     $("input[name='overridePrice']").on("click focus", function () {
 
                         $(this).css("color", redColor);
@@ -6797,7 +7069,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
             }, 1000)
         }
 
-        setListenOverridePrice();
+        setListenOverridePrice(); */
 
         /* 
             Created By    :- Created By Zainal Arifin, Date : 21 March 2018
@@ -7219,15 +7491,14 @@ if ( $('#customerMasterString_t').length > 0 ) {
                     */
 
                     if($('input[name="userSalesOrg_PL"]').val()=="2800" || (document.getElementById('userSalesOrg_t').value == '2800')){
-                        /* var trNo = parseInt($(this).parent().parent().parent().parent().attr('data-sequence-number-field-index'));
-                        console.log(trNo);
-                        var chineseTxt = $('span[data-varname="chineseDescription_l"]').eq(trNo).text().trim();
-                        console.warn(chineseTxt.length); */
+                        // var trNo = parseInt($(this).parent().parent().parent().parent().attr('data-sequence-number-field-index'));
+                        // console.log(trNo);
+                        // var chineseTxt = $('span[data-varname="chineseDescription_l"]').eq(trNo).text().trim();
 
                         var parent = $(this).closest(".line-item");
                         var chineseChild = $(parent).find("td[id*='_chineseDescription_l_']");
                         chineseTxt = $(chineseChild).find('span[data-varname="chineseDescription_l"]').text().trim();
-
+                        console.warn(chineseTxt.length);
                         if(chineseTxt.length > 0){
                             input_val = chineseTxt;
                             console.log(input_val);
@@ -7486,6 +7757,7 @@ if ( $('#customerMasterString_t').length > 0 ) {
 
                replace css for displaying material description, this need word wrap view text.
             */
+           
             $(data).css("white-space", "normal");
             /* add css white-space then give value normal */
             /* Start : 17 March 2017 */

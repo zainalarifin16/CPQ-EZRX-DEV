@@ -2,7 +2,7 @@ console.log("js-tablet1");
 var js2 = jQuery.noConflict();
 $(document).ready(function() {
 	console.log("js-tablet2");
-	
+
 	var check_nationality = function (nationality) {
 		var countryEle = document.getElementById('userSalesOrg_t');
 		if (countryEle == null) { //this is for material page.
@@ -158,8 +158,8 @@ $(document).ready(function() {
 				
 				//$(".config-array #attribute-type").css("width", "50px");
 				//$(".config-array #attribute-materialDescription").css("width", "300px");
-				$(".config-array #attribute-materialAndDesc").css("width", "120px");
-				$(".config-array #attribute-inStock").css("width", "40px");
+				// $(".config-array #attribute-materialAndDesc").css("width", "120px");
+				// $(".config-array #attribute-inStock").css("width", "40px");
 				$(".config-array #attribute-price").css("width", "40px");
 				
 				/*$(".config-array #attribute-materialAndDesc").css("width", "200px");
@@ -189,7 +189,34 @@ $(document).ready(function() {
 				$(".config-array #attribute-addAdditionalMaterial").css("width", "initial");
 				*/
 			}else{
-				
+				/* 
+						Created By    :- Created By Zainal Arifin, Date : 26 March 2018
+						Task          :- SG-02 Show Material Desc next to Contract Bonus – After Swipe section
+						Page          :- Model Configuration
+						File Location :- $BASE_PATH$/javascript/js-tablet.js
+						Layout        :- Tablet
+					*/
+
+				if (sg_nationalty) {
+
+					if ($("#attribute-materialDescription").hasClass("hidden")){
+						$("#attribute-promotion").addClass("hidden");
+						$(".cell-promotion").addClass("hidden");
+					}else{
+						$("#attribute-promotion").removeClass("hidden");
+						$(".cell-promotion").removeClass("hidden");
+					}
+
+				}
+
+				/* 
+					Created By    :- Created By Zainal Arifin, Date : 26 March 2018
+					Task          :- SG-02 Show Material Desc next to Contract Bonus – After Swipe section
+					Page          :- Model Configuration
+					File Location :- $BASE_PATH$/javascript/js-tablet.js
+					Layout        :- Tablet
+				*/
+
 				$("input[name='qty_text']").css({"text-align": "center", "font-size":"14px"});
 				$("input[name='additionalMaterialQty']").css({"text-align": "center", "font-size":"14px"});
 				$("input[name='overridePrice']").css({"text-align": "center", "font-size":"14px"});
@@ -235,6 +262,23 @@ $(document).ready(function() {
 		
 		},500);
 	};
+
+	var moveDescriptionBeforeContractPrice = function(){
+		//move header after contractBonus
+		$("#attribute-materialDescription").insertAfter($("#attribute-contractBonus"));
+		$("#attribute-materialDescription").addClass("hidden");
+		//move coloumn 
+		$(".cell-materialDescription").map(function (index, data) {
+			var id = $(data).attr("id").replace("cell-materialDescription-", "");
+			$("#cell-materialDescription-" + id).insertAfter($("#cell-contractBonus-" + id));
+			$("#cell-materialDescription-" + id).addClass("hidden");
+		});
+
+		$("#attribute-promotion").addClass("hidden");
+		$(".cell-promotion").addClass("hidden");
+
+	}
+
 	var alignAddtnlArraySet = function(){
 		setTimeout(function() {
 			 $("#additionalMaterialArrayset [class*=array-attribute]").each(function(){//enable all columns in the arrayset
@@ -336,55 +380,55 @@ $(document).ready(function() {
 							},2000);
 						});
 
-						/* 
-							Created By    :- Created By Zainal Arifin, Date : 27 March 2018
-							Task          :- Hide button bar if slide shown up
-							Page          :- Global
-							File Location :- $BASE_PATH$/javascript/js-tablet.js
-							Layout        :- Desktop
-						*/
-						
-						var hideAndShowBtnBottom = function () {
-							setTimeout(function () {
-								var isSliderShow = $("#swipe-sidebar").hasClass("sidebar-state-1");
-								if (!isSliderShow) {
-									$("#button-bar").slideDown();
-									$("#swipe-sidebar").css("height", "auto");
-								} else {
-									$("#button-bar").slideUp();
-									$("#swipe-sidebar").css("height", "calc( 100% - 54px )");
-								}
-							}, 500);
-						}
+					 /* 
+								 Created By    :- Created By Zainal Arifin, Date : 27 March 2018
+								 Task          :- Hide button bar if slide shown up
+								 Page          :- Global
+								 File Location :- $BASE_PATH$/javascript/js-tablet.js
+								 Layout        :- Desktop
+							 */
 
-						/* 
+					 var hideAndShowBtnBottom = function () {
+						 setTimeout(function () {
+							 var isSliderShow = $("#swipe-sidebar").hasClass("sidebar-state-1");
+							 if (!isSliderShow) {
+								 $("#button-bar").slideDown();
+								 $("#swipe-sidebar").css("height", "auto");
+							 } else {
+								 $("#button-bar").slideUp();
+								 $("#swipe-sidebar").css("height", "calc( 100% - 54px )");
+							 }
+						 }, 500);
+					 }
+
+					/* 
 						Created By    :- Created By Zainal Arifin, Date : 27 March 2018
 						Task          :- Hide button bar if slide shown up
 						Page          :- Global
 						File Location :- $BASE_PATH$/javascript/js-tablet.js
 						Layout        :- Desktop
 					*/
-
+						
 						$("body").on("click touchend","#showFavdetails",function(e){
-							e.preventDefault();		
-							$("#swipe-sidebar-content").css("display", "block");									
-							$(".sidebar-handle-icon").trigger("swipeleft");
+									e.preventDefault();		
+									$("#swipe-sidebar-content").css("display", "block");									
+									$(".sidebar-handle-icon").trigger("swipeleft");
 						});
 						$("body").on("click touchend","#showMaterialSearch",function(e){
-							e.preventDefault();								
-							$(".sidebar-handle-icon").trigger("swiperight");
+									e.preventDefault();								
+									$(".sidebar-handle-icon").trigger("swiperight");
 						});
 						$("body").on("click tochend swipeleft swiperight","#swipe-sidebar",function(e){
-							if($(this).hasClass("sidebar-state-1")){
-								$("#showFavdetails").hide();
-								$("#showMaterialSearch").show();
-								//$("#attribute-currentCustFav").addClass("myFavMobile");
-								$('#attribute-currentCustFav').attr('style', 'height: 400px !important');
-							}else{
-								$("#showFavdetails").show();
-								$("#showMaterialSearch").hide();
-							}
-							hideAndShowBtnBottom();									
+								if($(this).hasClass("sidebar-state-1")){
+									$("#showFavdetails").hide();
+									$("#showMaterialSearch").show();
+									//$("#attribute-currentCustFav").addClass("myFavMobile");
+									$('#attribute-currentCustFav').attr('style', 'height: 400px !important');
+								}else{
+									$("#showFavdetails").show();
+									$("#showMaterialSearch").hide();
+								}
+								hideAndShowBtnBottom();
 						});
 						$("body").on("click touchend","#duplicatefooter .cancelButton",function(e){
 						
@@ -489,6 +533,9 @@ $(document).ready(function() {
 							
 						});
 
+					 	if (sg_nationalty) {
+							moveDescriptionBeforeContractPrice();
+						}						
 						
 						// START UPDATE 19-01-2018
 						// START SLIDER CONTENT
@@ -504,7 +551,7 @@ $(document).ready(function() {
 								
 								var elementToMove = $(".ui-collapsible-inset");
 								
-								$(elementToMove[1]).show();
+								$(elementToMove[1]).show();								
 								$( $(elementToMove[1]) ).appendTo("#swipe-sidebar-content");
 
 								js2("#PastOrders").DataTable({
@@ -527,7 +574,7 @@ $(document).ready(function() {
 								}else{
 									$( $(elementToMove[2]) ).appendTo("#swipe-sidebar-content");
 								}
-
+								
 								/* 
 									Created By    :- Created By Zainal Arifin, Date : 19 March 2018
 									Task          :- Hide Recomended Material in SG
@@ -546,95 +593,86 @@ $(document).ready(function() {
 
 								$(elementToMove[3]).show();
 								$( $(elementToMove[3]) ).appendTo("#swipe-sidebar-content");
-								
+
 								js2("#CurrentCustFav").DataTable({
 									"bLengthChange": false,
 									"searching": false,
 									"pageLength": 5,
 								});
 
-								$("#CurrentCustFav").css({"height":"auto"});								
+								$("#CurrentCustFav").css({"height":"auto"});
 
-																/* 
+								/* 
 									Created By    :- Created By Zainal Arifin, Date : 27 March 2018
 									Task          :- Add paggination on favorite table
 									Page          :- Global
 									File Location :- $BASE_PATH$/javascript/js-tablet.js
 									Layout        :- Desktop
 								*/
-
+								
 								$("#swipe-sidebar-content").find(".ui-collapsible-heading-toggle").each(function(index, data){
 									$(data).css({ "background-color": "#afc008","border-radius": "0","color": "#fff", "border-color": "transparent"});
 								});
-
+								
 								/* 8-03-2018 move button add and delete in My Favourite */
-								$("#AddCustFav").closest("span").css({"width": "100%", "background": "#ffffff"});
-								$("#AddCustFav").css({"margin": "10px", "float":"right"});
-								$("#DeleteCustFav").css({"margin": "10px", "float":"right"});
+								$("#AddCustFav").closest("span").css({ "width": "100%", "background": "#ffffff" });
+								$("#AddCustFav").css({ "margin": "10px", "float": "right" });
+								$("#DeleteCustFav").css({ "margin": "10px", "float": "right" });
 								var parent = $("#AddCustFav").closest(".ui-collapsible-inset");
 								var buttonAddDelete = $("#AddCustFav").closest("span");
 								$("#DeleteCustFav").prependTo($(buttonAddDelete));
 								$(buttonAddDelete).appendTo($(parent).find(".ui-collapsible-heading"));
 								/* 8-03-2018 move button add and delete in My Favourite */
-								if($(parent).hasClass("ui-collapsible-collapsed")){
+								if ($(parent).hasClass("ui-collapsible-collapsed")) {
 									$(buttonAddDelete).hide();
 								}
 								var buttonHeadingFav = $("#AddCustFav").closest(".ui-collapsible-inset").find(".ui-collapsible-heading-toggle");
-								$(buttonHeadingFav).on("click", function(){
+								$(buttonHeadingFav).on("click", function () {
 									if ($(parent).hasClass("ui-collapsible-collapsed")) {
 										$(buttonAddDelete).show();
-									}else{
+									} else {
 										$(buttonAddDelete).hide();
 									}
 								});
 
+
 								$("#swipe-sidebar-content").siblings(".sidebar-handle").show();	
 								// END SLIDER CONTENT
-	
-								/*//set width Material Description COLOUMN
-								$("#attribute-materialDescription").css("width", "300px");
-								$("#attribute-materialAndDesc").css("width", "300px");
-								$("#attribute-additionalMaterialDescription").css("width", "300px");
-	
-								//set width QTY Coloumn
-								$("#attribute-qty_text").css("width", "30px");
-								$("#attribute-additionalMaterialQty").css("width", "30px");
-								
-								// Type, Material, Bonus and price
-								$("#attribute-type").css("width", "60px");
-								$("#attribute-overridePrice").css("width", "50px");
-								$("#attribute-totalPrice").css("width", "50px");
-								$("#attribute-price").css("width", "50px");
-								$("#attribute-material").css("width", "80px");
-								$("#attribute-overrideBonusQty").css("width", "70px");
-								*/
-								// $('#jg-overlay').hide();
 
 								/* 
-									Created By    :- Created By Zainal Arifin, Date : 19 March 2018
-									Task          :- Hide button bar if slide shown up
-									Page          :- Global
-									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+									Task          :- Reorder button in order page
+									Page          :- Order Page
+									File Location :- $BASE_PATH$/javascript/js-ezrx.js
 									Layout        :- Desktop
 								*/
-								
-								/* $(".sidebar-handle").on("click touchend", function () {
-									var isSliderShow = $("#swipe-sidebar").hasClass("sidebar-state-1");
-									if (isSliderShow) {
-										$("#button-bar").hide();
-									} else {
-										$("#button-bar").show();
+
+								$("#tab-content").find(".ui-collapsible-heading-toggle").each(function (index, data) {
+									$(data).closest(".ui-collapsible-inset").removeClass("ui-collapsible-collapsed");
+									$(data).closest(".ui-collapsible-heading").removeClass("ui-collapsible-heading-collapsed");
+									var parent = $(data).closest(".ui-collapsible-inset");
+									$(parent).find(".ui-collapsible-content").removeClass("ui-collapsible-content-collapsed").attr("aria-hidden", "false");
+
+									if(  $(data).text().indexOf("All Materials") != -1  ){
+										var firstRow = $($(".cell-material").find("input[name='material']")[0]).val();
+										if(firstRow != ""){
+											$(data).closest(".ui-collapsible-inset").addClass("ui-collapsible-collapsed");
+											$(data).closest(".ui-collapsible-heading").addClass("ui-collapsible-heading-collapsed");
+											var parent = $(data).closest(".ui-collapsible-inset");
+											$(parent).find(".ui-collapsible-content").addClass("ui-collapsible-content-collapsed").attr("aria-hidden", "false");
+										}
 									}
-								}); */
+
+								});
 
 								/* 
-									Created By    :- Created By Zainal Arifin, Date : 19 March 2018
-									Task          :- Hide button bar if slide shown up
-									Page          :- Global
-									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+									Task          :- Reorder button in order page
+									Page          :- Order Page
+									File Location :- $BASE_PATH$/javascript/js-ezrx.js
 									Layout        :- Desktop
 								*/
-
+								
 								if ($("#swipe-sidebar-content").children(":not('.sidebar-content-inner')").length == 0){
 									reposition_content();
 								}
@@ -658,70 +696,69 @@ $(document).ready(function() {
 						
 						// END UPDATE 19-01-2018
 
-
 					 /* 
-						 Created By    :- Created By Zainal Arifin, Date : 15 March 2018
-						 Task          :- highlight on QTY material in additional bonus for SG
-						 Page          :- Model Configuration
-						 File Location :- $BASE_PATH$/javascript/js-tablet.js
-						 Layout        :- Desktop
-					 */
+						Created By    :- Created By Zainal Arifin, Date : 15 March 2018
+						Task          :- highlight on QTY material in additional bonus for SG
+						Page          :- Model Configuration
+						File Location :- $BASE_PATH$/javascript/js-tablet.js
+						Layout        :- Desktop
+					*/
 
-					 if (sg_nationalty) {
-						 var listEditedField = {};
-						 var listenQtyAdditionalBonus = function () {
-							 setTimeout(function(){
-								 if (isLoadingDone()) {
-									 $("input[name='additionalMaterialQty']:not(input[type='hidden'])").map(function (index, data) {
-										 if ($(data).length > 0) {
-											 var id = $(data).attr("id").replace("additionalMaterialQty", "");
-											 if ($(data).val() != 0) {
-												 $("#additionalMaterialQty" + id).css("color", redColor);
-											 }
-										 }
-									 });
+					if (sg_nationalty) {
+						var listEditedField = {};
 
-									 $("input[name='additionalMaterialQty']").on("click focus starttouch", function () {
+						var listenQtyAdditionalBonus = function () {
+							setTimeout(function () {
+								if (isLoadingDone()) {
+									$("input[name='additionalMaterialQty']:not(input[type='hidden'])").map(function (index, data) {
+										if ($(data).length > 0) {
+											var id = $(data).attr("id").replace("additionalMaterialQty", "");
+											if ($(data).val() != 0) {
+												$("#additionalMaterialQty" + id).css("color", redColor);
+											}
+										}
+									});
 
-										 var id = $(this).attr("id").replace("additionalMaterialQty", "");
-										 if (!listEditedField.hasOwnProperty(id)) {
-											 listEditedField[id] = { before: $(this).val(), after: 0 };
-										 }
+									$("input[name='additionalMaterialQty']").on("click focus starttouch", function () {
 
-										 if ($(this).val() != 0) {
-											 $("#additionalMaterialQty" + id).css("color", redColor);
-										 }
+										var id = $(this).attr("id").replace("additionalMaterialQty", "");
+										if (!listEditedField.hasOwnProperty(id)) {
+											listEditedField[id] = { before: $(this).val(), after: 0 };
+										}
 
-									 });
+										if ($(this).val() != 0) {
+											$("#additionalMaterialQty" + id).css("color", redColor);
+										}
 
-									 $("input[name='additionalMaterialQty']").on("keyup blur change", function () {
+									});
 
-										 var id = $(this).attr("id").replace("additionalMaterialQty", "");
-										 listEditedField[id]["after"] = $(this).val();
+									$("input[name='additionalMaterialQty']").on("keyup blur change", function () {
 
-										 var isShowMessage = false;
-										 $.each(listEditedField, function (index, data) {
-											 if (!isShowMessage) {
-												 if (data.before != data.after) {
-													 $("#additionalMaterialQty" + index).css("color", redColor);
-												 }
-											 }
-										 });
+										var id = $(this).attr("id").replace("additionalMaterialQty", "");
+										listEditedField[id]["after"] = $(this).val();
 
-										 if (listEditedField[id]["after"] == 0) {
-											 $("#additionalMaterialQty" + id).css("color", blackColor);
-										 }
+										var isShowMessage = false;
+										$.each(listEditedField, function (index, data) {
+											if (!isShowMessage) {
+												if (data.before != data.after) {
+													$("#additionalMaterialQty" + index).css("color", redColor);
+												}
+											}
+										});
 
-									 });
-								 } else {
-									 listenQtyAdditionalBonus();
-								 }
-							 }, 500);
-						 }
+										if (listEditedField[id]["after"] == 0) {
+											$("#additionalMaterialQty" + id).css("color", blackColor);
+										}
 
-						 listenQtyAdditionalBonus();
+									});
+								} else {
+									listenQtyAdditionalBonus();
+								}
+							}, 500);
+						}
 
-					 }
+						listenQtyAdditionalBonus();
+					}
 
 					/* 
 						Created By    :- Created By Zainal Arifin, Date : 15 March 2018
@@ -731,38 +768,35 @@ $(document).ready(function() {
 						Layout        :- Tablet
 					*/
 
-					 /* 
+					/* 
 						Created By    :- Created By Zainal Arifin, Date : 21 March 2018
 						Task          :- highlight on Override Price on Mobile Device
 						Page          :- Model Configuration
 						File Location :- $BASE_PATH$/javascript/js-tablet.js
-						Layout        :- Desktop
+						Layout        :- Tablet
 					*/
 
-					var redColor = "rgb(255, 0, 0)";
-					var blackColor = "#000000";
+					function setListenOverridePrice(){
+						setTimeout(function(){
+							if (isLoadingDone()){
+								$("input[name='overridePrice']").on("click focus", function () {
 
-					 function setListenOverridePrice() {
-						 setTimeout(function () {
-							 if (isLoadingDone()) {
-								 $("input[name='overridePrice']").on("click focus", function () {
+									$(this).css("color", redColor);
 
-									 $(this).css("color", redColor);
+								});
 
-								 });
+								$("input[name='overridePrice']").on("blur", function () {
 
-								 $("input[name='overridePrice']").on("blur", function () {
+									if ($(this).val() == "0.0") {
+										$(this).css("color", blackColor);
+									}
 
-									 if ($(this).val() == "0.0") {
-										 $(this).css("color", blackColor);
-									 }
-
-								 });
-							 } else {
-								 setListenOverridePrice();
-							 }
-						 }, 1000)
-					 }
+								});
+							}else{
+								setListenOverridePrice();
+							}
+						}, 1000)
+					}
 
 					 setListenOverridePrice();
 
@@ -773,33 +807,31 @@ $(document).ready(function() {
 						File Location :- $BASE_PATH$/javascript/js-tablet.js
 						Layout        :- Desktop
 					*/
+					
+					/* 
+						Created By    :- Created By Zainal Arifin, Date : 31 March 2018
+						Task          :- after adding materials focus should go to shopping cart table in shopping cart page
+						Page          :- Model Configuration
+						File Location :- $BASE_PATH$/javascript/js-tablet.js
+						Layout        :- Desktop
+					*/
 
-					 /* 
-						 Created By    :- Created By Zainal Arifin, Date : 31 March 2018
-						 Task          :- after adding materials focus should go to shopping cart table in shopping cart page
-						 Page          :- Model Configuration
-						 File Location :- $BASE_PATH$/javascript/js-tablet.js
-						 Layout        :- Desktop
-					 */
-
-					 $("#addMaterialBtn").on("click", function () {
-						 window.localStorage.setItem("scrollToShoppingCart", true);
-					 });
-
-					 function scrollWindowToShoppingCart() {
-						 setTimeout(function () {
-							 if (isLoadingDone()) {
-								 var isScrollToShoppingCart = window.localStorage.getItem("scrollToShoppingCart");
-								 if (isScrollToShoppingCart) {
-									 window.localStorage.setItem("scrollToShoppingCart", false);
-									 $('html, body').animate({
-										 scrollTop: $("#materialArrayset").offset().top
-									 }, 1000);
-								 }
-							 } else {
-								 scrollWindowToShoppingCart();
-							 }
-						 }, 1000);
+					 function scrollWindowToShoppingCart(){
+						setTimeout(function(){
+							if (isLoadingDone()){
+								var isScrollToShoppingCart = window.localStorage.getItem("scrollToShoppingCart");
+								console.log("status isScrollToShoppingCart : ", isScrollToShoppingCart);
+								if (isScrollToShoppingCart == "true") {
+									window.localStorage.setItem("scrollToShoppingCart", "false");
+									console.log("status isScrollToShoppingCart : ", window.localStorage.getItem("scrollToShoppingCart"));
+									$('html, body').animate({
+										scrollTop: $("#materialArrayset").offset().top
+									}, 1000);
+								}
+							}else{
+								scrollWindowToShoppingCart();
+							}
+						},1000);
 					 }
 
 					 scrollWindowToShoppingCart();
@@ -812,34 +844,43 @@ $(document).ready(function() {
 						Layout        :- Desktop
 					*/
 
-					 /* 
-						 Created By    :- Created By Zainal Arifin, Date : 31 March 2018
-						 Task          :- restyling table shopping cart in mobile
-						 Page          :- Model Configuration
-						 File Location :- $BASE_PATH$/javascript/js-tablet.js
-						 Layout        :- Desktop
-					 */
+					
 
-					 function reStylingTableShoppingCart() {
-						 setTimeout(function () {
-							 if (isLoadingDone()) {
-								 $("#attribute-overridePrice_currency").css({ "width": "10%" });
-							 } else {
-								 reStylingTableShoppingCart();
-							 }
-						 }, 1000);
-					 }
+					function reStylingTableShoppingCart(){
+						setTimeout(function(){
+							if(isLoadingDone()){
 
-					 reStylingTableShoppingCart();
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 31 March 2018
+									Task          :- restyling table shopping cart in mobile
+									Page          :- Model Configuration
+									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Layout        :- Desktop
+								*/
 
-					/* 
-						Created By    :- Created By Zainal Arifin, Date : 31 March 2018
-						Task          :- restyling table shopping cart in mobile
-						Page          :- Model Configuration
-						File Location :- $BASE_PATH$/javascript/js-tablet.js
-						Layout        :- Desktop
-					*/
+								$("#attribute-materialAndDesc").css({"width":"auto"});
+								$("#attribute-qty").css({"width":"10%"});
+								$("#attribute-overridePrice_currency").css({ "width":"15%"});
+								$("#attribute-price_Currency").css({"width":"11%"});
+								$("#attribute-totalPrice_currency").css({"width":"10%"});
+								$("#attribute-inStock").css({ "width": "10%" });
+								$("#attribute-addAdditionalMaterial").css({"width":"10%"});
 
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 31 March 2018
+									Task          :- restyling table shopping cart in mobile
+									Page          :- Model Configuration
+									File Location :- $BASE_PATH$/javascript/js-tablet.js
+									Layout        :- Desktop
+								*/
+
+							}else{
+								reStylingTableShoppingCart();
+							}
+						}, 1000);
+					}
+
+					reStylingTableShoppingCart();
 						
 				}else if(pageTitle == "order page"){
 						 var isPageError = false;
@@ -895,8 +936,6 @@ $(document).ready(function() {
 							$("button:contains('Pipeline Viewer')").hide();
 						}
 						
-
-						
 						if(isPageError){
 							$("#duplicatefooter").append("<button class='ui-btn ui-btn-inline' id='order-allorders'>All Orders</button><button class='ui-btn ui-btn-inline' id='order-showshoppingcart'>Show Shopping Cart</button><button class='ui-btn ui-btn-inline' id='order-neworder'>New Order</button>");
 
@@ -921,6 +960,7 @@ $(document).ready(function() {
 								var token = $("input[name=token]").val();
 								var url = "/commerce/buyside/document.jsp?token=" + token + "&process=oraclecpqo&formaction=create&search_id="+selectedSearchId;
 								window.location.href=url;
+								showLoadingDialog();
 								showLoadingDialog();
 						});
 						/*if(isPageError){
@@ -1008,6 +1048,27 @@ $(document).ready(function() {
 						}else{
 							$("button:contains('Add Material')").show();
 						}*/
+
+					 	/* 
+							Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+							Task          :- Hide All Order button on order page for non CSTeam users
+							Page          :- Order Page
+							File Location :- $BASE_PATH$/javascript/js-ezrx.js
+							Layout        :- Desktop
+						*/
+
+						if ($("#zPUserType").val().toLowerCase() != "csteam") {
+							$("#order-allorders").hide();
+						}
+
+						/* 
+							Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+							Task          :- Hide All Order button on order page for non CSTeam users
+							Page          :- Order Page
+							File Location :- $BASE_PATH$/javascript/js-ezrx.js
+							Layout        :- Desktop
+						*/
+
 						$("body").on("click touchend","#order-showorderdetails",function(e){
 									e.preventDefault();			
 									$(".sidebar-handle").trigger("click");		
@@ -1016,11 +1077,86 @@ $(document).ready(function() {
 						
 						$("body").on("click touchend","#tab-orderAudit",function(e){
 							
-							setTimeout(function(){
-								$('#auditTable table').attr("style","width: 92%;");
-			
-							}, 1000);
+
+							/* 8-03-2018 | restyling Audit Table */
+							function auditTableTab(){
+
+								setTimeout(function(){
+
+									if( $(".ui-loader.ui-corner-all").css("display") == "none" ){
+
+										$( $("#auditTable table").closest(".ui-corner-all") ).children()[0].remove();
+										$($( $("#auditTable table").closest(".ui-corner-all") ).children()[0]).css("width", "100%");
+										$('#auditTable table').attr("style","width: 98%;");
+
+									}else{
+
+										auditTableTab();
+
+									}
+				
+								}, 1000);
+								
+							}
+
+							auditTableTab();
+							
+							/* 8-03-2018 | restyling Audit Table */
+
 						});
+						
+						/* 
+							Created By    :- Created By Zainal Arifin, Date : 29 March 2018
+							Task          :- Move Field orderingRequestNoMoreThan90Characters_t and customerPORef_t
+							Page          :- Model Configuration
+							File Location :- $BASE_PATH$/javascript/js-tablet.js
+							Layout        :- Desktop
+						*/
+						var reposisitonFieldOrderingReq = function () {
+
+							setTimeout(function () {
+								if (isLoadingDone()) {
+									$("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".group-content").css({
+										"margin-top": "30px",
+										"padding-top": "30px",
+										"border-top": "solid 2px #ddd"
+									});
+
+									setTimeout(function () {
+
+									/* 
+										Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+										Task          :- Reorder button in order page
+										Page          :- Order Page
+										File Location :- $BASE_PATH$/javascript/js-ezrx.js
+										Layout        :- Desktop
+									*/
+
+										$("#sticky-actions").find(".action-type-modify:contains('Home')").appendTo("#sticky-actions");
+
+									/* 
+										Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+										Task          :- Reorder button in order page
+										Page          :- Order Page
+										File Location :- $BASE_PATH$/javascript/js-ezrx.js
+										Layout        :- Desktop
+									*/
+
+									var parent = $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".ui-collapsible-content");
+
+									$("#attribute-orderingRequestNoMoreThan90Characters_t").prependTo(parent);
+
+									$("#attribute-customerPORef_t").prependTo(parent);
+									}, 2000);
+
+								} else {
+									reposisitonFieldOrderingReq();
+								}
+							}, 1000);
+
+						}
+
+						reposisitonFieldOrderingReq();
 
 						/* 
 							Created By    :- Created By Zainal Arifin, Date : 29 March 2018
@@ -1029,42 +1165,7 @@ $(document).ready(function() {
 							File Location :- $BASE_PATH$/javascript/js-tablet.js
 							Layout        :- Desktop
 						*/
-							var reposisitonFieldOrderingReq = function () {
 
-								setTimeout(function () {
-									if (isLoadingDone()) {
-										$("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".group-content").css({
-											"margin-top": "30px",
-											"padding-top": "30px",
-											"border-top": "solid 2px #ddd"
-										});
-
-										setTimeout(function () {
-											var parent = $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".ui-collapsible-content");
-
-											$("#attribute-orderingRequestNoMoreThan90Characters_t").prependTo(parent);
-
-											$("#attribute-customerPORef_t").prependTo(parent);
-										}, 2000);
-
-									} else {
-										reposisitonFieldOrderingReq();
-									}
-								}, 1000);
-
-							}
-
-							reposisitonFieldOrderingReq();
-
-							/* 
-								Created By    :- Created By Zainal Arifin, Date : 29 March 2018
-								Task          :- Move Field orderingRequestNoMoreThan90Characters_t and customerPORef_t
-								Page          :- Model Configuration
-								File Location :- $BASE_PATH$/javascript/js-tablet.js
-								Layout        :- Desktop
-							*/
-						
-					 
 				 }
 				
 			 }

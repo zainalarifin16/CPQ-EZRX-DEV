@@ -159,6 +159,7 @@ $(document).ready(function(js2){
 			}else{ */
 				if ($('#customerMasterString_t').length > 0) {
 					var customerDetails = $("#customerMasterString_t").val();
+					console.log(customerDetails);
 					// if (customerDetails === "" && $('#fileAttachmentBSID_t').val() == "") {
 					if (customerDetails === "") {
 						return true;
@@ -273,7 +274,10 @@ var changeCust = function(){
 			Layout        :- Desktop
 		*/
 		$("#selectedCustomerDetail").val(newCustId);
-		$("#customerMasterString_t").val("");
+		//PH-47 : Only once to change customer 6/4/2018, Zainal Arifin
+		if(!check_nationality(2500)){
+			$("#customerMasterString_t").val("");
+		}
 		setTimeout(function(){
 				$("#save").click();
 		}, 500);
@@ -323,7 +327,25 @@ var delete_line_item_func = function(selectedCustShipID){
 			//return false;
 		}
 		// console.log('showCustomerList selectedCustomerDetail value', $("#selectedCustomerDetail").val());
-		$("#customerMasterString_t").val("");
+		//PH-47 : Only once to change customer 6/4/2018, Zainal Arifin
+		var check_nationality = function (nationality) {
+			var countryEle = document.getElementById('userSalesOrg_t');
+			if (countryEle == null) { //this is for material page.
+				countryEle = $('input[name="userSalesOrg_PL"]').val();
+				countryCode = countryEle;
+			} else {
+				var countryCode = parseInt(countryEle.value);
+			}
+			var valid = false;
+			if (nationality == countryCode) {
+				valid = true;
+			}
+
+			return valid;
+		}
+		if(!check_nationality(2500)){
+			$("#customerMasterString_t").val("");
+		}
 		setTimeout(function(){
 			$("#save").click();
 		}, 500);

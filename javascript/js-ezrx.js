@@ -5595,7 +5595,14 @@
                     mobile_customerSearch();
                     if ($('#frequentlyAccessedCustomers_t').length) {
                         var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
-                        if (customerDetails == "") {
+                        if (customerDetails.length > 0) {
+                            localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
+                        } else {
+                            customerDetails = localStorage.getItem("frequentlyAccessedCustomers_t");
+                        }
+                        $("#frequentlyAccessedCustomers_t").val("");
+
+                        if (customerDetails.length == 0) {
                             return true;
                         } else {
                             mobile_topCustomerList(customerDetails);
@@ -6002,9 +6009,16 @@
                 mobile_orderpage();
                 mobile_customerSearch();
 
-                if ($('#frequentlyAccessedCustomers_t').length) {
+                if ($('#frequentlyAccessedCustomers_t').length > 0) {
                     var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
-                    if (customerDetails == "") {
+                    if (customerDetails.length > 0) {
+                        localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
+                    } else {
+                        customerDetails = localStorage.getItem("frequentlyAccessedCustomers_t");
+                    }
+                    $("#frequentlyAccessedCustomers_t").val("");
+
+                    if (customerDetails.length == 0) {
                         return true;
                     } else {
                         mobile_topCustomerList(customerDetails);

@@ -1116,11 +1116,11 @@ $(document).ready(function() {
 
 							setTimeout(function () {
 								if (isLoadingDone()) {
-									$("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".group-content").css({
+									/* $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".group-content").css({
 										"margin-top": "30px",
 										"padding-top": "30px",
 										"border-top": "solid 2px #ddd"
-									});
+									}); */
 
 									setTimeout(function () {
 
@@ -1142,11 +1142,16 @@ $(document).ready(function() {
 										Layout        :- Desktop
 									*/
 
-									var parent = $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".ui-collapsible-content");
+										$("#attribute-orderingRequestNoMoreThan90Characters_t").on("focus click", function (e) {
+											e.preventDefault();
+											e.stopPropagation();
+											$(this).closest(".group-content").css("height", "1000px");
+										});
 
-									$("#attribute-orderingRequestNoMoreThan90Characters_t").prependTo(parent);
+										$("#attribute-orderingRequestNoMoreThan90Characters_t").on("blur", function () {
+											$(this).closest(".ui-collapsible-content").css("height", "auto");
+										});
 
-									$("#attribute-customerPORef_t").prependTo(parent);
 									}, 2000);
 
 								} else {

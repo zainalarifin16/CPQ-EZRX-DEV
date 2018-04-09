@@ -191,19 +191,17 @@ $(document).ready(function(js2){
 
 		if( $('#frequentlyAccessedCustomers_t').length ) {
 			var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
-			console.log( "frequentlyAccessedCustomers_t", customerDetails );
-			if(customerDetails.length > 0){
+			console.log("frequentlyAccessedCustomers_t is", (customerDetails.length > 0) ? "Not Empty" : "Empty", "The data is : " + customerDetails );
+			if (customerDetails.length > 0) {
 				localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
-			}else{
-				customerDetails = localStorage.getItem("frequentlyAccessedCustomers_t");
+			} else {
+				customerDetails = (localStorage.getItem("frequentlyAccessedCustomers_t") !=  null ? localStorage.getItem("frequentlyAccessedCustomers_t") : "" );
 			}
 			$("#frequentlyAccessedCustomers_t").val("");
-
 			//console.log('frequentlyAccessedCustomers_t customerDetails  PR 1.0  =====>>>>>>> ', customerDetails);
 			if(customerDetails.length == 0){
 				return true;
 			} else {
-				console.log("SHOWCUSTOMERLIST");
 				showCustomerList(customerDetails);
 			}
 		}

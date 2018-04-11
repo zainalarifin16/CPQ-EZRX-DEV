@@ -956,6 +956,7 @@ $(document).ready(function() {
 						});
 						$("body").on("click touchend","#order-neworder",function(e){
 								e.preventDefault();
+								localStorage.removeItem("frequentlyAccessedCustomers_t");
 								var selectedSearchId = '-1';
 								var token = $("input[name=token]").val();
 								var url = "/commerce/buyside/document.jsp?token=" + token + "&process=oraclecpqo&formaction=create&search_id="+selectedSearchId;
@@ -1151,6 +1152,11 @@ $(document).ready(function() {
 										$("#attribute-orderingRequestNoMoreThan90Characters_t").on("blur", function () {
 											$(this).closest(".ui-collapsible-content").css("height", "auto");
 										});
+
+										//hide sold to id
+										if (check_nationality(2500) || check_nationality(2800)) {
+											$("#attribute-customerSoldToId_t").hide();
+										}
 
 									}, 2000);
 

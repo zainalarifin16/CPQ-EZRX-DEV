@@ -2716,12 +2716,7 @@
         for (var i = fromIndex; i < toIndex; i++) {
             colArr = custArr[i].split("$$");
             var subDataSet;
-            if (custArr.length > 2) {
-                subDataSet = ['', colArr[2], colArr[0], colArr[1], colArr[3]];
-            } else {
-                subDataSet = ['', colArr[0], colArr[1], "", ""];
-            }
-
+            subDataSet = ['', colArr[2], colArr[0], colArr[1], colArr[3]];
             dataSet.push(subDataSet);
         }
 
@@ -5588,7 +5583,8 @@
             /* if filterPage contains with commerce */
             console.log('filterPage', filterPage);
             if ($("#line-item-grid").length > 0 && filterPage.search("copy_processing.jsp") == -1 ){
-				filterPage = "commerce";
+                filterPage = "commerce";
+                localStorage.removeItem("frequentlyAccessedCustomers_t");                
 			}
 			if($("#materialArrayset").length > 0){
 				filterPage = "config";
@@ -5604,10 +5600,11 @@
                     mobile_customerSearch();
                     if ($('#frequentlyAccessedCustomers_t').length) {
                         var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
+                        console.log("frequentlyAccessedCustomers_t is", (customerDetails.length > 0) ? "Not Empty" : "Empty", "The data is : " + customerDetails);                        
                         if (customerDetails.length > 0) {
                             localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
                         } else {
-                            customerDetails = localStorage.getItem("frequentlyAccessedCustomers_t");
+                            customerDetails = (localStorage.getItem("frequentlyAccessedCustomers_t") != null ? localStorage.getItem("frequentlyAccessedCustomers_t") : "");                            
                         }
                         $("#frequentlyAccessedCustomers_t").val("");
 
@@ -6020,10 +6017,11 @@
 
                 if ($('#frequentlyAccessedCustomers_t').length > 0) {
                     var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
+                    console.log("frequentlyAccessedCustomers_t is", (customerDetails.length > 0) ? "Not Empty" : "Empty", "The data is : " + customerDetails);                    
                     if (customerDetails.length > 0) {
                         localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
                     } else {
-                        customerDetails = localStorage.getItem("frequentlyAccessedCustomers_t");
+                        customerDetails = (localStorage.getItem("frequentlyAccessedCustomers_t") != null ? localStorage.getItem("frequentlyAccessedCustomers_t") : "");                        
                     }
                     $("#frequentlyAccessedCustomers_t").val("");
 

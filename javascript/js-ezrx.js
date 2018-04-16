@@ -354,13 +354,13 @@
 
                 var pageTitle = $('#tab-material-content #group-39792374 .group-header span').text(); //commented by suresh
                 var materialHTML = '<div class="materialSearchWrapper"> <div class="normalPopupCont flLeft" id="leftPanel"> <table id="resultsTable" style="width: 100%;"></table> </div><div class="normalPopupCont1 flRight" id="rightPanel"> <div class="popupHeader1 bigHeader">Selected Materials</div><div class="accountstable" id="selectedResultsTable"> <div class="accountstable" id="selectedMatTableDiv" style="overflow-y: auto;height: 400px;"> <table id="selectedMatTable" style="background-color: white !important;"> <thead> <tr> <th style="width:5%">Qty</th><th style="width:18%">Material Number</th> <th style="width:50%">Material Description</th><th style="width:22%">Comm. Item for Bonus</th> <th style="width:5%"></th> </tr></thead> <tbody id="selectedMatTableBody"> </tbody> </table> <a href="#" id="addMaterialBtn" name="addMaterialBtn" class="jg-btn addMat-btn" style="width: auto; margin-top: 50px; display: inline-block;">Add</a> </div></div></div></div>';
-                var userType = $('input[name="zPUserType"]').val();
-
+                
+                var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                            
 
                 if ($('#tab-material-content').length > 0) {
                     pageTitle = "model configuration";
                 }
-                if (($("#actualMasterString").text() !== "") || (userType === 'CSTeam' && pageTitle == "model configuration")) {
+                if (($("#actualMasterString").text() !== "") || (userType === 'csteam' && pageTitle == "model configuration")) {
 					$("#materialResults").parent().parent().parent().parent().hide();
 					$("#attribute-material_s").parent().parent().hide();
 					$("#attribute-enableOldMaterialSearch").hide();
@@ -802,7 +802,7 @@
            // debugger;
             var tableObj = document.getElementById("selectedMatTableBody"); //Selected Materials Table
             var clonedTrObj = trObj.cloneNode(true); //Clone ROW
-            var zPUserType = js2('#zPUserType').val();
+            var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                        
 
             console.log('clonedTrObj', clonedTrObj);
 
@@ -819,7 +819,7 @@
                 console.log('taiwan only ,delete last 2 column');
                 clonedTrObj.deleteCell(3);
                 clonedTrObj.deleteCell(3);
-                if(zPUserType=='Principal'){
+                if(zPUserType=='principal'){
                     clonedTrObj.deleteCell(3);
                 }
                 
@@ -1100,9 +1100,10 @@
         var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
         
         if (salesOrg != 2600 && typeof salesOrg != 'undefined' ) {
-            ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";            
+            ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";  
+            ajaxData = "q=\{$and:[{'sales_org':'" + salesOrg + "'},{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}]}&orderby=material:asc";                      
         // if (typeof salesOrg != 'undefined') {
-            ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&salesorg=" + salesOrg + "&orderby=material:asc";
+            // ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&salesorg=" + salesOrg + "&orderby=material:asc";
         }
 
         // var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
@@ -1213,9 +1214,9 @@
         }
 		var customerDetails = null;
 		var custArr = null;
-		var totalRecs = null;
-		var userType = $('input[name="zPUserType"]').val();
-		if (userType !== 'CSTeam'){
+        var totalRecs = null;
+		var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
+		if (userType !== 'csteam'){
 
             /* 
 				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
@@ -1574,9 +1575,10 @@
             }
         });
 
+        
+        var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
 
-        var zPUserType = $('#zPUserType').val();
-        if (zPUserType === 'CSTeam') {
+        if (zPUserType === 'csteam') {
             $('#searchCustomerInput').keyup(function() {
 
                 var inputLength = $('#searchCustomerInput').val().length;
@@ -1660,9 +1662,9 @@
     var searchCustList = function(dataSet, seachCustomer) {
         console.log('searchCustList');
 
-        var zPUserType = $('#zPUserType').val();
+        var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
 
-        if (zPUserType !== 'CSTeam') {
+        if (zPUserType !== 'csteam') {
             // console.log('split table');
             var custArr = dataSet.split("##");
             var totalRecs = custArr.length;
@@ -2692,8 +2694,8 @@
     var mobile_materialSearch = function() {
         console.log('start mobile_materialSearch');
         var materialHTML = '<div class="materialSearchWrapper"> <div class="normalPopupCont flLeft" id="leftPanel"> <table id="resultsTable" style="width: 100%;"></table> </div><div class="normalPopupCont1 flRight" id="rightPanel"> <div class="popupHeader1 bigHeader">Selected Materials</div><div class="accountstable" id="selectedResultsTable"> <div class="accountstable" id="selectedMatTableDiv" style="overflow-y: auto;height: 400px;"> <table id="selectedMatTable" style="background-color: white !important;"> <thead> <tr> <th style="width:5%">Qty</th><th style="width:20%">Material Number</th> <th style="width:50%">Material Description</th><th style="width:20%">Comm. Item for Bonus</th> <th style="width:5%"></th> </tr></thead> <tbody id="selectedMatTableBody"> </tbody> </table> <a href="#" id="addMaterialBtn" name="addMaterialBtn" class="jg-btn addMat-btn" style="width: auto; margin-top: 50px; display: inline-block;">Add</a> </div></div></div></div>';
-        var userType = $('input[name="zPUserType"]').val();
-        if (($("#actualMasterString").text() !== "") || (userType === 'CSTeam')) {
+        var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();            
+        if (($("#actualMasterString").text() !== "") || (userType === 'csteam')) {
             $('#attribute-materialSearch').append().html(materialHTML);
             /* 4 April 2018, Zainal : Add localstorage for scroll to shopping cart */
             $("#addMaterialBtn").on("click", function () {
@@ -2812,8 +2814,8 @@
 
         $("#attribute-customerSearchHolder_HTML").html(searchCustomerWrapper);
 
-        var zPUserType = $('#zPUserType').val();
-        if (zPUserType === 'CSTeam') {
+        var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
+        if (zPUserType === 'csteam') {
             searchCustomerList();
 
         } else {
@@ -3161,8 +3163,9 @@
                         Layout        :- Desktop
                     */
 
-                    if ($("#zPUserType").length > 0 ){
-                        if ($("#zPUserType").val().toLowerCase() != "csteam"){
+                    var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                                
+                    if ( zPUserType.length > 0 ){
+                        if (zPUserType != "csteam"){
                             $("#order-allorders").hide();
                         }
                     }
@@ -4369,8 +4372,8 @@
                 isUserHaveModifySC = false;
                 localStorage.setItem("orderItem_" + trans_id, isUserHaveModifySC);
             }
-
-            if ($("#zPUserType").val().toLowerCase() != "csteam") {
+            var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                        
+            if ( zPUserType != "csteam") {
                 if ( $("#line-item-grid").find(".line-item-show:not(.parent-line-item)").length > 0 ){
                     if(!isUserHaveModifySC){
                         setTimeout(function(){

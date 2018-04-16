@@ -1126,7 +1126,9 @@ $(document).ready(function() {
 							Layout        :- Desktop
 						*/
 
-						if ($("#zPUserType").val().toLowerCase() != "csteam") {
+            			var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+						
+						if (zpUserType != "csteam") {
 							$("#order-allorders").hide();
 						}
 

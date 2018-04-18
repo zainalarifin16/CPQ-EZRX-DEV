@@ -1101,7 +1101,9 @@
         
         if (salesOrg != 2600 && typeof salesOrg != 'undefined' ) {
             ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";  
-            ajaxData = "q=\{$and:[{'sales_org':'" + salesOrg + "'},{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}]}&orderby=material:asc";                      
+            // ajaxData = "q=\{$and:[{'sales_org':'" + salesOrg + "'},{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}]}&orderby=material:asc";
+            ajaxData = "q=\{ $and: [ { 'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}, { sales_org: { $eq:" + salesOrg + "} }, { Dwnld_To_DSS: { $eq: 'Y'} } ] }&orderby=material:asc";
+                      
         // if (typeof salesOrg != 'undefined') {
             // ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&salesorg=" + salesOrg + "&orderby=material:asc";
         }
@@ -1378,8 +1380,8 @@
         // append loading message after initialised datatable.
         $('.dataTables_scrollBody').prepend(loading);
 
-        if (userType === 'CSTeam' && enableOldMaterialSearch == "false") {
-            //console.info('material search ajax call');
+        if (userType === 'csteam' && enableOldMaterialSearch == "false") {
+            console.info('material search ajax call');
 
             var salesOrg = $('input[name="userSalesOrg_PL"]').val();
             ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
@@ -1388,6 +1390,7 @@
             if (salesOrg != 2600 && typeof salesOrg != 'undefined') {
                 ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
             // if (typeof salesOrg != 'undefined') {
+                // ajaxData = "q=\{ $and: [ { sales_org: { $eq:" + salesOrg + "} }, { Dwnld_To_DSS: { $eq: 'Y'} } ] }&orderby=material:asc";
                 ajaxData = "q=\{\"sales_org\":\"" + salesOrg + "\"}&orderby=material:asc";
             }
 
@@ -1443,7 +1446,7 @@
 
             //console.log('materialSearch',materialSearch);
 
-            if ((userType === 'CSTeam') && (materialSearch.length > 2) && enableOldMaterialSearch == "false") {
+            if ((userType === 'csteam') && (materialSearch.length > 2) && enableOldMaterialSearch == "false") {
 
                 if (materialSearch.slice(-1) === '%') {
                     materialSearch = materialSearch.substring(0, materialSearch.length - 1);
@@ -1511,7 +1514,7 @@
                     var materialSearch = $(this).val() || '';
 
 
-                    if ((userType === 'CSTeam') && (materialSearch.length > 2)) {
+                    if ((userType === 'csteam') && (materialSearch.length > 2)) {
                         /*
                             Start : 10 Nov 2017
                             Task  : Wildcard material search
@@ -3157,7 +3160,7 @@
 
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-                        Task          :- Hide All Order button on order page for non CSTeam users
+                        Task          :- Hide All Order button on order page for non csteam users
                         Page          :- Order Page
                         File Location :- $BASE_PATH$/javascript/js-ezrx.js
                         Layout        :- Desktop
@@ -3172,7 +3175,7 @@
 
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-                        Task          :- Hide All Order button on order page for non CSTeam users
+                        Task          :- Hide All Order button on order page for non csteam users
                         Page          :- Order Page
                         File Location :- $BASE_PATH$/javascript/js-ezrx.js
                         Layout        :- Desktop

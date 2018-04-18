@@ -1137,6 +1137,54 @@ $(document).ready(function() {
 						}
 
 						/* 
+							Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+							Task          :- Disable user submit order repeatly
+							Page          :- Order Page
+							File Location :- $BASE_PATH$/javascript/js-ezrx.js
+							Layout        :- Desktop
+						*/
+
+						$(".action.action-type-modify:contains('Submit Order')").on("click", function () {
+							$(this).attr("disabled", true);
+						});
+
+						/* 
+							Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+							Task          :- Disable user submit order repeatly
+							Page          :- Order Page
+							File Location :- $BASE_PATH$/javascript/js-ezrx.js
+							Layout        :- Desktop
+						*/
+
+						if(check_nationality(2600)){
+							/* 
+								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+								Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
+								Page          :- Order Page
+								File Location :- $BASE_PATH$/javascript/js-ezrx.js
+								Layout        :- Desktop
+							*/
+
+							var isCompleteOrSubmitted = $("input[name='status_t']").val().trim().toLowerCase();
+							if (isCompleteOrSubmitted == "completed" || isCompleteOrSubmitted == "submitted" || isCompleteOrSubmitted == "in process") {
+								var isSaveAsTemplate = $("input[name='isATestOrder_t']").val().trim().toLowerCase();
+								if (isSaveAsTemplate == "true") {
+									$($("input[name='isATestOrder_t']").siblings()[0]).text("Yes");
+								} else {
+									$($("input[name='isATestOrder_t']").siblings()[0]).text("No");
+								}
+							}
+
+							/* 
+								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+								Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
+								Page          :- Order Page
+								File Location :- $BASE_PATH$/javascript/js-ezrx.js
+								Layout        :- Desktop
+							*/
+						}
+
+						/* 
 							Created By    :- Created By Zainal Arifin, Date : 2 April 2018
 							Task          :- Hide All Order button on order page for non CSTeam users
 							Page          :- Order Page

@@ -1126,6 +1126,10 @@ $(document).ready(function() {
 							Layout        :- Desktop
 						*/
 
+						$(".action.action-type-modify:contains('Submit Order')").on("click", function () {
+							$(this).attr("disabled", true);
+						});
+
             			var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
 						
 						if (zpUserType != "csteam") {
@@ -1139,6 +1143,37 @@ $(document).ready(function() {
 							File Location :- $BASE_PATH$/javascript/js-ezrx.js
 							Layout        :- Desktop
 						*/
+
+						if(check_nationality(2600)){
+							/* 
+								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+								Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
+								Page          :- Order Page
+								File Location :- $BASE_PATH$/javascript/js-ezrx.js
+								Layout        :- Desktop
+							*/
+
+								if (isMobile()) {
+									var isCompleteOrSubmitted = $("#attribute-status_t").find("span.form-field").text().trim().toLowerCase();
+									if (isCompleteOrSubmitted == "completed" || isCompleteOrSubmitted == "submitted" || isCompleteOrSubmitted == "in process") {
+										var isSaveAsTemplate = $("#attribute-isATestOrder_t").find("span.form-field").text().trim().toLowerCase();
+										if (isSaveAsTemplate == "true") {
+											$("#attribute-isATestOrder_t").find("span.form-field").text("Yes");
+										} else {
+											$("#attribute-isATestOrder_t").find("span.form-field").text("No");
+										}
+									}
+								}
+
+
+							/* 
+								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+								Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
+								Page          :- Order Page
+								File Location :- $BASE_PATH$/javascript/js-ezrx.js
+								Layout        :- Desktop
+							*/
+						}
 
 						$("body").on("click touchend","#order-showorderdetails",function(e){
 									e.preventDefault();			

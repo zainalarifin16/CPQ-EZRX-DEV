@@ -73,12 +73,29 @@
         } else {
             var countryCode = parseInt(countryEle.value);
         }
+           
+        console.log( "countryCode", typeof countryCode, countryCode, typeof countryCode == "undefined" );
+        if (typeof countryCode == "undefined" || countryCode == "" ){        
+            countryCode = "2601";
+        }
+        if(nationality == 2600){
+            nationality = 2601;
+        }
+
         var valid = false;
-        if (nationality == countryCode) {
+        if (nationality == countryCode || countryCode == 2601 || countryCode == 2600 ) {        
             valid = true;
         }
 
         return valid;
+    }
+
+    var getZPUserType = function() {
+        if ($("#zPUserType").length > 0 || $("input[name='zPUserType']").length > 0 ){
+            return ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+        }else{
+            return "";
+        }
     }
 
     var isLoadingDone = function () {
@@ -342,7 +359,10 @@
                 */
                 _loadingImage = rootFolder + "/image/images/loading-icon.gif";
                // closeLoadingDialog();
-                $('#jg-overlay').hide();
+                if (url.indexOf('copy_processing') == -1){               
+                    $('#jg-overlay').hide();
+                }
+
                 $("#loading-mask").children("#loading-dialog").children('img').attr("src", rootFolder + "/image/images/loading-icon.gif");
                 desktop_newlayout();
                 hide_navigation();
@@ -354,8 +374,8 @@
 
                 var pageTitle = $('#tab-material-content #group-39792374 .group-header span').text(); //commented by suresh
                 var materialHTML = '<div class="materialSearchWrapper"> <div class="normalPopupCont flLeft" id="leftPanel"> <table id="resultsTable" style="width: 100%;"></table> </div><div class="normalPopupCont1 flRight" id="rightPanel"> <div class="popupHeader1 bigHeader">Selected Materials</div><div class="accountstable" id="selectedResultsTable"> <div class="accountstable" id="selectedMatTableDiv" style="overflow-y: auto;height: 400px;"> <table id="selectedMatTable" style="background-color: white !important;"> <thead> <tr> <th style="width:5%">Qty</th><th style="width:18%">Material Number</th> <th style="width:50%">Material Description</th><th style="width:22%">Comm. Item for Bonus</th> <th style="width:5%"></th> </tr></thead> <tbody id="selectedMatTableBody"> </tbody> </table> <a href="#" id="addMaterialBtn" name="addMaterialBtn" class="jg-btn addMat-btn" style="width: auto; margin-top: 50px; display: inline-block;">Add</a> </div></div></div></div>';
-                
                 var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                            
+
 
                 if ($('#tab-material-content').length > 0) {
                     pageTitle = "model configuration";
@@ -3267,7 +3287,9 @@
         }
 
         // remove white overlay
-        $('#jg-overlay').hide();
+        if (url.indexOf('copy_processing') == -1) {    
+            $('#jg-overlay').hide();
+        }
         /*
             End : -
             Task  : -

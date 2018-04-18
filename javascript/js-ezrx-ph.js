@@ -1015,6 +1015,15 @@ $(document).ready(function(){
           });
         }
 
+        var orderPageComponent = function(){
+            if(isMobile()){
+              $("label[for*='pODate']").css("color", "red");
+            }else{
+              $("label[for*='pODate']").find("span").css("color", "red");
+              $("#field_wrapper_1_pODate").css({"padding-left": "130px"});
+            }
+        }
+
         if (navigator.userAgent.match(/Android/i) ||
             navigator.userAgent.match(/webOS/i) ||
             navigator.userAgent.match(/iPhone/i) ||
@@ -1040,6 +1049,7 @@ $(document).ready(function(){
                   reAlignSoldShipAddressSection();
                   onShoppingCartSwipe();
                   reposition_order_mobile();
+                  orderPageComponent();
                 } else {
                   loadOderPageScript();
                 }
@@ -1095,6 +1105,7 @@ $(document).ready(function(){
                         File Location : $BASE_PATH$/javascript/js-ezrx.js
                         Layout : Both
                     */
+                    orderPageComponent();                   
                   } else {
                     loadOderPageScript();
                   }

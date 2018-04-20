@@ -45,198 +45,6 @@ $(document).ready(function(){
     return $("#jg-overlay").css("display") == "none" ? true : false;
   }
 
-  //config dynamic variable
-  var var_qty = ($("td.cell-qty_text").length > 0) ? "td.cell-qty_text" : "td.cell-qty";
-  var var_netpricedisc = ($("td.cell-netPriceDiscount").length > 0) ? "td.cell-netPriceDiscount" : "td.cell-netPriceDiscount";
-  var var_overrideprice = ($("td.cell-overridePrice").length > 0) ? "td.cell-overridePrice" : "td.cell-overridePrice_currency";
-  var var_comments = ($("td.cell-comments").length > 0) ? "td.cell-comments" : "td.cell-comments";
-  var var_qtyBonus = ($("td.cell-additionalMaterialQty").length > 0) ? "td.cell-additionalMaterialQty" : "td.cell-additionalMaterialQty";
-  var var_bonusOverride = ($("td.cell-overrideBonusQty").length > 0) ? "td.cell-overrideBonusQty" : "td.cell-overrideBonusQty";
-
-     /* TW-05 and TW-13 Override Invoice Price */
-    /* function override_redcolor(){
-        var redColor = "rgb(255, 0, 0)";
-        var blackColor = "#000000";
-        
-        $(var_netpricedisc.replace("td", "")).find(".text-field").off();        
-        $(var_netpricedisc.replace("td", "")).find(".text-field").map(function(index, data){
-            if( $(data).val() != "0.0" ){
-                // $(data).css("color", redColor); //remove logic for Highlight QTY in case of PH. 7 March 2018
-            }
-        });
-
-        $(var_netpricedisc.replace("td", "")).find(".text-field").on("keyup click", function(){
-            
-            // $(this).css("color", redColor); //remove logic for Highlight QTY in case of PH. 7 March 2018
-            
-        });
-
-        $(var_netpricedisc.replace("td", "")).find(".text-field").blur( function(){
-            
-            if( $(this).val() == "0.0" ){
-                $(this).css("color", blackColor);
-            }
-
-        });
-
-        $( var_overrideprice.replace("td", "") ).map(function(index, data){
-            var overridePrice = $(data).find(".text-field");
-
-            if( $(overridePrice).length > 0  ){
-
-              if($(overridePrice).val() != "0.0"){
-                overridePrice.css("color", redColor);
-                $(data).attr("style", "color: "+redColor+" !important;");
-                var rowMaterial = $(overridePrice).attr("id").replace("overridePrice-", "");
-                // $( "#qty_text-"+rowMaterial ).css("color", redColor); //remove logic for Highlight QTY in case of PH. 7 March 2018
-              }
-              
-            }
-        });
-
-        $("input[name='"+var_bonusOverride.replace("td.cell-")+"'][type='checkbox']").map(function(index, data){
-          isChecked = (typeof $(this).attr("checked") == 'undefined') ? false : true;
-          var rowMaterial = $(this).val();
-          if( isChecked ){
-            $( "#qty_text-"+rowMaterial ).css("color", redColor);
-          }else{
-            $( "#qty_text-"+rowMaterial ).css("color", blackColor);
-          }
-
-        });        
-
-        $("input[name='"+var_bonusOverride.replace("td.cell-")+"'][type='checkbox']").on("change", function(){
-          
-          isChecked = (typeof $(this).attr("checked") == 'undefined') ? false : true;
-          var rowMaterial = $(this).val();
-          if( isChecked ){
-            $( "#qty_text-"+rowMaterial ).css("color", redColor);
-          }else{
-            $( "#qty_text-"+rowMaterial ).css("color", blackColor);
-          }
-
-        });
-
-    } */
-
-    function disabled_btn_save_show_alert()
-    {
-      if( $("#update-alert").length == 0 ){
-          var updateMsg = "<div id='update-alert' class='updateMsg'>Please click 'update' to proceed.</div>";
-          $('#materialArrayset').after(updateMsg);
-          $("#update-alert").css("padding-bottom", "30px");
-          if ($("#btn-cart-save").length > 0){
-            $("#btn-cart-save").attr("disabled", true).css({ "background-color": "grey"});
-          }else{
-            $("#btn-cart-addtoorder").attr("disabled", true).css({ "background-color": "grey"});
-          }
-      }
-    }
-
-    function enabled_btn_save_remove_alert()
-    {
-      $("#update-alert").remove();
-      if ($("#btn-cart-save").length > 0) {
-        $("#btn-cart-save").attr("disabled", false).css({ "background-color": "#0C727A" });
-      }else{
-        $("#btn-cart-addtoorder").attr("disabled", false).css({ "background-color": "#0C727A" });
-      }      
-    }
-
-    /*
-        SUMMARY : Listen user change the value of QTY, OVerride Invoice and Override Price,
-                  Show Alert if the value has been changed
-    */
-    var redColor = "rgb(255, 0, 0)";
-    var blackColor = "rgb(255, 255, 0)";
-
-    function check_user_change_value(isMobile){
-        var listEditedField = {};
-        console.log("APPLY check_user_change_value");
-        var var_find_text = (isMobile) ? ".form-field" : ".text-field";
-        
-        $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).on("click focus", function(){
-
-          var id = "";
-          if ($(this).closest(var_qty.replace("td", "")).length > 0 ){
-            id = "qty_" + $(this).attr("id").replace(var_qty.replace("td.cell-", "")+"-", "");
-            $(this).css("color", redColor);
-          }
-
-          if ($(this).closest( var_overrideprice.replace("td", "") ).length > 0){
-            id = "op_" + $(this).attr("data-value-attr").replace(var_overrideprice.replace("td.cell-", "")+ "-", "");
-            $(this).css("color", redColor);            
-          }
-
-          if( $(this).closest( var_netpricedisc.replace("td", "") ).length > 0 ){
-            id = "oip_" + $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", "")+"-", "");
-            $(this).css("color", redColor);            
-          }
-          
-          if ($(this).closest(var_comments.replace("td", "") ).length > 0 ){
-            id = "cmt_" + $(this).attr("id").replace(var_comments.replace("td.cell-", "")+"-", "");
-            $(this).css("color", redColor);                        
-          }
-
-          if ($(this).closest(var_qtyBonus.replace("td", "") ).length > 0 ){
-            id = "cmt_" + $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", "")+"-", "");
-            $(this).css("color", redColor);                        
-          }
-
-          if(!listEditedField.hasOwnProperty(id))
-          {
-              listEditedField[id] = { before : $(this).val() };
-          }
-
-        });
-
-        $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).on("keyup blur", function(){
-          
-          var id = "";
-          if ($(this).closest(var_qty.replace("td", "")).length > 0) {
-            id = "qty_" + $(this).attr("id").replace(var_qty.replace("td.cell-", "") + "-", "");
-          }
-
-          if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
-            id = "op_" + $(this).attr("data-value-attr").replace(var_overrideprice.replace("td.cell-", "") + "-", "");
-          }
-
-          if ($(this).closest(var_netpricedisc.replace("td", "")).length > 0) {
-            id = "oip_" + $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", "") + "-", "");
-          }
-
-          if ($(this).closest(var_comments.replace("td", "")).length > 0) {
-            id = "cmt_" + $(this).attr("id").replace(var_comments.replace("td.cell-", "") + "-", "");
-          }
-
-          if ($(this).closest(var_qtyBonus.replace("td", "")).length > 0) {
-            id = "cmt_" + $(this).attr("id").replace(var_qtyBonus.replace("td.cell-", "") + "-", "");
-          }
-
-          listEditedField[id]["after"] = $(this).val();
-
-          var isShowMessage = false;
-          $.each(listEditedField, function(index, data){
-            if(!isShowMessage){
-              if(data.before != data.after){
-                isShowMessage = true;
-              }
-            }else{
-              $(this).css("color", blackColor);                          
-              return false;
-            }
-          });
-
-          if(isShowMessage){
-            disabled_btn_save_show_alert();
-          }else{
-            enabled_btn_save_remove_alert();
-          }
-
-        });
-
-    }
-
     function hide_recommended_material(){
       var tabelFavFreqReq = $("#attribute-pastOrders").parent().parent().parent().parent().parent().parent('.column-1');
       $(tabelFavFreqReq.children()[1]).hide();
@@ -463,7 +271,7 @@ $(document).ready(function(){
           $("#line-item-grid").find(".readonly-wrapper").css({ "color": "rgb(0,0,0)" });
         }
 
-        var order_page_stock_color = function () {
+        var order_page_stock_color = function(){
 
         /* $("td[id*='qty_int_l']").each(function (i, data) {
           var isQtyOverride = parseInt( $(this).find("span[id*='qty_int_l']").text().trim().toLowerCase() );
@@ -490,13 +298,13 @@ $(document).ready(function(){
         });
 
 
-        $("td[id*='isPriceOverride']").each(function (i, data) {
+        $("td[id*='isPriceOverride']").each(function(i, data){
           var parent = $(this).closest(".line-item");
           var type_material = $(parent).find("span[id*='refNO_text']").text().trim().toLowerCase();
-          if (type_material != "bonus") {
+          if(type_material != "bonus"){
             var isPriceOverrideVal = $(this).find("span[id*='isPriceOverride']").text().trim().toLowerCase();
-            if (isPriceOverrideVal.length > 0) {
-              if (isPriceOverrideVal == 'true') {
+            if(isPriceOverrideVal.length > 0){
+              if(isPriceOverrideVal == 'true'){
                 var totalPriceSpan = $(parent).find("span[id*='totalPrice_currency']");
                 $(totalPriceSpan).css("color", "red");
                 var unitPriceSpan = $(parent).find("span[id*='unitPrice_currency']");
@@ -506,13 +314,13 @@ $(document).ready(function(){
           }
         });
 
-        $("td[id*='netPriceDiscount_t']").each(function (i, data) {
+        $("td[id*='netPriceDiscount_t']").each(function(i, data){
           var parent = $(this).closest(".line-item");
           var type_material = $(parent).find("span[id*='refNO_text']").text().trim().toLowerCase();
-          if (type_material != "bonus") {
+          if(type_material != "bonus"){
             var priceDiscount_tVal = $(this).find("span[id*='netPriceDiscount_t']").text().trim().toLowerCase();
-            if (priceDiscount_tVal.length > 0) {
-              if (priceDiscount_tVal != '0.0') {
+            if(priceDiscount_tVal.length > 0){
+              if (priceDiscount_tVal != '0.0'){
                 var parent = $(this).closest(".line-item");
                 var totalPriceSpan = $(parent).find("span[id*='totalPrice_currency']");
                 $(totalPriceSpan).css("color", "red");
@@ -1024,6 +832,133 @@ $(document).ready(function(){
             }
         }
 
+                /* 
+          Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+          Task          :- Order View Page: Material description to be shown on hover for  Additional Bonus Materials.
+          Page          :- Model Configuration
+          File Location :- $BASE_PATH$/javascript/js-ezrx-ph.js
+          Layout        :- Desktop
+        */
+        var ph_tooltip_modelconfiguration = function(){
+          if(isMobile()){
+            
+            $("td.cell-additionalMaterialDescription").off();
+            $("td.cell-additionalMaterialDescription").each(function (index, data) {
+              var button_helper;
+              var valueOfPromotion = $(this).find('input[name="promotion"]').val();
+              if (valueOfPromotion != '') {
+                button_helper = '<i class="material-lens" aria-hidden="true" ></i>';
+                $(this).find('input[name=promotion]').prop('type', 'text');
+                $(this).find('input[name=promotion]').css('display', 'block !important');
+              } else {
+                button_helper = '-';
+              }
+              $($(this).children().children()).hide();
+              $($(this).children().children()).parent().append(button_helper);
+              $(this).prop("tooltip", valueOfPromotion);
+
+              $(this).on("click", function () {
+                var additionalMaterialDescription = $(this).find('input[name="additionalMaterialDescription"]').val();
+                if (additionalMaterialDescription.trim() != '') {
+                  if ($(this).hasClass('open')) {
+
+                    $(this).removeClass('open');
+                    $('.table-tooltip').remove();
+
+                  } else {
+                    $(this).addClass('open');
+                    $('.table-tooltip').remove();
+
+                    /* if mouse hover on element material description then showing table of Material Description. */
+                    var table = '<table class="table-tooltip" >\
+                              <thead style="padding:5px;font-weight:bold">\
+                                <tr style="background-color:#EEE;">\
+                                  <th style="border: 1px solid #999;padding:5px;">Material Description</th>\
+                                </tr>\
+                              </thead>';
+                    table += "<tbody>";
+                    table += "<tr><td>" + additionalMaterialDescription + "</td></tr>";
+                    table += "</tbody></table>";
+
+                    $(this).parent().parent().parent().parent().append(table);
+                    $('.table-tooltip').css({
+                      right: '50%',
+                      position: 'absolute',
+                      transform: 'translate(50%, -50%)',
+                      top: '50%',
+                      width: '500px'
+                    });
+                  }
+                }
+              });
+            });
+
+          }else{
+            var input_val;
+            /* prepare for tooltip on material description */
+            $('td.cell-additionalMaterialDescription').off();
+            $('td.cell-additionalMaterialDescription').prop("tooltip", function () {
+              var input_text = $(this).find(".attribute-field-container span").text();
+              return input_text;
+            }).mouseenter(function () {
+              /* get text of material desciption */
+              var input_text = $(this).find(".attribute-field-container span").text();
+              /* if mouse hover on element material description then showing table of Material Description. */
+              var table = '<table style="text-align:center;width:100%;border-collapse: collapse;">\
+                        <thead style="padding:5px;font-weight:bold">\
+                          <tr style="background-color:#EEE;">\
+                            <th style="border: 1px solid #999;padding:5px;">Material Description</th>\
+                          <tr></thead>';
+              table += "<tbody>";
+              table += "<tr><td>" + input_text + "</td></tr>";
+              table += "</tbody></table>";
+              // if ($(this).attr('tooltip') != '') {
+              /* always showing table of material description */
+              $('#myModal').addClass('hover-modal-content').html(table);
+              $('#myModal').css("display", "block");
+              // }
+              $('.cell-additionalMaterialDescription').mouseleave(function () {
+                $('#myModal').css("display", "none");
+              });
+            });
+
+            $('td.cell-additionalMaterialDescription')
+              .hover(function (e) {
+                e.preventDefault();
+              })
+              .mousemove(function (e) {
+                  /* console.log(e.pageY, $(document).scrollTop(), e.pageY - $(document).scrollTop());
+                  console.log(e.pageX, $(document).scrollLeft(), e.pageX - $(document).scrollLeft());
+                  console.log( $("#myModal").css("width").replace("px", ""), $("#myModal").css("height").replace("px", "") ); */
+                  var offSetWidth = 0;
+                  var offsetHeight = 0;
+                  var diffWidth = (e.pageX - $(document).scrollLeft() + 10) + parseInt($("#myModal").css("width").replace("px", ""));
+                  var diffHeight = (e.pageY - $(document).scrollTop() + 10) + parseInt($("#myModal").css("height").replace("px", ""));
+                  // console.log( diffWidth , diffHeight );
+                  if (diffWidth > window.innerWidth) {
+                    offSetWidth = (window.innerWidth - diffWidth);
+                    offSetWidth = Math.abs(offSetWidth) + 50;
+                  }
+                  if (diffHeight > window.innerHeight) {
+                    offsetHeight = window.innerHeight - diffHeight;
+                    offsetHeight = Math.abs(offsetHeight) + 10 + parseInt($("#myModal").css("height").replace("px", ""));
+                  }
+                  var currentTop = (e.pageY - $(document).scrollTop() + 10) - offsetHeight;
+                  var currentLeft = (e.pageX - $(document).scrollLeft() + 10) - offSetWidth;
+                  $('#myModal')
+                    .css('top', currentTop + 'px')
+                    .css('left', currentLeft + 'px');
+              });
+          }
+        }
+        /* 
+          Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+          Task          :- Order View Page: Material description to be shown on hover for  Additional Bonus Materials.
+          Page          :- Model Configuration
+          File Location :- $BASE_PATH$/javascript/js-ezrx-ph.js
+          Layout        :- Desktop
+        */
+
         if (navigator.userAgent.match(/Android/i) ||
             navigator.userAgent.match(/webOS/i) ||
             navigator.userAgent.match(/iPhone/i) ||
@@ -1064,6 +999,7 @@ $(document).ready(function(){
                 if (isLoadingDone) {
                   // check_user_change_value(true);
                   textColorQty();
+                  ph_tooltip_modelconfiguration();
                 } else {
                   loadShoppingCartScript();
                 }
@@ -1119,6 +1055,7 @@ $(document).ready(function(){
                 setTimeout(function () {
                   if (isLoadingDone) {
                     textColorQty();
+                    ph_tooltip_modelconfiguration();                    
                   } else {
                     loadShoppingCartScript();
                   }

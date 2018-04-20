@@ -23,6 +23,16 @@ $(document).ready(function() {
 		return $("#jg-overlay").css("display") == "none"? true : false;
 	}
 
+	function getQueryVariableUrl(variable) {
+		var query = window.location.search.substring(1);
+		var vars = query.split("&");
+		for (var i = 0; i < vars.length; i++) {
+			var pair = vars[i].split("=");
+			if (pair[0] == variable) { return pair[1]; }
+		}
+		return (false);
+	}
+
 	var redColor = "rgb(255, 0, 0)";
 	var blackColor = "rgb(0, 0, 0)";
 	var userSalesOrg_t = (($("#userSalesOrg_t").length == 0) ? false : true);
@@ -582,7 +592,7 @@ $(document).ready(function() {
 									Layout        :- Desktop
 								*/
 
-								if(sg_nationalty){
+								if(check_nationality(2600) || check_nationality(2500)){
 									$($(elementToMove[2])).hide();
 								}else{
 									$( $(elementToMove[2]) ).appendTo("#swipe-sidebar-content");
@@ -951,6 +961,42 @@ $(document).ready(function() {
 					 */
 					
 				}else if(pageTitle == "order page"){
+
+						/* 
+							Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+							Task          :- Disable user submit order repeatly
+							Page          :- Order Page
+							File Location :- $BASE_PATH$/javascript/js-ezrx.js
+							Layout        :- Desktop
+						*/
+						try {
+							
+							var handleDisableSubmitBtn = function () {
+								setTimeout(function () {
+									if (isLoadingDone()) {
+										$(".action.action-type-modify:contains('Submit Order')").on("click", function () {
+											$(this).attr("disabled", true);
+										});
+									} else {
+										handleDisableSubmitBtn();
+									}
+								}, 500);
+							}
+	
+							handleDisableSubmitBtn();
+
+						} catch (error) {
+							console.log(error);
+						}
+
+						/* 
+							Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+							Task          :- Disable user submit order repeatly
+							Page          :- Order Page
+							File Location :- $BASE_PATH$/javascript/js-ezrx.js
+							Layout        :- Desktop
+						*/
+
 						 var isPageError = false;
 						 var exitingDataItems = $("#line-item-grid").attr('data-properties');
 						 var linesObj = JSON.parse(exitingDataItems);
@@ -1126,35 +1172,13 @@ $(document).ready(function() {
 							Layout        :- Desktop
 						*/
 
-						$(".action.action-type-modify:contains('Submit Order')").on("click", function () {
-							$(this).attr("disabled", true);
-						});
-
             			var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
 						
 						if (zpUserType != "csteam") {
 							$("#order-allorders").hide();
 						}
 
-						/* 
-							Created By    :- Created By Zainal Arifin, Date : 17 April 2018
-							Task          :- Disable user submit order repeatly
-							Page          :- Order Page
-							File Location :- $BASE_PATH$/javascript/js-ezrx.js
-							Layout        :- Desktop
-						*/
-
-						$(".action.action-type-modify:contains('Submit Order')").on("click", function () {
-							$(this).attr("disabled", true);
-						});
-
-						/* 
-							Created By    :- Created By Zainal Arifin, Date : 17 April 2018
-							Task          :- Disable user submit order repeatly
-							Page          :- Order Page
-							File Location :- $BASE_PATH$/javascript/js-ezrx.js
-							Layout        :- Desktop
-						*/
+						
 
 						if(check_nationality(2600)){
 							/* 
@@ -1278,23 +1302,29 @@ $(document).ready(function() {
 
 									setTimeout(function () {
 
-									/* 
-										Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-										Task          :- Reorder button in order page
-										Page          :- Order Page
-										File Location :- $BASE_PATH$/javascript/js-ezrx.js
-										Layout        :- Desktop
-									*/
+										/* 
+											Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+											Task          :- Reorder button in order page
+											Page          :- Order Page
+											File Location :- $BASE_PATH$/javascript/js-ezrx.js
+											Layout        :- Desktop
+										*/
 
 										$("#sticky-actions").find(".action-type-modify:contains('Home')").appendTo("#sticky-actions");
 
-									/* 
-										Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-										Task          :- Reorder button in order page
-										Page          :- Order Page
-										File Location :- $BASE_PATH$/javascript/js-ezrx.js
-										Layout        :- Desktop
-									*/
+										if (getQueryVariableUrl("flag") == "rightnow") {
+											$("#sticky-actions").find(".action-type-modify:contains('Home')").show();
+										} else {
+											$("#sticky-actions").find(".action-type-modify:contains('Home')").hide();
+										}
+
+										/* 
+											Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+											Task          :- Reorder button in order page
+											Page          :- Order Page
+											File Location :- $BASE_PATH$/javascript/js-ezrx.js
+											Layout        :- Desktop
+										*/
 
 										/* var parent = $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".ui-collapsible-content");
 										$("#attribute-orderingRequestNoMoreThan90Characters_t").prependTo(parent);

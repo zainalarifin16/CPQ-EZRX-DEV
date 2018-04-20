@@ -75,7 +75,7 @@
         }
            
         console.log( "countryCode", typeof countryCode, countryCode, typeof countryCode == "undefined" );
-        if (typeof countryCode == "undefined" || countryCode == "" ){        
+        if (typeof countryCode == "undefined" || countryCode == "" || isNaN(countryCode) ){        
             countryCode = "2601";
         }
         if(nationality == 2600){
@@ -100,6 +100,16 @@
 
     var isLoadingDone = function () {
         return $("#jg-overlay").css("display") == "none" ? true : false;
+    }
+
+    function getQueryVariableUrl(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) { return pair[1]; }
+        }
+        return (false);
     }
 
     var isMobile = function () {
@@ -822,7 +832,9 @@
            // debugger;
             var tableObj = document.getElementById("selectedMatTableBody"); //Selected Materials Table
             var clonedTrObj = trObj.cloneNode(true); //Clone ROW
+
             var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                        
+
 
             console.log('clonedTrObj', clonedTrObj);
 
@@ -1098,6 +1110,25 @@
                 dumpSelectedRow(this);
             }
 
+            if(check_nationality(2800)){
+                if (isMobile()) {
+                    $("#materialArrayset").find("input[name='materialAndDesc']").map(function (index, data) {
+                        var materialDesc = $(data).closest("tr").find("input[name='materialDescription']").val();
+                        var typeMaterialandCode = $(data).val().replace(materialDesc, "").split("-");
+                        console.log( $("select[name='itemBonus']").find("option[value='" + typeMaterialandCode[1] + "']") );
+                        $("select[name='itemBonus']").find("option[value='" + typeMaterialandCode[1] + "']").remove();
+                    });
+                } else {
+                    $("#materialArrayset").find("input[name='type']").map(function (index, data) {
+                        if ($(data).val().toLowerCase() == "bonus") {
+                            var id = $(data).attr("id").replace("type-", "");
+                            var code_material = $("#material-" + id).val();
+                            $("select[name='itemBonus']").find("option[value='" + code_material + "']").remove();
+                        }
+                    });
+                }
+            }
+
         });
     };
     /*
@@ -1116,17 +1147,24 @@
         var dataSet2 = [];
 
         var salesOrg = $('input[name="userSalesOrg_PL"]').val();
-        ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
+        if ( check_nationality(2600) ) {
+            salesOrg = (salesOrg == 2601)? salesOrg : 2601;
+        }
+
+        ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
+        ajaxData = "q=\{ $and: [ { 'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}, { sales_org: { $eq:" + salesOrg + "} }, { dwnld_to_dss: { $eq: 'Y'} } ] }&orderby=material:asc";
+
+        /*ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
         var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
         
         if (salesOrg != 2600 && typeof salesOrg != 'undefined' ) {
             ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";  
             // ajaxData = "q=\{$and:[{'sales_org':'" + salesOrg + "'},{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}]}&orderby=material:asc";
-            ajaxData = "q=\{ $and: [ { 'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}, { sales_org: { $eq:" + salesOrg + "} }, { Dwnld_To_DSS: { $eq: 'Y'} } ] }&orderby=material:asc";
+            ajaxData = "q=\{ $and: [ { 'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}, { sales_org: { $eq:" + salesOrg + "} }, { dwnld_to_dss: { $eq: 'Y'} } ] }&orderby=material:asc";
                       
         // if (typeof salesOrg != 'undefined') {
             // ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&salesorg=" + salesOrg + "&orderby=material:asc";
-        }
+        }*/
 
         // var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
         // var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
@@ -1180,7 +1218,12 @@
             $.each(data, function(i, item) {
                 // console.log(item.material_number, item.material_desc, item.principal_name);
                // console.log(item);
-                var subDataSet2 = ["", item.material_number, item.material_desc, item.principal_name];
+                var subDataSet2 = [
+                                    "", 
+                                    (item.material != null)? item.material : "", 
+                                    (item.description != null)? item.description : "", 
+                                    (item.principal_name != null)? item.principal_name : ""
+                                ];
                 if($('input[name="userSalesOrg_PL"]').val()=="2800"){
                     if(item.material_group_5 == 500 && item.materialgroup != "ZGM"){
                         var promo = "P";
@@ -1307,7 +1350,7 @@
         //userType = null;
 
         console.warn('materialSearch');
-        if (userType !== 'CSTeam' ||  enableOldMaterialSearch == "true") {
+        if (userType !== 'csteam' ||  enableOldMaterialSearch == "true") {
             for (var i = fromIndex; i < toIndex; i++) {
                 colArr = custArr[i].split("$$");
                 console.dir(colArr);
@@ -1361,7 +1404,7 @@
                 title: "Principal Name"
             }];
 
-            if(userType == 'Principal'){
+            if(userType == 'principal'){
                 material_column.splice(3, 0, {title: "Principal Material Code"}); 
             }
         }
@@ -1410,8 +1453,9 @@
             if (salesOrg != 2600 && typeof salesOrg != 'undefined') {
                 ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
             // if (typeof salesOrg != 'undefined') {
-                // ajaxData = "q=\{ $and: [ { sales_org: { $eq:" + salesOrg + "} }, { Dwnld_To_DSS: { $eq: 'Y'} } ] }&orderby=material:asc";
-                ajaxData = "q=\{\"sales_org\":\"" + salesOrg + "\"}&orderby=material:asc";
+                ajaxData = "q=\{ $and: [ { sales_org: { $eq:" + salesOrg + "} }, { dwnld_to_dss: { $eq: 'Y'} } ] }&orderby=material:asc";                
+                // ajaxData = "q=\{ $and: [ { sales_org: { $eq:" + salesOrg + "} }, { dwnld_to_dss: { $eq: 'Y'} } ] }&orderby=material:asc";
+                // ajaxData = "q=\{\"sales_org\":\"" + salesOrg + "\"}&orderby=material:asc";
             }
 
              // var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
@@ -1435,14 +1479,27 @@
                 $.each(data, function(i, item) {
                     //console.log(item.material_number, item.material_desc, item.principal_name);
                     //console.log(item);
-                    var subDataSet = ["", item.material_number, item.material_desc, item.principal_name];
+                    var subDataSet = [
+                                        "", 
+                                        (item.material != null)? item.material : "", 
+                                        (item.description != null)? item.description : "", 
+                                        (item.principal_name != null)? item.principal_name : ""
+                                    ];
                     if($('input[name="userSalesOrg_PL"]').val()=="2800"){
                         if(item.material_group_5 == 500 && item.materialgroup != "ZGM"){
                             var promo = "P";
                         } else {
                             var promo = "";
                         }
-                        subDataSet = ["", item.material, item.description, promo, item.principal_code, item.principal_name];
+                        
+                        subDataSet = [
+                                        "", 
+                                        (item.material != null)? item.material : "", 
+                                        (item.description != null)? item.description : "", 
+                                        (promo != null)? promo : "", 
+                                        (item.principal_code != null)? item.principal_code : "", 
+                                        (item.principal_name != null)? item.principal_name : ""
+                                    ];
                     }
                     dataSet.push(subDataSet);
                     //console.log(subDataSet);
@@ -1598,7 +1655,6 @@
             }
         });
 
-        
         var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
 
         if (zPUserType === 'csteam') {
@@ -1647,12 +1703,11 @@
         var sub = parts[0];
         var dataSet = [];
 
-        var ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master";
-
-        if(check_nationality(2500)){
+        if(check_nationality(2600)){
+            var ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master";
+        }else if(check_nationality(2500)){
             ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master_2500";
-        }
-        if(check_nationality(2800)){
+        }else if(check_nationality(2800)){
             ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master_2800";
         }
 
@@ -1667,9 +1722,47 @@
             $.each(data, function(i, item) {
                 var subDataSet = [
                                     "", 
-                                    item.customer_soldto_id, item.customer_shipto_id, item.customer_name, item.customer_corp_group, item.cust_shpto_add1, item.cust_shpto_addr2, item.customer_ship_phone, item.customer_shpto_pcode
+                                    item.customer_soldto_id, 
+                                    item.customer_shipto_id, 
+                                    item.customer_name, 
+                                    item.customer_corp_group, 
+                                    item.cust_shpto_add1, 
+                                    item.cust_shpto_addr2, 
+                                    item.customer_ship_phone, 
+                                    item.customer_shpto_pcode
                                 ];
-
+                if (check_nationality(2800)) {
+                    subDataSet = [
+                        "", //number
+                        item.customer_sold_to_id, 	//1 SOLD TO ID
+                        item.customer_name, 		//2 SOLD TO NAME
+                        item.customer_shipto_id,	//3 SHIP TO ID
+                        item.cust_name_shipto,		//4 SHIP TO NAME
+                        item.address_1_shipto,		//5 SHIP TO ADDRESS 1
+                        item.address_2_shipto,		//6 SHIP TO ADDRESS 2
+                        item.address_4_shipto,		//7 SHIP TO DISTRICT
+                        item.city_shipto,			//8 SHIP TO CITY
+                        item.postalcode_shipto,		//9 SHIP TO POSTAL Code
+                        item.customer_bill_to_id,	//10 BILL TO ID
+                        item.cust_name_billto,		//11 BILL TO NAME
+                    ];
+                } else if (check_nationality(2500)) {
+                    subDataSet = [
+                        "", //number
+                        item.customer_soldto_id, 	//SOLD TO ID
+                        item.customer_shipto_id, 	//SHIP TO ID
+                        item.customer_name, 		//CUSTOMER NAME
+                        item.customer_corp_group, 	//CORP. GROUP
+                        item.address_1, 			//SOLD TO ADDRESS1
+                        item.address_2, 			//SOLD TO ADDRESS2
+                        item.phone, 				//SOLD TO PHONE
+                        item.postal_code, 			//SOLD TO POSTAL CODE
+                        item.address_1_shipto, 		//SHIP TO ADDRESS1
+                        item.address_2_shipto, 		//SHIP TO ADDRESS2
+                        "", 						//SHIP TO NAME
+                        item.PostalCode_ShipTo, 	//SHIP TO POSTAL CODE
+                    ];
+                }
                 /*if(userCountry === 'PH'){
                     subDataSet = ["", item.customer_soldto_id, item.customer_name, item.customer_corp_group, item.cust_shpto_add1, item.cust_shpto_addr2, item.customer_ship_phone, item.customer_shpto_pcode];
                 }*/
@@ -1698,23 +1791,55 @@
             for (var i = fromIndex; i < toIndex; i++) {
                 colArr = custArr[i].split("$$");
                 var subDataSet = [];
-
                 if (check_nationality(2500)) {
-                    subDataSet = ['',
-                        colArr[0],  //SOLD TO ID
-                        colArr[1],  //SHIP TO ID
-                        colArr[2],  //CUSTOMER NAME
-                        colArr[3],  //CORP.NAME
-                        colArr[4],  //SOLD TO ADDRESS1
-                        colArr[5],  //SOLD TO ADDRESS2
-                        colArr[6],  //SOLD TO PHONE
-                        colArr[7],  //SOLD TO POSTAL CODE
-                        colArr[15], //SHIP TO ADDRESS1
-                        colArr[16], //SHIP TO ADDRESS2
-                        '', //SHIP TO PHONE
-                        colArr[19],  //SHIP TO POSTAL CODE
-                        colArr[14],
-                    ];
+                        subDataSet = [
+                            '', // 1.Radio Button
+                            colArr[0],  // 2.SOLD TO ID
+                            colArr[1],  // 3.SHIP TO ID
+                            colArr[2],  // 4.CUSTOMER NAME
+                            colArr[3],  // 5.CORP.NAME
+                            colArr[4],  // 6.SOLD TO ADDRESS1
+                            colArr[5],  // 7.SOLD TO ADDRESS2
+                            colArr[6],  // 8.SOLD TO PHONE
+                            colArr[7],  // 9.SOLD TO POSTAL CODE
+                            colArr[15], // 10.SHIP TO ADDRESS1
+                            colArr[16], // 11.SHIP TO ADDRESS2
+                            '', // 12.SHIP TO PHONE
+                            colArr[19],  // 13.SHIP TO POSTAL CODE
+                            colArr[14], //14. 
+                        ];
+                }else if(check_nationality(2800)){
+                    if (zPUserType.toLowerCase() == "principal") {
+                        subDataSet = ['',
+                            colArr[0],  //1 PRINCIPAL CUST CODE
+                            colArr[1],  //2 SOLD TO ID
+                            colArr[3],  //3 SOLD TO NAME
+                            colArr[2],  //4 SHIP TO ID
+                            colArr[14], //5 SHIP TO NAME
+                            colArr[18], //6 SHIP TO ADDRESS 1
+                            colArr[19], //7 SHIP TO ADDRESS 2
+                            colArr[21], //8 SHIP TO DISTRICT
+                            colArr[23], //9 SHIP TO CITY
+                            colArr[22], //10 SHIP TO POSTAL CODE
+                            colArr[15], //11 BILL TO ID
+                            colArr[16], //12 BIILL TO NAME
+                        ];
+                    }
+                    if (zPUserType.toLowerCase() == "salesrep") {
+                        subDataSet = ['',
+                            colArr[0],  //1 SOLD TO ID
+                            colArr[2],  //2 SOLD TO NAME
+                            colArr[1],  //3 SHIP TO ID
+                            colArr[13], //4 SHIP TO NAME
+                            colArr[17], //5 SHIP TO ADDRESS 1
+                            colArr[18], //6 SHIP TO ADDRESS 2
+                            colArr[20], //7 SHIP TO DISTRICT
+                            colArr[22], //8 SHIP TO CITY
+                            colArr[21], //9 SHIP TO POSTAL CODE
+                            colArr[14], //10 BILL TO ID
+                            colArr[15], //11 BIILL TO NAME
+                        ];
+                    }
                 }else{
                     subDataSet = [  '', 
                                     colArr[0], 
@@ -1727,6 +1852,7 @@
                                     colArr[7]
                                 ];
                 }
+                
                 dataSet.push(subDataSet);
             }
 
@@ -1743,7 +1869,7 @@
 
         var userColumn = [];
 
-        if (check_nationality(2500)) {
+        if (check_nationality(2500) || check_nationality(2800)) {
             
             userColumn.push({ title: "" });
 
@@ -1813,7 +1939,13 @@
                             }
                             console.log(full);
 							data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '" data-suspended="'+full[13]+'" '+disabled+' >';
-						} else{
+						}else if(check_nationality(2800)){
+                            if( zPUserType == "principal" ){
+								data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2]+ '$$' + full[4] + '$$' +full[11] +'">';
+							}else{
+								data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[1]+ '$$' + full[3] + '$$' +full[10] +'">';
+							}
+                        }else{
 							data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '">';
 						}
                     }
@@ -1844,6 +1976,18 @@
             },
         });
 
+        seachCustomer.on( 'draw', function () {
+
+			console.log("draw dt");
+			$("input[name='searchCust']").off();
+		    $("input[name='searchCust']").on('click', function() {
+	             //console.log('777.111111 ===>>> ',$(this).val());
+				delete_line_item_func($(this).val());
+				
+			});
+
+        } );
+        
         $("#searchCustomer").on('click',"input[name='searchCust']", function() {
         //$("input[name='searchCust']").on('click', function() {
             mobile_delete_line_item_func($(this).val());
@@ -2371,7 +2515,7 @@
     */
     function order_page_stock_color() {
         console.log('order_page_stock_color');
-        if(check_nationality(2600)){
+        if (check_nationality(2600)) {
             $('#line-item-grid .lig-side-scroller>table tr.lig-row.child').each(function () {
                 var $child = $(this).children('td');
                 var $stock = $child.find('input[name*="inStock_l"]');
@@ -2404,7 +2548,6 @@
     
             });
         }
-
     }
     /*
         End : 07 Nov 2017
@@ -2746,7 +2889,13 @@
         for (var i = fromIndex; i < toIndex; i++) {
             colArr = custArr[i].split("$$");
             var subDataSet;
-            subDataSet = ['', colArr[2], colArr[0], colArr[1], colArr[3]];
+            if(check_nationality(2500)){
+                subDataSet = ['', colArr[2], colArr[0], colArr[1], colArr[3]];                
+            }else if(check_nationality(2800)){
+                subDataSet = ['', colArr[0], colArr[1], colArr[2], colArr[3], colArr[4]];                
+            }else{
+                subDataSet = ['', colArr[2], colArr[0], colArr[1], colArr[3]];
+            }
             dataSet.push(subDataSet);
         }
 
@@ -2757,7 +2906,17 @@
                 { title: "Ship to ID" },
                 { title: "Customer Name" }
             ];
-        }else{
+        }else if( check_nationality(2800)){
+            columnTopCustList = [
+                { title: "" },
+                { title: "Sold to ID" },
+                { title: "Sold to Name" },
+                { title: "Ship to ID" },
+                { title: "Ship to Name" },
+                { title: "Bill to ID" }
+            ];
+        }
+        else{
             var columnTopCustList = [{
                                         title: ""
                                     },
@@ -2794,7 +2953,12 @@
                        // data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '">';
                         if (check_nationality(2500) ){
                         data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '">';
-                        } else{
+                        }else if(check_nationality(2800)){
+                            console.log(full);
+							//FORMAT soldtoid$$shiptoid$$billtoid
+                            data = '<input type="radio" name="topCust" id= "topCust" value="' + full[1] + '$$' + full[3] + '$$' + full[5] + '" >';
+                        }
+                        else{
                             data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '">';
                         }
                     }
@@ -2838,6 +3002,7 @@
         $("#attribute-customerSearchHolder_HTML").html(searchCustomerWrapper);
 
         var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
+
         if (zPUserType === 'csteam') {
             searchCustomerList();
 
@@ -2959,9 +3124,9 @@
     */
 
     function clearStorageOrderItem(){
-        for (var i = 0; i < localStorage.length; i++) {
-            if (localStorage.key(i).indexOf("orderItem_ZP") != -1) {
-                localStorage.removeItem(localStorage.key(i));
+        for (var i = 0; i < window.localStorage.length; i++) {
+            if (window.localStorage.key(i).indexOf("orderItem_ZP") != -1) {
+                window.localStorage.removeItem(window.localStorage.key(i));
             }
         }
     }
@@ -2993,8 +3158,8 @@
                     $('body').addClass('jg-page-orders');
                     $('#jg-mainmenu-orders').addClass('active');
                     $('#jg-submenu-myorders').addClass('active');
-                    transform_orderspage();
                     localStorage.removeItem("frequentlyAccessedCustomers_t");
+                    transform_orderspage();
                     
                     var hideMenuForCreditControlUser = function(){
                         $('#jg-overlay').show();
@@ -3036,8 +3201,8 @@
                             }
                             $('#jg-overlay').hide();
                         });
+                        $('#jg-overlay').hide();                        
                     }
-
                     hideMenuForCreditControlUser();
                     clearStorageOrderItem();
 
@@ -3167,6 +3332,7 @@
                         Layout        :- Desktop
                     */
                     
+                   /* SG-19 : Hide add to Favourites  Refresh Order from SAP, by Zainal Arifin */
                     $("#add_to_favourites").closest("a[name='_line_items']").hide();
                     $("#refresh_order_from_sap").closest("table").hide();                    
                     
@@ -3180,28 +3346,106 @@
 
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-                        Task          :- Hide All Order button on order page for non csteam users
+                        Task          :- SG-18 : Hide All Order button on order page for non CSTeam users                        
                         Page          :- Order Page
                         File Location :- $BASE_PATH$/javascript/js-ezrx.js
                         Layout        :- Desktop
                     */
-
-                    var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                                
-                    if ( zPUserType.length > 0 ){
-                        if (zPUserType != "csteam"){
+                    var zpUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
+                    if ( zpUserType.length > 0 ){
+                        if ( zpUserType != "csteam"){
                             $("#order-allorders").hide();
                         }
                     }
 
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-                        Task          :- Hide All Order button on order page for non csteam users
+                        Task          :- Hide All Order button on order page for non CSTeam users
                         Page          :- Order Page
                         File Location :- $BASE_PATH$/javascript/js-ezrx.js
                         Layout        :- Desktop
                     */
 
                     mobile_pricingChange();
+
+                    if(check_nationality(2600)){
+                        /* 
+                            Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+                            Task          :- SG-37 Hide Customer Search and Top 10 Customers if ZP User Type = Customer
+                            Page          :- Order Page
+                            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+                            Layout        :- Desktop
+                        */
+                        if (getZPUserType().length && getZPUserType() == "customer") {
+                            $("#searchCustomerInput").closest(".column").hide();
+                            var parentSearchCustomer = $("#searchCustomerInput").closest(".column-layout");
+                            $(parentSearchCustomer).find(".last").remove();
+                            $("label[for*='customerSelection_t']").closest(".column").hide();
+                            var parentCustomerSelection = $("label[for*='customerSelection_t']").closest(".column-layout");
+                            $($("#attr_wrapper_1_shipToAddress_html_t").closest(".column")).appendTo(parentCustomerSelection);
+                            $("#attr_wrapper_1_shipToAddress_html_t").css("margin-top", "0px");
+                            $($("#attr_wrapper_1_customerShipToId_t").closest(".column")).appendTo(parentSearchCustomer);
+                            $($("#attr_wrapper_1_customerSoldToId_t").closest(".column")).appendTo(parentSearchCustomer);
+                        }
+
+                        /* 
+                            Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+                            Task          :- SG-37 Hide Customer Search and Top 10 Customers if ZP User Type = Customer
+                            Page          :- Order Page
+                            File Location :- $BASE_PATH$/javascript/js-ezrx.js
+                            Layout        :- Desktop
+                        */
+
+                    }
+
+                    /* 
+                        Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+                        Task          :- Disable user submit order repeatly
+                        Page          :- Order Page
+                        File Location :- $BASE_PATH$/javascript/js-ezrx.js
+                        Layout        :- Desktop
+                    */
+
+                    try {
+
+                        var handleDisableSubmitBtn = function(){
+                            setTimeout(function(){
+                                if(isLoadingDone()){
+                                    $("a[name='submit_order']").on("click", function () {
+                                        $("a[name='submit_order']")
+                                            .closest(".button-middle")
+                                            .css({ "background": "grey" })
+                                            .closest(".form-action")
+                                            .css({ "pointer-events": "none", "cursor": "default" });
+                                        $("a[name='submit_order']").on("click", function (e) {
+                                            e.preventDefault();
+                                        });
+                                    });
+                                }else{
+                                    handleDisableSubmitBtn();
+                                }
+                            }, 500);
+                        }
+
+                        handleDisableSubmitBtn();
+
+                    } catch (error) {
+                        console.log(error);
+                    }
+      
+                    /* 
+                        Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+                        Task          :- Disable user submit order repeatly
+                        Page          :- Order Page
+                        File Location :- $BASE_PATH$/javascript/js-ezrx.js
+                        Layout        :- Desktop
+                    */
+
+                    if (getQueryVariableUrl("flag") == "rightnow") {
+                        $("a[name='home']").closest("table").show();
+                    }else{
+                        $("a[name='home']").closest("table").hide();
+                    }
 
                     transform_newcopypage();
                 } else if (pagetitle == 'model configuration') {
@@ -3221,6 +3465,7 @@
                         showLoadingDialog();
                     });
                     $('#jg-submenu-copyorder').parent().remove();
+                    /* SG-19  Pipeline viewer link on top right corner in shopping cart, by Zainal Arifin */
                     $("#pipeline-viewer-opener").hide(); //hide pipeline-viewer-opener
                     transform_modelconfig();
                 } else if (pagetitle == "report manager") {
@@ -4285,8 +4530,21 @@
         /* find column with id is inStock when value is no then give red color text inStock, then check type of material, if comm then give text red color on qty coloumn */
 
         
+
         $("td[id*='inStock']").each(function(i, data) {
-            var refNo = $(this).attr("id").split("attr_wrapper");
+            
+            var parent = $(this).closest(".line-item");
+            var type_material = $(parent).find("span[id*='refNO_text']").text().trim().toLowerCase();
+
+            if(type_material == "comm"){
+                var isInStock = $(this).find("span[id*='inStock']").text().trim().toLowerCase();
+                if(isInStock == "no"){
+                    var qty_span = $(parent).find("span[id*='qty_int_l']");
+                    $(qty_span).css("color", "red");
+                }
+            }
+
+            /* var refNo = $(this).attr("id").split("attr_wrapper");
             var object_span = $("#readonly" + refNo[1]);
             if (object_span.text().toLowerCase() == 'no') {
                 // object_span.addClass('sc-no-stock');
@@ -4304,7 +4562,7 @@
                         qty_span.css("color", "red");
                     }
                 }
-            }
+            } */
         });
 
         /*
@@ -4397,8 +4655,10 @@
                 isUserHaveModifySC = false;
                 localStorage.setItem("orderItem_" + trans_id, isUserHaveModifySC);
             }
-            var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                        
-            if ( zPUserType != "csteam") {
+            
+            var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+
+            if ( zpUserType != "csteam") {
                 if ( $("#line-item-grid").find(".line-item-show:not(.parent-line-item)").length > 0 ){
                     if(!isUserHaveModifySC){
                         setTimeout(function(){
@@ -5157,7 +5417,7 @@
             Layout        :- Desktop
         */
         trans_id = $("#orderNumber_ML").val();
-        $('.cart-addtoorder, .cart-save').on("click", function(){
+        $('.cart-addtoorder, .cart-save, .cart-cancelshopping').on("click", function(){        
             localStorage.setItem("orderItem_" + trans_id, true);
         });
 
@@ -5303,17 +5563,6 @@
         Layout : BOTH
     */
 
-    function getQueryVariableUrl(variable)
-    {
-           var query = window.location.search.substring(1);
-           var vars = query.split("&");
-           for (var i=0;i<vars.length;i++) {
-                   var pair = vars[i].split("=");
-                   if(pair[0] == variable){return pair[1];}
-           }
-           return(false);
-    }
-
     var hide_navigation = function(layout){
         var siteUrl = window.location.href;
         layout = layout || 'Desktop';//Tablet
@@ -5337,7 +5586,9 @@
             $("#"+target_button).on("click", function(e){
                 e.preventDefault();
                 localStorage.removeItem("flag");
-                window.close();
+                setTimeout(function(){
+                    window.close();
+                }, 1000);
             });
 
              var jg_box_mainarea = document.querySelector('.jg-box-mainarea');
@@ -5567,6 +5818,7 @@
                 // transform_loginpage();
             } else {
                 /* if pagetitle commerce then call transform_mainlayout and transform_orderspage */
+                clearStorageOrderItem();
                 if (pagetitle == 'commerce management') {
                     console.log('commerce management');
                     $('html').addClass('jg-mobilelayout');
@@ -5635,12 +5887,11 @@
                         var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
                         console.log("frequentlyAccessedCustomers_t is", (customerDetails.length > 0) ? "Not Empty" : "Empty", "The data is : " + customerDetails);                        
                         if (customerDetails.length > 0) {
-                            localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
+                            window.localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
                         } else {
-                            customerDetails = (localStorage.getItem("frequentlyAccessedCustomers_t") != null ? localStorage.getItem("frequentlyAccessedCustomers_t") : "");                            
+                            customerDetails = (window.localStorage.getItem("frequentlyAccessedCustomers_t") != null ? window.localStorage.getItem("frequentlyAccessedCustomers_t") : "");                            
                         }
                         $("#frequentlyAccessedCustomers_t").val("");
-
                         if (customerDetails.length == 0) {
                             return true;
                         } else {
@@ -6057,7 +6308,6 @@
                         customerDetails = (localStorage.getItem("frequentlyAccessedCustomers_t") != null ? localStorage.getItem("frequentlyAccessedCustomers_t") : "");                        
                     }
                     $("#frequentlyAccessedCustomers_t").val("");
-
                     if (customerDetails.length == 0) {
                         return true;
                     } else {
@@ -6341,6 +6591,7 @@
 
     }
 
+
     function mobile_orderpage() {
 
         /*
@@ -6360,9 +6611,9 @@
 		 Task  : Replace MutationObserver and handle the Arrow click on the Order page
 		 Page  : Order Page
 		 Author: Pratap Rudra
-		*/
+        */
+        
         var documentNumber2 = "";
-
         //checking with timeOut 500ms if load data table is done.
         function waitShoppingCartLoad(){
             setTimeout(function(){
@@ -6696,15 +6947,20 @@
             File Location :- $BASE_PATH$/javascript/js-ezrx.js
             Layout        :- Global
         */
+console.log("check_nationality", check_nationality(2601) );
+        if(check_nationality(2601)){
 
-        if(!check_nationality(2500)){
             function disabled_btn_save_show_alert() {
                 if ($("#update-alert").length == 0) {
                     var updateMsg = "<div id='update-alert' class='updateMsg'>Please click 'update' to proceed.</div>";
                     $('#materialArrayset').after(updateMsg);
                     $("#update-alert").css("padding-bottom", "30px");
                     if ($("#btn-cart-save").length > 0) {
-                        $("#btn-cart-save").attr("disabled", true).css({ "background-color": "grey" });
+                        if (isMobile()) {
+                            $(".button-save").attr("disabled");
+                        } else {
+                            $("#btn-cart-save").attr("disabled", true).css({ "background-color": "grey" });
+                        }
                     } else {
                         $("#btn-cart-addtoorder").attr("disabled", true).css({ "background-color": "grey" });
                     }
@@ -6714,86 +6970,170 @@
             function enabled_btn_save_remove_alert() {
                 $("#update-alert").remove();
                 if ($("#btn-cart-save").length > 0) {
-                    $("#btn-cart-save").attr("disabled", false).css({ "background-color": "#0C727A" });
+                    if (isMobile()) {
+                        $(".button-save").removeAttr("disabled");
+                    } else {
+                        $("#btn-cart-save").attr("disabled", false).css({ "background-color": "#0C727A" });
+                    }
                 } else {
                     $("#btn-cart-addtoorder").attr("disabled", false).css({ "background-color": "#0C727A" });
                 }
             }
 
             var var_qty = ($("td.cell-qty_text").length > 0) ? "td.cell-qty_text" : "td.cell-qty";
-            var var_netpricedisc = ($("td.cell-netPriceDiscount").length > 0) ? "td.cell-netPriceDiscount" : "td.cell-netPriceDiscount";
-            var var_Invoiceoverrideprice = ($("td.cell-overrideInvoicePrice").length > 0) ? "td.cell-overrideInvoicePrice" : "td.cell-overrideInvoicePrice";
             var var_overrideprice = ($("td.cell-overridePrice").length > 0) ? "td.cell-overridePrice" : "td.cell-overridePrice_currency";
-            var var_comments = ($("td.cell-comments").length > 0) ? "td.cell-comments" : "td.cell-comments";
             var var_qtyBonus = ($("td.cell-additionalMaterialQty").length > 0) ? "td.cell-additionalMaterialQty" : "td.cell-additionalMaterialQty";
             var var_bonusOverride = ($("td.cell-overrideBonusQty").length > 0) ? "td.cell-overrideBonusQty" : "td.cell-overrideBonusQty";
+            var var_totalPrice_Currency = "td.cell-totalPrice_currency";
 
             var redColor = "rgb(255, 0, 0)";
             var blackColor = "rgb(0, 0, 0)";
 
-            var basic_value = 0.0;
+            var basic_value = "0.0";
+            var basic_value_price = "0.00";
             var listEditedField = {};
             var var_find_text = (isMobile()) ? ".form-field" : ".text-field";
 
-            function check_qty_and_stock(data, id) {
-                if ($(data).val() > $("#stockQty-" + id).val()) {
-                    // qty color become red highlight if val is greater than stock
-                    $(data).css("color", redColor);
+            $(var_qty + ", " + var_overrideprice + ", " + var_qtyBonus + ", " + var_bonusOverride).off();
+
+            function isStockAvailable(id){
+                id = Math.abs(id);
+                var qty_l = $("#"+var_qty.replace("td.cell-", "")+"-"+id);
+                var parent = $(qty_l).closest("tr");
+                var isInStock = $(parent).find("input[id='inStock-" + id + "']").val().trim().toLowerCase();
+                var typeMaterial = $(parent).find("input[id='type-" + id + "']").val().trim().toLowerCase();
+
+                if(typeMaterial != "bonus"){
+                    console.log(qty_l, "isInStock", isInStock);                
+                    if (isInStock == "yes") {
+                        console.log($(qty_l).val(), ">", $("input[id='stockQty-" + id + "']").val());
+                        if ($(qty_l).val() > $("input[id='stockQty-" + id + "']").val()) {
+                            $(qty_l).css("color", redColor);
+                        }
+                    } else {
+                        $(qty_l).css("color", redColor);
+                    }
                 }
             }
 
             function isOverridePrice(id) {
                 id = Math.abs(id);
-                var overridePriceVal = $("#overridePrice_currency-" + id + "-display").val();
-                var overridePriceValue = (overridePriceVal != "") ? parseFloat(overridePriceVal.replace(/[a-z]/gi, "")) : 0.0;
-                if (overridePriceValue != basic_value) {
-                    $("#overridePrice_currency-" + id + "-display").css("color", redColor);
-                    $("#totalPrice_currency-" + id).css("color", redColor);
+                var overridePriceString = (isMobile()) ? "overridePrice_currency" : "overridePrice_currency-";
+                var overridePriceVal = $("#" + overridePriceString + id + "-display").val();
+                if (!isMobile()) {
+                    var overridePriceValue = (overridePriceVal != "") ? overridePriceVal.slice(1) : 0.0;
+                }
+                if (overridePriceValue != basic_value_price) {
+                    $("#" + overridePriceString + id + "-display").css("color", redColor);
+                    if (!isMobile()) {
+                        $("#totalPrice_currency-" + id).css("color", redColor);
+                    } else {
+                        $("#" + var_totalPrice_Currency.replace("td.", "") + "-" + id).find(".form-field").css({ "color": redColor });
+                    }
                     // $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);                
                 } else {
-                    $("#overridePrice_currency-" + id + "-display").css("color", blackColor);
+                    $("#" + overridePriceValue + id + "-display").css("color", blackColor);
                 }
 
             }
 
-            function isOverrideDiscount(id) {
-                console.log("isOverrideDiscount", id);
-                id = Math.abs(id);
-                var overrideDiscountVal = $("#netPriceDiscount-" + id).val();
-                var overrideDiscountValue = (overrideDiscountVal != "") ? parseFloat(overrideDiscountVal.replace(/[a-z]/gi, "")) : 0.0;
-                if (overrideDiscountValue != basic_value) {
-                    $("#netPriceDiscount-" + id).css("color", redColor);
-                    $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").css("color", redColor);
-                    // $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);                
-                } else {
-                    $("#netPriceDiscount-" + id).css("color", blackColor);
-                    isOverridePrice(id);
+            function inStock(data, id) {
+                var parent = $(data).closest("tr");
+                var isInStock = $(parent).find("input[id='inStock-" + id + "']").val().trim().toLowerCase();
+                var typeMaterial = $(parent).find("input[id='type-"+ id +"']").val().trim().toLowerCase();
+                if(typeMaterial != "bonus"){
+                    if (isInStock == "yes") {
+                        if ($(data).val() > $("input[id='stockQty-" + id + "']").val()) {
+                            $(data).css("color", redColor);
+                        }
+                    } else {
+                        $(data).css("color", redColor);
+                    }
                 }
+
             }
 
             function override_price(data, id) {
-                var overridePriceValue = ($(data).val() != "") ? parseFloat($(data).val().replace(/[a-z]/gi, "")) : 0.0;
-                if (overridePriceValue != basic_value) {
+                if (isMobile()) {
+                    overridePriceValue = parseFloat($("#" + var_overrideprice.replace("td.cell-", "") + id).val());
+                } else {
+                    overridePriceValue = ($(data).val() != "") ? $(data).val().slice(1) : 0.0;
+                }
+                console.log(overridePriceValue, "==", basic_value_price, overridePriceValue != basic_value_price);
+                if (overridePriceValue != basic_value_price) {
                     $(data).css("color", redColor);
-                    $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").css("color", redColor);
-                    // $("#"+var_qty.replace("td.cell-", "")+"-" + id).css("color", redColor);
+                    if (!isMobile()) {
+                        $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").css("color", redColor);
+                    } else {
+                        console.log("#" + var_totalPrice_Currency.replace("td.", "") + "-" + id);
+                        $("#" + var_totalPrice_Currency.replace("td.", "") + "-" + id).find(".form-field").css({ "color": redColor });
+                    }
                 }
             }
 
-            function netprice_disc(data, id) {
-                var var_netpricediscValue = ($(data).val() != "") ? parseFloat($(data).val().replace(/[a-z]/gi, "")) : 0.0;
-                if (var_netpricediscValue != basic_value) {
-                    $(data).css("color", redColor);
-                    // $("#overridePrice_currency-" + id + "-display").css("color", redColor);
-                    $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").css("color", redColor);
-                }
-            }
+            $( var_qty + ", " + var_overrideprice + ", " + var_qtyBonus).find(var_find_text).map(function (index, data) {
+                console.log($(this));
+                if (!isMobile()) {
+                    if ($(this).closest(var_qty.replace("td", "")).length > 0) {
+                        id = $(this).attr("id").replace(var_qty.replace("td.cell-", "") + "-", "");
+                        inStock($(this), id);
+                    }
 
-            $(var_bonusOverride).find("input[type='checkbox']").map(function (index, data) {
-                id = $(data).attr("id").replace("overrideBonusQty_", "");
-                console.log("overrideBonusQty_", id, $(data).is("checked"));
-                if ($(data).is(":checked")) {
+                    if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
+                        id = $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                        override_price($(this), id);
+                    }
+
+                } else {
+                    if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
+                        id = $(this).attr("id").replace(var_overrideprice.replace("td.cell-", ""), "").replace("-display", "");
+                        override_price($(this), id);
+                    }
+
+                }
+
+            });
+
+            var typeBnsOverride = (isMobile()) ? "select" : "input[type='checkbox']";
+            $(var_bonusOverride).find(typeBnsOverride).map(function (index, data) {
+                id = (isMobile()) ? $(data).attr("id").replace("overrideBonusQty", "") : $(data).attr("id").replace("overrideBonusQty_", "");
+
+                /* set net price discount and overrideprice to readonly */
+                var overridePriceString = (isMobile()) ? "overridePrice_currency" : "overridePrice_currency-";
+                //set value 0.0 total price
+                if (!isMobile()) {
+                    $("#" + overridePriceString + id + "-display").val("P0.00").css({ "color": blackColor, "background": "transparent", "border": "0px" });
+                    $("#" + overridePriceString + id + "-display").attr("readonly", "readonly");
+                    $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").text("0.0").css({ "color": blackColor });
+                } else {
+                    $("#" + overridePriceString + id + "-display").val("P0.00").css({ "color": blackColor }).parent().css({ "background": "transparent", "border": "0px" });
+                    $("#" + overridePriceString + id + "-display").attr("readonly", "readonly");
+                    $("#" + var_totalPrice_Currency.replace("td.", "") + "-" + id).find(".form-field").css({ "color": blackColor });
+                    //remove class recommended
+                    $("#" + overridePriceString + id + "-display").closest(var_overrideprice.replace("td", "")).removeClass("recommended");
+                    $("#" + var_totalPrice_Currency.replace("td.", "") + "-" + id).closest(var_totalPrice_Currency.replace("td", "")).removeClass("recommended")
+                }
+
+                // Check if Checbox is checked
+
+                if (isMobile()) {
+                    isChecked = $(data).val();
+                    if (isChecked.toLowerCase() == "true") {
+                        isChecked = true;
+                    } else {
+                        isChecked = false;
+                    }
+                } else {
+                    isChecked = $(data).is(":checked");
+                }
+                console.log($(data).id, isChecked);
+                if (isChecked) {
                     $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);
+                    var qty_bns_current = $("#" + var_qty.replace("td.cell-", "") + "-" + id).val();
+                    var qty_bns_before = $("#prevQty-" + id).val();
+                    if (qty_bns_before != qty_bns_current) {
+                        $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);
+                    }
                     $("#" + var_qty.replace("td.cell-", "") + "-" + id).removeAttr("readonly");
                 } else {
                     console.log("#" + var_qty.replace("td.cell-", "") + "-" + id);
@@ -6801,41 +7141,44 @@
                     $("#" + var_qty.replace("td.cell-", "") + "-" + id).attr("readonly", "readonly");
                 }
 
+                // Listen On CLICK
                 $(data).on("click change", function () {
                     console.log("click change", $(this).is(":checked"));
-                    if ($(this).is(":checked")) {
+                    id = $(this).attr("id").replace("overrideBonusQty_", "");
+                    var overridePriceString = (isMobile()) ? "overridePrice_currency" : "overridePrice_currency-";
+
+                    if (isMobile()) {
+                        isChecked = $(data).val();
+                        if (isChecked.toLowerCase() == "true") {
+                            isChecked = true;
+                        } else {
+                            isChecked = false;
+                        }
+                    } else {
+                        isChecked = $(data).is(":checked");
+                    }
+
+                    if (isChecked) {
                         $("#" + var_qty.replace("td.cell-", "") + "-" + id).removeAttr("readonly");
+                        $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);
+                        //set value 0.0 for override price + total price
+
+                        var qty_bns_current = $("#" + var_qty.replace("td.cell-", "") + "-" + id).val();
+                        var qty_bns_before = $("#prevQty-" + id).val();
+                        if (qty_bns_before != qty_bns_current) {
+                            $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);
+                        }
+
                     } else {
                         $("#" + var_qty.replace("td.cell-", "") + "-" + id).attr("readonly", "readonly");
+                        $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", blackColor);
+
                     }
                 });
-            });
-
-            $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_Invoiceoverrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).map(function (index, data) {
-
-                if (!isMobile()) {
-                    if ($(this).closest(var_qty.replace("td", "")).length > 0) {
-                        id = $(this).attr("id").replace(var_qty.replace("td.cell-", "") + "-", "");
-                        if (!check_nationality(2500)) {
-                            check_qty_and_stock(this, id);
-                        }
-                    }
-
-                    if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
-                        id = $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
-                        override_price(this, id);
-                    }
-
-                    if ($(this).closest(var_netpricedisc.replace("td", "")).length > 0) {
-                        id = $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", "") + "-", "").replace("-display", "");
-                        netprice_disc(this, id);
-                    }
-
-                }
 
             });
 
-            $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_Invoiceoverrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).on("click focus focusin", function () {
+            $( var_qty + ", " + var_overrideprice + ", " + var_qtyBonus).find(var_find_text).on("click focus focusin", function () {
 
                 var id = "";
                 if ($(this).closest(var_qty.replace("td", "")).length > 0) {
@@ -6845,28 +7188,10 @@
 
                 if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
                     if (isMobile()) {
-                        id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                        id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", ""), "").replace("-display", "");
                     } else {
                         id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
                     }
-                    if (!check_nationality(2500)) {
-                        $("#qty-" + id.replace("op_", "")).css("color", redColor);
-                    }
-                    $(this).css("color", redColor);
-                }
-
-                if ($(this).closest(var_Invoiceoverrideprice.replace("td", "")).length > 0) {
-                    id = "iop_" + $(this).attr("id").replace(var_Invoiceoverrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
-                    $(this).css("color", redColor);
-                }
-
-                if ($(this).closest(var_netpricedisc.replace("td", "")).length > 0) {
-                    id = "oip_" + $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", ""), "");
-                    $(this).css("color", redColor);
-                }
-
-                if ($(this).closest(var_comments.replace("td", "")).length > 0) {
-                    id = "cmt_" + $(this).attr("id").replace(var_comments.replace("td.cell-", ""), "");
                     $(this).css("color", redColor);
                 }
 
@@ -6875,7 +7200,7 @@
                     $(this).css("color", redColor);
                 }
 
-
+                console.log(id);
 
                 if (!listEditedField.hasOwnProperty(id)) {
                     listEditedField[id] = { before: $(this).val() };
@@ -6883,7 +7208,7 @@
 
             });
 
-            $(var_netpricedisc + ", " + var_qty + ", " + var_overrideprice + ", " + var_Invoiceoverrideprice + ", " + var_comments + ", " + var_qtyBonus).find(var_find_text).on("keyup blur", function () {
+            $( var_qty + ", " + var_overrideprice + ", " + var_qtyBonus).find(var_find_text).on("keyup blur", function () {
 
                 var id = "";
                 if ($(this).closest(var_qty.replace("td", "")).length > 0) {
@@ -6892,25 +7217,13 @@
 
                 if (isMobile()) {
                     if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
-                        id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
+                        id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", ""), "").replace("-display", "");
                     }
                 }
                 else {
                     if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
                         id = "op_" + $(this).attr("id").replace(var_overrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
                     }
-                }
-
-                if ($(this).closest(var_Invoiceoverrideprice.replace("td", "")).length > 0) {
-                    id = "iop_" + $(this).attr("id").replace(var_Invoiceoverrideprice.replace("td.cell-", "") + "-", "").replace("-display", "");
-                }
-
-                if ($(this).closest(var_netpricedisc.replace("td", "")).length > 0) {
-                    id = "oip_" + $(this).attr("id").replace(var_netpricedisc.replace("td.cell-", ""), "");
-                }
-
-                if ($(this).closest(var_comments.replace("td", "")).length > 0) {
-                    id = "cmt_" + $(this).attr("id").replace(var_comments.replace("td.cell-", ""), "");
                 }
 
                 if ($(this).closest(var_qtyBonus.replace("td", "")).length > 0) {
@@ -6923,6 +7236,7 @@
                 // console.log(listEditedField);
                 $.each(listEditedField, function (index, data) {
 
+                    console.log(id);
                     if (index == id) {
                         if (data.before == data.after) {
                             $(currentObject).css("color", blackColor);
@@ -6931,36 +7245,38 @@
                                 current_id = parseInt(id.replace("op_", ""));
                                 // $("#qty-" + id.replace("op_", "") ).css("color", blackColor);
                                 isOverridePrice(current_id);
-                                isOverrideDiscount(current_id);
                             }
 
                             if (id.indexOf("oip_") != -1) {
                                 current_id = parseInt(id.replace("oip_", ""));
-                                isOverrideDiscount(current_id);
                             }
-
+                            
                             if (id.indexOf("qty_") != -1) {
                                 current_id = parseInt(id.replace("qty_", ""));
-                                if (!check_nationality(2500)) {
-                                    check_qty_and_stock($(var_qty.replace("td.cell-", "")), current_id);
-                                }
+                                isStockAvailable(current_id);
                             }
+
                         } else {
                             $(currentObject).css("color", redColor);
 
                             if (id.indexOf("op_") != -1) {
                                 current_id = parseInt(id.replace("op_", ""));
-                                $("#qty-" + id.replace("op_", "")).css("color", redColor);
+                                // $("#qty-" + id.replace("op_", "")).css("color", redColor);
                                 isOverridePrice(current_id);
-                                isOverrideDiscount(current_id);
                             }
-                            if (id.indexOf("qty_") != -1) {
-                                current_id = parseInt(id.replace("qty_", ""));
-                                if (!check_nationality(2500)) {
-                                    check_qty_and_stock($(var_qty.replace("td.cell-", "")), current_id);
+                        }
+
+                        if (id.indexOf("qty_") != -1) {
+                            var var_type_qty = $(this).closest("tr").find("td.cell-type").find(".attribute-field.read-only").text().trim().toLowerCase();
+                            if (var_type_qty == "bonus") {
+                                var qty_bns_current = $("#" + var_qty.replace("td.cell-", "") + "-" + id).val();
+                                var qty_bns_before = $("#prevQty-" + id).val();
+                                if (qty_bns_before != qty_bns_current) {
+                                    $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);
                                 }
                             }
                         }
+
                     }
 
                 });
@@ -6983,6 +7299,8 @@
                 }
 
             });
+
+
         }
 
         /* 
@@ -7543,7 +7861,7 @@
                         if mouse hover on element material description then showing table of Material Description.
                     */
 
-                    if($('input[name="userSalesOrg_PL"]').val()=="2800" || (document.getElementById('userSalesOrg_t').value == '2800')){
+                    if(check_nationality(2800)){                    
                         // var trNo = parseInt($(this).parent().parent().parent().parent().attr('data-sequence-number-field-index'));
                         // console.log(trNo);
                         // var chineseTxt = $('span[data-varname="chineseDescription_l"]').eq(trNo).text().trim();
@@ -7572,13 +7890,90 @@
                 });
         });
 
+        
+        if(check_nationality(2600)){
+            $('td.cell-additionalMaterialDescription').off();
+            $('td.cell-additionalMaterialDescription').prop("tooltip", function () {
+                var input_text = $(this).find(".attribute-field-container span").text();
+                return input_text;
+            }).mouseenter(function () {
+                /* get text of material desciption */
+                var input_text = $(this).find(".attribute-field-container span").text();
+                /* if mouse hover on element material description then showing table of Material Description. */
+                var table = '<table style="text-align:center;width:100%;border-collapse: collapse;">\
+                        <thead style="padding:5px;font-weight:bold">\
+                          <tr style="background-color:#EEE;">\
+                            <th style="border: 1px solid #999;padding:5px;">Material Description</th>\
+                          <tr></thead>';
+                table += "<tbody>";
+                table += "<tr><td>" + input_text + "</td></tr>";
+                table += "</tbody></table>";
+                // if ($(this).attr('tooltip') != '') {
+                /* always showing table of material description */
+                $('#myModal').addClass('hover-modal-content').html(table);
+                $('#myModal').css("display", "block");
+                // }
+                $('.cell-additionalMaterialDescription').mouseleave(function () {
+                    $('#myModal').css("display", "none");
+                });
+            });
+
+            $('td.cell-additionalMaterialDescription')
+                .hover(function (e) {
+                    e.preventDefault();
+                })
+                .mousemove(function (e) {
+                    /* console.log(e.pageY, $(document).scrollTop(), e.pageY - $(document).scrollTop());
+                        console.log(e.pageX, $(document).scrollLeft(), e.pageX - $(document).scrollLeft());
+                        console.log( $("#myModal").css("width").replace("px", ""), $("#myModal").css("height").replace("px", "") ); */
+                    var offSetWidth = 0;
+                    var offsetHeight = 0;
+                    var diffWidth = (e.pageX - $(document).scrollLeft() + 10) + parseInt($("#myModal").css("width").replace("px", ""));
+                    var diffHeight = (e.pageY - $(document).scrollTop() + 10) + parseInt($("#myModal").css("height").replace("px", ""));
+                    // console.log( diffWidth , diffHeight );
+                    if (diffWidth > window.innerWidth) {
+                        offSetWidth = (window.innerWidth - diffWidth);
+                        offSetWidth = Math.abs(offSetWidth) + 50;
+                    }
+                    if (diffHeight > window.innerHeight) {
+                        offsetHeight = window.innerHeight - diffHeight;
+                        offsetHeight = Math.abs(offsetHeight) + 10 + parseInt($("#myModal").css("height").replace("px", ""));
+                    }
+                    var currentTop = (e.pageY - $(document).scrollTop() + 10) - offsetHeight;
+                    var currentLeft = (e.pageX - $(document).scrollLeft() + 10) - offSetWidth;
+                    $('#myModal')
+                        .css('top', currentTop + 'px')
+                        .css('left', currentLeft + 'px');
+                });
+        }
+
         /* listen all class in the list, for following position above all code of modal table  */
         $('td.cell-contractBonus, td.cell-promotion, td[id*="part_desc"], td.cell-materialDescription')
             .hover(function(e) {
                 e.preventDefault();
             })
             .mousemove(function(e) {
-                $('#myModal').css('top', e.pageY - $(document).scrollTop() + 10 + 'px').css('left', e.pageX - $(document).scrollLeft() + 10 + 'px');
+                /* console.log(e.pageY, $(document).scrollTop(), e.pageY - $(document).scrollTop());
+                console.log(e.pageX, $(document).scrollLeft(), e.pageX - $(document).scrollLeft());
+                console.log( $("#myModal").css("width").replace("px", ""), $("#myModal").css("height").replace("px", "") ); */
+                var offSetWidth = 0;
+                var offsetHeight = 0;
+                var diffWidth = (e.pageX - $(document).scrollLeft() + 10) + parseInt($("#myModal").css("width").replace("px", ""));
+                var diffHeight = (e.pageY - $(document).scrollTop() + 10) + parseInt($("#myModal").css("height").replace("px", ""));
+                // console.log( diffWidth , diffHeight );
+                if ( diffWidth > window.innerWidth ){
+                    offSetWidth = (window.innerWidth - diffWidth);
+                    offSetWidth = Math.abs( offSetWidth ) + 50;
+                }
+                if ( diffHeight > window.innerHeight ){
+                    offsetHeight = window.innerHeight - diffHeight;
+                    offsetHeight = Math.abs( offsetHeight ) + 10 + parseInt($("#myModal").css("height").replace("px", ""));
+                }
+                var currentTop = (e.pageY - $(document).scrollTop() + 10) - offsetHeight;
+                var currentLeft = (e.pageX - $(document).scrollLeft() + 10) - offSetWidth;
+                $('#myModal')
+                    .css('top', currentTop + 'px')
+                    .css('left', currentLeft + 'px');
             });
     }
 
@@ -7618,83 +8013,89 @@
 
         });
 
-		$('td.cell-promotion').off();
-        $('td.cell-promotion').attr('tooltip', function() {
-			//console.log(' mobile_adjust_tooltip cell-promotion click 222 =====>>>> ');
-            var button_helper;
-            var valueOfPromotion = $(this).find('input[name=promotion]').val();
-            //console.log(' mobile_adjust_tooltip cell-promotion click 222.111 =====>>>> ', valueOfPromotion);
-            if (valueOfPromotion != '') {
-				 //console.log(' mobile_adjust_tooltip cell-promotion click 222.111.111 =====>>>> ');
-                button_helper = '<i class="material-lens" aria-hidden="true" ></i>';
-                $(this).find('input[name=promotion]').attr('type', 'text');
-                $(this).find('input[name=promotion]').css('display', 'block !important');
-            } else {
-                button_helper = '-';
-            }
-			//console.log(' mobile_adjust_tooltip cell-promotion click 222.111.222 =====>>>> ');
-            // $(this).children('.attribute-field-container').children('span').html(button_helper);
-            $($(this).children().children()).hide();
-			//console.log(' mobile_adjust_tooltip cell-promotion click 222.111.333 =====>>>> ');
-            $($(this).children().children()).parent().append(button_helper);
-			//console.log(' mobile_adjust_tooltip cell-promotion click 222.111.444 =====>>>> ');
-            return valueOfPromotion;
-        }).click(function() {
-            if ($(this).attr('tooltip').trim() != '') {
-                if ($(this).hasClass('open')) {
-
-                    $(this).removeClass('open');
-                    $('.table-tooltip').remove();
-
+        if (check_nationality(2500) || check_nationality(2600)){
+            $('td.cell-promotion').off();
+            $('td.cell-promotion').attr('tooltip', function() {
+                //console.log(' mobile_adjust_tooltip cell-promotion click 222 =====>>>> ');
+                var button_helper;
+                var valueOfPromotion = $(this).find('input[name=promotion]').val();
+                //console.log(' mobile_adjust_tooltip cell-promotion click 222.111 =====>>>> ', valueOfPromotion);
+                if (valueOfPromotion != '') {
+                    //console.log(' mobile_adjust_tooltip cell-promotion click 222.111.111 =====>>>> ');
+                    button_helper = '<i class="material-lens" aria-hidden="true" ></i>';
+                    $(this).find('input[name=promotion]').attr('type', 'text');
+                    $(this).find('input[name=promotion]').css('display', 'block !important');
                 } else {
-                    //console.log(' mobile_adjust_tooltip 222.222 =====>>>> ');
-                    $(this).addClass('open');
-                    $('.table-tooltip').remove();
-
-                    var table = '<table class="table-tooltip"><thead style="padding:5px;font-weight:bold"><tr style="background-color:#EEE;"><th style="border: 1px solid #999;padding:5px;">Ordered Quantity</th><th style="border: 1px solid #999;padding:5px;">Contract Price</th></tr></thead>';
-                    //console.log(' mobile_adjust_tooltip 333 =====>>>> ');
-                    var x = $(this).attr('tooltip').trim();
-                    if (x != "") {
-						 //console.log(' mobile_adjust_tooltip 444 =====>>>> ');
-                        var col = x.trim().split(",");
-                        if (col.length > 0) {
-                            table += "<tbody>";
-                            col.forEach(function(row) {
-                                table += '<tr>';
-                                //row = row.trim().split('#@#');
-                                row = row.trim().split('**');
-                                if (row.length > 0) {
-                                    row.forEach(function(item) {
-                                        table = table + '<td style="border: 1px solid #999;padding:5px;">' + item + '</td>';
-                                    });
-                                }
-                                table += '</tr>';
-                            });
-                            table += '</tbody>';
-
-                        }
-                    }
-                    table += '</table>';
-					//console.log(' mobile_adjust_tooltip 555 =====>>>> ');
-                    $(this).parent().parent().parent().parent().append(table);
-                    $('.table-tooltip').css({
-                        right: '50%',
-                        position: 'absolute',
-                        transform: 'translate(50%, -50%)',
-                        top: '50%',
-                        width: '500px'
-                    });
-                    // var tooltipPosX = document.querySelector( ".table-tooltip" ).getBoundingClientRect().x;
-                    // var tooltipWidth = document.querySelector( ".table-tooltip" ).getBoundingClientRect().width;
-                    // if ( ( tooltipPosX + tooltipWidth ) > $( window ).width() ) {
-                    //     $('.table-tooltip').css({
-                    //         left: - ((( tooltipPosX + tooltipWidth ) / 2) - 60)
-                    //     });
-                    // }
+                    button_helper = '-';
                 }
-            }
+                //console.log(' mobile_adjust_tooltip cell-promotion click 222.111.222 =====>>>> ');
+                // $(this).children('.attribute-field-container').children('span').html(button_helper);
+                $($(this).children().children()).hide();
+                //console.log(' mobile_adjust_tooltip cell-promotion click 222.111.333 =====>>>> ');
+                $($(this).children().children()).parent().append(button_helper);
+                //console.log(' mobile_adjust_tooltip cell-promotion click 222.111.444 =====>>>> ');
+                return valueOfPromotion;
+            }).click(function() {
+                if ($(this).attr('tooltip').trim() != '') {
+                    if ($(this).hasClass('open')) {
 
-        });
+                        $(this).removeClass('open');
+                        $('.table-tooltip').remove();
+
+                    } else {
+                        //console.log(' mobile_adjust_tooltip 222.222 =====>>>> ');
+                        $(this).addClass('open');
+                        $('.table-tooltip').remove();
+
+                        var table = '<table class="table-tooltip"><thead style="padding:5px;font-weight:bold">'+
+                                        '<tr style="background-color:#EEE;">'+
+                                        '<th style="border: 1px solid #999;padding:5px;">Ordered Quantity</th>'+
+                                        '<th style="border: 1px solid #999;padding:5px;">Contract Price</th></tr></thead>';
+                        //console.log(' mobile_adjust_tooltip 333 =====>>>> ');
+                        var x = $(this).attr('tooltip').trim();
+                        if (x != "") {
+                            //console.log(' mobile_adjust_tooltip 444 =====>>>> ');
+                            var col = x.trim().split(",");
+                            if (col.length > 0) {
+                                table += "<tbody>";
+                                col.forEach(function(row) {
+                                    table += '<tr>';
+                                    //row = row.trim().split('#@#');
+                                    row = row.trim().split('**');
+                                    if (row.length > 0) {
+                                        row.forEach(function(item) {
+                                            table = table + '<td style="border: 1px solid #999;padding:5px;">' + item + '</td>';
+                                        });
+                                    }
+                                    table += '</tr>';
+                                });
+                                table += '</tbody>';
+
+                            }
+                        }
+                        table += '</table>';
+                        //console.log(' mobile_adjust_tooltip 555 =====>>>> ');
+                        $(this).parent().parent().parent().parent().append(table);
+                        $('.table-tooltip').css({
+                            right: '50%',
+                            position: 'absolute',
+                            transform: 'translate(50%, -50%)',
+                            top: '50%',
+                            width: '500px'
+                        });
+                        // var tooltipPosX = document.querySelector( ".table-tooltip" ).getBoundingClientRect().x;
+                        // var tooltipWidth = document.querySelector( ".table-tooltip" ).getBoundingClientRect().width;
+                        // if ( ( tooltipPosX + tooltipWidth ) > $( window ).width() ) {
+                        //     $('.table-tooltip').css({
+                        //         left: - ((( tooltipPosX + tooltipWidth ) / 2) - 60)
+                        //     });
+                        // }
+                    }
+                }
+
+            });
+
+        }
 
 
         /* create tootip for contract bonus */
@@ -7847,6 +8248,60 @@
                 });
         });
 
+                
+        if(check_nationality(2600)){
+            $("td.cell-additionalMaterialDescription").off();
+            $("td.cell-additionalMaterialDescription").each(function (index, data) {
+                var button_helper;
+                var valueOfPromotion = $(this).find('input[name="promotion"]').val();
+                if (valueOfPromotion != '') {
+                    button_helper = '<i class="material-lens" aria-hidden="true" ></i>';
+                    $(this).find('input[name=promotion]').prop('type', 'text');
+                    $(this).find('input[name=promotion]').css('display', 'block !important');
+                } else {
+                    button_helper = '-';
+                }
+                $($(this).children().children()).hide();
+                $($(this).children().children()).parent().append(button_helper);
+                $(this).prop("tooltip", valueOfPromotion);
+
+                $(this).on("click", function () {
+                    var additionalMaterialDescription = $(this).find('input[name="additionalMaterialDescription"]').val();
+                    if (additionalMaterialDescription.trim() != '') {
+                        if ($(this).hasClass('open')) {
+
+                            $(this).removeClass('open');
+                            $('.table-tooltip').remove();
+
+                        } else {
+                            $(this).addClass('open');
+                            $('.table-tooltip').remove();
+
+                            /* if mouse hover on element material description then showing table of Material Description. */
+                            var table = '<table class="table-tooltip" >\
+                              <thead style="padding:5px;font-weight:bold">\
+                                <tr style="background-color:#EEE;">\
+                                  <th style="border: 1px solid #999;padding:5px;">Material Description</th>\
+                                </tr>\
+                              </thead>';
+                            table += "<tbody>";
+                            table += "<tr><td>" + additionalMaterialDescription + "</td></tr>";
+                            table += "</tbody></table>";
+
+                            $(this).parent().parent().parent().parent().append(table);
+                            $('.table-tooltip').css({
+                                right: '50%',
+                                position: 'absolute',
+                                transform: 'translate(50%, -50%)',
+                                top: '50%',
+                                width: '500px'
+                            });
+                        }
+                    }
+                });
+            });
+        }
+    
     }
 	
 	

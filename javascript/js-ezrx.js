@@ -65,6 +65,54 @@
 
     */
 
+    function Interceptor(nativeOpenWrapper, nativeSendWrapper) {
+        XMLHttpRequest.prototype.open = function () {
+            // Code here to intercept XHR
+            console.log(this, arguments);
+            return nativeOpenWrapper.apply(this, arguments);
+        }
+        XMLHttpRequest.prototype.send = function () {
+            this.onloadend = function () {
+                if (this.capture) {
+                    console.log(this.responseText);
+                }
+            }
+            console.log(this, arguments);
+            var xhr = this,
+                waiter = setInterval(function () {
+                    if (xhr.readyState && xhr.readyState == 4) {
+                        var checkingUrl = xhr.responseURL.split("/");
+                        if (checkingUrl[checkingUrl.length - 1] == "ConfigDwr.updateArraySize.dwr") {
+                            $('#update')[0].click();
+                        }
+                        clearInterval(waiter);
+                    }
+                }, 50);
+            return nativeSendWrapper.apply(this, arguments);
+        }
+    }
+
+    /* $(document).ajaxComplete(function (event, xhr, settings) {
+        console.log("Ajax COmplete");
+        console.log(event);
+        console.log(xhr);
+        console.log(settings);
+    });
+
+    $(document).ajaxSuccess(function (event, xhr, settings) {
+        console.log("Ajax Success");
+        console.log(event);
+        console.log(xhr);
+        console.log(settings);
+    });
+
+    $(document).ajaxStop(function (event, xhr, settings) {
+        console.log("Ajax Stop");
+        console.log(event);
+        console.log(xhr);
+        console.log(settings);
+    }); */
+
     var check_nationality = function (nationality) {
         var countryEle = document.getElementById('userSalesOrg_t');
         if (countryEle == null) { //this is for material page.
@@ -83,7 +131,7 @@
         }
 
         var valid = false;
-        if (nationality == countryCode || countryCode == 2601 || countryCode == 2600 ) {        
+        if ( nationality == countryCode ) {        
             valid = true;
         }
 
@@ -415,25 +463,29 @@
 							}*/
                         }).done(function (materialDetails) {
                             sumResult = materialDetails;
-                            //materialSearch(materialDetails);
-                            $.ajax({
-                                type: "GET",
-                                url: ajaxUrl2,
-                                dataType: "text",
-                                /* success: function (materialDetails) {
-                                    materialSearch(materialDetails);
-                                } */
-                            }).done(function (materialDetails2) {
+                            
+                            if ( check_nationality(2800) ) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: ajaxUrl2,
+                                    dataType: "text",
+                                    /* success: function (materialDetails) {
+                                        materialSearch(materialDetails);
+                                    } */
+                                }).done(function (materialDetails2) {
 
-                                if (sumResult.length > 0) {
-                                    sumResult += materialDetails2;
-                                    console.log(sumResult, "long of material details", sumResult.length);
+                                    if (sumResult.length > 0) {
+                                        sumResult += materialDetails2;
+                                        console.log(sumResult, "long of material details", sumResult.length);
+                                    } else {
+                                        console.log("materialDetails is empty");
+                                    }
                                     materialSearch(sumResult);
-                                } else {
-                                    console.log("materialDetails is empty");
-                                }
-                            });
-
+                                    
+                                });
+                            }else{
+                                materialSearch(sumResult);                                
+                            }
 
                         });
 					}
@@ -619,22 +671,26 @@
                     console.log(' == overridePrice setting YES to need update ==>> overridePrice');
                 });
 
+                /* var timeOut = 3000;
+                if (check_nationality(2800)) {
+                    timeOut = 5000;
+                } */
                 // shoppingcart Remove item
                 $("#materialArrayset .array-remove").click(function() { //auto update when material is deleted
                     // alert('REMOVE MOBILE');
                     //set all materials tab to collapse
                     localStorage.setItem('allMaterialsTabState', 'collapsed');
-                    setTimeout(function() {
+                    /* setTimeout(function() {
                         $('#update')[0].click();
                         // alert('UPDATE IS CLICK');
-                    }, 3000);
+                    }, timeOut); */
                 });
                 $("#additionalMaterialArrayset .array-remove").click(function() { //auto update when material is deleted
                     //set all materials tab to collapse
                     localStorage.setItem('allMaterialsTabState', 'collapsed');
-                    setTimeout(function() {
+                    /* setTimeout(function() {
                         $('#update')[0].click();
-                    }, 3000);
+                    }, timeOut); */
                 });
 
 
@@ -2952,22 +3008,26 @@
             }).done(function(materialDetails){
                 sumResult = materialDetails;
                 console.log(sumResult, "long of material details", sumResult.length);
-                $.ajax({
-                    type: "GET",
-                    url: ajaxUrl2,
-                    dataType: "text",
-                    success: function (materialDetails2) {
-                        
-                    }
-                }).done(function(materialDetails2){
-                    if(sumResult.length > 0){
-                        sumResult += materialDetails2;
-                        console.log(sumResult, "long of material details", sumResult.length);
+                if ( check_nationality(2800) ) {
+                    $.ajax({
+                        type: "GET",
+                        url: ajaxUrl2,
+                        dataType: "text",
+                        success: function (materialDetails2) {
+
+                        }
+                    }).done(function (materialDetails2) {
+                        if (sumResult.length > 0) {
+                            sumResult += materialDetails2;
+                            console.log(sumResult, "long of material details", sumResult.length);
+                        } else {
+                            console.log("materialDetails is empty");
+                        }
                         materialSearch(sumResult);
-                    }else{
-                        console.log("materialDetails is empty");
-                    }
-                })
+                    });
+                }else{
+                    materialSearch(sumResult);                    
+                }
             });
         }
 
@@ -5274,7 +5334,7 @@
         $(tabelFavFreqReq).css({
             'position': 'fixed',
             'right': rightValue + 'px',
-            'height': '800px'
+            'height': 'auto'
         });
         // $(rightPanel).css({'position': 'absolute', 'right': rightValue+'px', 'height': '800px'});
 

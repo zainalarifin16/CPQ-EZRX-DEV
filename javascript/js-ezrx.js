@@ -1249,6 +1249,8 @@
 
     */
 
+    var ajaxSearchMaterialProcess = [];
+
     var searchMaterialAjax = function(materialSearchStr, materialList) {
 
         //console.info(materialSearchStr);
@@ -1261,7 +1263,7 @@
         }
 
         ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
-        ajaxData = "q=\{ $and: [ { 'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}, { sales_org: { $eq:" + salesOrg + "} }, { dwnld_to_dss: { $eq: 'Y'} } ] }&orderby=material:asc";
+        ajaxData = 'q=\{ $and: [ { "masterstring":{$regex:"/' + encodeURIComponent(searchStr).replace(/%27/g, "%5C%27") + '/i"}}, { sales_org: { $eq:' + salesOrg + '} }, { dwnld_to_dss: { $eq: "Y"} } ] }&orderby=material:asc';        
 
         /*ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
         var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
@@ -1320,7 +1322,8 @@
             data: ajaxData,
 
 
-        }).done(function(response) {
+        })
+        .done(function(response) {
             //console.dir(response);
             var data = response.items;
 
@@ -1346,9 +1349,9 @@
             });
             //console.dir(dataSet2);
 
-
-
         }).always(function() {
+
+            ajaxSearchMaterialProcess = [];
             materialList.clear().draw();
             materialList.rows.add(dataSet2);
             if (searchStr.indexOf("%") !== -1) {
@@ -1367,6 +1370,13 @@
                 //var materialResult = materialList.search(searchStr).order([2, 'asc']);
             }
 
+        });
+
+        $( window ).ajaxSend(function(event, jqxhr, settings){
+            console.log(jqxhr, settings);
+            if (settings.url.indexOf("customMaterial_Master") != -1 ){
+                ajaxSearchMaterialProcess.push( jqxhr );
+            }
         });
 
     };
@@ -1618,6 +1628,11 @@
                     materialSearch = materialSearch.replace(/%/g, ' ');
                     materialList.search(materialSearch).order([2, 'asc']).draw();
                 } else {
+                    // ajaxSearchMaterialProcess.abort();
+                    var i = 0;
+                    while (ajaxSearchMaterialProcess.length) {
+                        ajaxSearchMaterialProcess[i++].abort();
+                    }
                     $('.dataTables_scrollBody .loader-material').show();
                     $('.dataTables_scrollBody #resultsTable').hide();
                     searchMaterialAjax(materialSearch, materialList);

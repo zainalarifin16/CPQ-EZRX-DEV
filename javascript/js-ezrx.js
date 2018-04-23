@@ -390,17 +390,70 @@
                 if ($('#tab-material-content').length > 0) {
                     pageTitle = "model configuration";
                 }
-                if (($("#actualMasterString").text() !== "") || (userType === 'csteam' && pageTitle == "model configuration")) {
+                // if ( (userType === 'csteam' && pageTitle == "model configuration") ) {
+                if ( pageTitle == "model configuration" ) {
 					$("#materialResults").parent().parent().parent().parent().hide();
 					$("#attribute-material_s").parent().parent().hide();
 					$("#attribute-enableOldMaterialSearch").hide();
                     $('#attribute-materialSearch').append().html(materialHTML);
                     console.log("pageTitle=================" + pageTitle)
-                    materialSearch();
 
+					if(userType === 'csteam'){
+						materialSearch();
+					}else{
+                        var fileAttachmentID = ($("input[name='fileAttachmentID']").length >0 )? $("input[name='fileAttachmentID']").val() : $("input[name='fileAttachmentBSID_t']").val();
+                        console.log( "materialDetails in desktop", fileAttachmentID );
+                        var ajaxUrl = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails?docId=36244074&docNum=1";
+                        var ajaxUrl2 = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails2?docId=36244074&docNum=1";
+                        var sumResult = "";
+                        $.ajax({
+                            type: "GET",
+                            url: ajaxUrl,
+                            dataType: "text",
+							/* success: function (materialDetails) {
+								materialSearch(materialDetails);
+							}*/
+                        }).done(function (materialDetails) {
+                            sumResult = materialDetails;
+                            //materialSearch(materialDetails);
+                            $.ajax({
+                                type: "GET",
+                                url: ajaxUrl2,
+                                dataType: "text",
+                                /* success: function (materialDetails) {
+                                    materialSearch(materialDetails);
+                                } */
+                            }).done(function (materialDetails2) {
+
+                                if (sumResult.length > 0) {
+                                    sumResult += materialDetails2;
+                                    console.log(sumResult, "long of material details", sumResult.length);
+                                    materialSearch(sumResult);
+                                } else {
+                                    console.log("materialDetails is empty");
+                                }
+                            });
+
+
+                        });
+					}
+                   
+                    var isDataTableCreated = function () {
+                        console.log("isDataTableCreated");
+                        setTimeout(function () {
+                            if ($('.materialSearchWrapper .dataTables_scroll').length > 0) {
+                                materialAddItem();
+                            } else {
+                                isDataTableCreated();
+                            }
+                        }, 500);
+                    }
+    
+                    isDataTableCreated();
 
                 }
-                materialAddItem();
+                
+
                 // bonusQtyOverride();
                 updateErrorMsg();
                 $('.updateMsg').hide();
@@ -1175,7 +1228,7 @@
             /* ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v3/customMaterial_Master";
             var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material:asc"; */
         // }
-        if (searchStr.slice(-1) === '%') {
+        /* if (searchStr.slice(-1) === '%') {
             //console.log(searchStr);
             searchStr = searchStr.substring(0, searchStr.length - 1);
             //console.log(searchStr);
@@ -1203,7 +1256,7 @@
             }
             console.warn(ajaxData);
 
-        }
+        } */
         //console.warn('searchMaterialAjax');
 
         $.ajax({
@@ -1270,14 +1323,14 @@
 
     */
 
-    var materialSearch = function() {
+    var materialSearch = function(dataMaterialAjax) {
         console.log('materialSearch function');
         var userCountryMS = null;
         if($('input[name="userSalesOrg_PL"]').val()=="2800"){
         var userCountryMS = null;
             userCountryMS = 'TW'; 
         }
-		var customerDetails = null;
+        var materialDetails = dataMaterialAjax;
 		var custArr = null;
         var totalRecs = null;
 		var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
@@ -1285,41 +1338,13 @@
 
             /* 
 				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
-				Task          :- Search Customer from customerDetails.txt From URL
+				Task          :- Search Customer from materialDetails.txt From URL
 				Page          :- Shopping Cart
 				File Location :- $BASE_PATH$/javascript/js-ezrx.js
 				Layout        :- Global
             */
-            
-            var isPHCountry = check_nationality(2500);
-            // var isSGCountry = check_nationality(2600);
-            var usernameGetCustomer = "CPQAPIUser";
-            var passwordGetCustomer = "csC(#15^14";
 
-            // if (isPHCountry) {
-
-                // var isCPQAPIUSER = (window._BM_USER_LOGIN == "CPQAPIUser") ? true : false;
-
-                // if(isCPQAPIUSER){
-                    /* var fileAttachmentBSID_t = localStorage.getItem("fileAttachmentBSID_t");
-                    $.ajax({
-                        type: "GET",
-                        url: "/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentBSID_t + "/attachments/materialDetails?docId=36244074&docNum=1",
-                        dataType: "text",
-                        success: function (actualMasterString) {
-                            customerDetails = actualMasterString;
-                        },
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader("Authorization", "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer));
-                        }
-                    }); */
-                /*}else{
-                    customerDetails = $("#actualMasterString").html();
-                }*/
-
-            // } else {
-                customerDetails = $("#actualMasterString").html();
-            // }
+            // materialDetails = $("#actualMasterString").html();
 
             /* 
 				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
@@ -1329,7 +1354,7 @@
 				Layout        :- Global
 			*/
 
-            custArr = customerDetails.split("##");
+            custArr = materialDetails.split("##");
 			totalRecs = custArr.length;
 		}
                 
@@ -1353,7 +1378,7 @@
         if (userType !== 'csteam' ||  enableOldMaterialSearch == "true") {
             for (var i = fromIndex; i < toIndex; i++) {
                 colArr = custArr[i].split("$$");
-                console.dir(colArr);
+                // console.dir(colArr);
                 for (var t = 0; t < 3; t++) {
                     if (typeof colArr[t] === 'undefined') {
                         colArr[t] = '';
@@ -1363,10 +1388,11 @@
                 if(userCountryMS === 'TW'){
                      subDataSet = ["", colArr[0], colArr[1], colArr[2], colArr[3], colArr[4]];
                      //debugger;
-                     console.log('userType',userType);
-                    if(userType == 'Principal'){
+                    //  console.log('userType',userType);
+                    if(userType == 'principal'){
                         subDataSet = ["", colArr[0], colArr[1], colArr[5], colArr[2], colArr[3], colArr[4]]; 
                     }
+                    // console.log(subDataSet);
                 }
                 dataSet.push(subDataSet);
             }
@@ -1446,10 +1472,10 @@
         if (userType === 'csteam' && enableOldMaterialSearch == "false") {
             console.info('material search ajax call');
 
-            if(check_nationality(2600)){
+            if (check_nationality(2600)) {
                 var salesOrg = 2601;
-            }else{
-                salesOrg = getZPUserType();
+            } else {
+                salesOrg = $('input[name="userSalesOrg_PL"]').val();
             }
 
             ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
@@ -1709,11 +1735,11 @@
         var sub = parts[0];
         var dataSet = [];
 
-        if(check_nationality(2600)){
+        if (check_nationality(2600)) {
             var ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master";
-        }else if(check_nationality(2500)){
+        } else if (check_nationality(2500)) {
             ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master_2500";
-        }else if(check_nationality(2800)){
+        } else if (check_nationality(2800)) {
             ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master_2800";
         }
 
@@ -2871,10 +2897,35 @@
     */
     var mobile_materialSearch = function() {
         console.log('start mobile_materialSearch');
-        var materialHTML = '<div class="materialSearchWrapper"> <div class="normalPopupCont flLeft" id="leftPanel"> <table id="resultsTable" style="width: 100%;"></table> </div><div class="normalPopupCont1 flRight" id="rightPanel"> <div class="popupHeader1 bigHeader">Selected Materials</div><div class="accountstable" id="selectedResultsTable"> <div class="accountstable" id="selectedMatTableDiv" style="overflow-y: auto;height: 400px;"> <table id="selectedMatTable" style="background-color: white !important;"> <thead> <tr> <th style="width:5%">Qty</th><th style="width:20%">Material Number</th> <th style="width:50%">Material Description</th><th style="width:20%">Comm. Item for Bonus</th> <th style="width:5%"></th> </tr></thead> <tbody id="selectedMatTableBody"> </tbody> </table> <a href="#" id="addMaterialBtn" name="addMaterialBtn" class="jg-btn addMat-btn" style="width: auto; margin-top: 50px; display: inline-block;">Add</a> </div></div></div></div>';
-        var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();            
-        if (($("#actualMasterString").text() !== "") || (userType === 'csteam')) {
-            $('#attribute-materialSearch').append().html(materialHTML);
+        var materialHTML = '<div class="materialSearchWrapper">\
+                                <div class="normalPopupCont flLeft" id="leftPanel">\
+                                    <table id="resultsTable" style="width: 100%;"></table>\
+                                </div>\
+                                <div class="normalPopupCont1 flRight" id="rightPanel">\
+                                    <div class="popupHeader1 bigHeader">Selected Materials</div>\
+                                    <div class="accountstable" id="selectedResultsTable">\
+                                        <div class="accountstable" id="selectedMatTableDiv" style="overflow-y: auto;height: 400px;">\
+                                            <table id="selectedMatTable" style="background-color: white !important;">\
+                                                <thead>\
+                                                    <tr>\
+                                                        <th style="width:5%">Qty</th>\
+                                                        <th style="width:20%">Material Number</th>\
+                                                        <th style="width:50%">Material Description</th>\
+                                                        <th style="width:20%">Comm. Item for Bonus</th>\
+                                                        <th style="width:5%"></th>\
+                                                    </tr>\
+                                                </thead>\
+                                                <tbody id="selectedMatTableBody"> </tbody>\
+                                            </table>\
+                                            <a href="#" id="addMaterialBtn" name="addMaterialBtn" class="jg-btn addMat-btn" style="width: auto; margin-top: 50px; display: inline-block;">Add</a>\
+                                        </div>\
+                                    </div>\
+                                </div>\
+                            </div>';
+        var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+        $('#attribute-materialSearch').append().html(materialHTML);
+        
+        if ( userType === 'csteam') {
             /* 4 April 2018, Zainal : Add localstorage for scroll to shopping cart */
             $("#addMaterialBtn").on("click", function () {
                 window.localStorage.setItem("scrollToShoppingCart", "true");
@@ -2885,11 +2936,56 @@
             console.log('mobile_materialSearch');
             materialSearch();
 
+        }else{
+            var fileAttachmentID = ($("input[name='fileAttachmentID']").length > 0) ? $("input[name='fileAttachmentID']").val() : $("input[name='fileAttachmentBSID_t']").val();
+            console.log("materialDetails in mobile", fileAttachmentID);
+            var ajaxUrl = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails?docId=36244074&docNum=1";
+            var ajaxUrl2 = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails2?docId=36244074&docNum=1";
+            var sumResult = "";
+            $.ajax({
+                type: "GET",
+                url: ajaxUrl,
+                dataType: "text",
+                /* success: function (materialDetails) {
+                    
+                } */
+            }).done(function(materialDetails){
+                sumResult = materialDetails;
+                console.log(sumResult, "long of material details", sumResult.length);
+                $.ajax({
+                    type: "GET",
+                    url: ajaxUrl2,
+                    dataType: "text",
+                    success: function (materialDetails2) {
+                        
+                    }
+                }).done(function(materialDetails2){
+                    if(sumResult.length > 0){
+                        sumResult += materialDetails2;
+                        console.log(sumResult, "long of material details", sumResult.length);
+                        materialSearch(sumResult);
+                    }else{
+                        console.log("materialDetails is empty");
+                    }
+                })
+            });
         }
 
 
         //mobile_hide_unwanted_arrow();
-        materialAddItem();
+        var isDataTableCreated = function(){
+            console.log( "isDataTableCreated" );
+            setTimeout(function(){
+                if( $('.materialSearchWrapper .dataTables_scroll').length > 0 ){
+                    materialAddItem();
+                }else{
+                    isDataTableCreated();
+                }
+            }, 500);
+        }
+
+        isDataTableCreated();
+
     };
     var mobile_topCustomerList = function(customerDetails) {
         var custArr = customerDetails.split("##");
@@ -3020,22 +3116,42 @@
 
         } else {
 
-            if ( $('#customerMasterString_t').length > 0 ) {
+            var fullUrl = window.location.host;
+            var parts = fullUrl.split('.');
+            var sub = parts[0];
+            var fileAttachmentBSID_t = $("input[name='fileAttachmentBSID_t']").val();
+            console.log("customerDetails on mobile", fileAttachmentBSID_t);
+            var ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentBSID_t + "/attachments/customerDetails?docId=36244074&docNum=1";
+
+            $.ajax({
+                // header: { "Authorization": "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer) },
+                type: "GET",
+                url: ajaxUrl,
+                dataType: "text",
+                success: function (customerDetails) {
+                    // console.log(response);
+                    var seachCustomer;
+                    customer_master_string = customerDetails;
+                    // $("#customerMasterString_t").val("");
+                    searchCustList(customerDetails, seachCustomer);
+                    searchCustomerList(seachCustomer);
+
+                    $('.search-cust_wrapper').hide();
+
+                }
+            });
+
+            /* if ( $('#customerMasterString_t').length > 0 ) {
                 var customerDetails = $("#customerMasterString_t").val();
                 if (customerDetails === "") {
                     return true;
                 } else {
 
-                    var seachCustomer;
-                    customer_master_string = customerDetails;
-                    $("#customerMasterString_t").val("");
-                    searchCustList(customerDetails, seachCustomer);
-                    searchCustomerList(seachCustomer);
+                    
 
-                    $('.search-cust_wrapper').hide();
                 }
 
-            }
+            } */
         }
     }
 
@@ -6030,7 +6146,7 @@
 					mobile_onChangeUpdateMsg();
 					mobile_shoppingCart_msg();
 					//mobile_hide_unwanted_arrow();
-					mobile_customerSearch();
+					// mobile_customerSearch();
 				}, 2000);
 				
 				$("body").on("click touchend",".pagination .ui-radio",function(e){

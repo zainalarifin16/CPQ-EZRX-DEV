@@ -12,8 +12,15 @@ $(document).ready(function(js2){
 		} else {
 			var countryCode = parseInt(countryEle.value);
 		}
+		if (typeof countryCode == "undefined") {
+			countryCode = "2601";
+		}
+		if (nationality == 2600) {
+			nationality = 2601;
+		}
+
 		var valid = false;
-		if (nationality == countryCode) {
+		if (nationality == countryCode || countryCode == 2601) {
 			valid = true;
 		}
 
@@ -126,10 +133,28 @@ $(document).ready(function(js2){
 				Layout        :- Global
 			*/
 
-			var isPHCountry = check_nationality(2500);
+			// var isPHCountry = check_nationality(2500);
 			// var isSGCountry = check_nationality(2600);
-			var usernameGetCustomer = "CPQAPIUser";
-			var passwordGetCustomer = "csC(#15^14";
+			/* var usernameGetCustomer = "CPQAPIUser";
+			var passwordGetCustomer = "csC(#15^14"; */
+
+			var fileAttachmentBSID_t = $("input[name='fileAttachmentBSID_t']").val();
+			var ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentBSID_t + "/attachments/customerDetails?docId=36244074&docNum=1";
+
+			$.ajax({
+				// header: { "Authorization": "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer) },
+				type: "GET",
+				url: ajaxUrl,
+				dataType: "text",
+				success: function (customerDetails) {
+					// console.log(response);
+					var seachCustomer;
+					searchCustList(customerDetails, seachCustomer);
+					searchCustomerList(seachCustomer);
+					$('.search-cust_wrapper').hide();
+
+				}
+			});
 
 			/* if (isPHCountry){
 
@@ -157,9 +182,9 @@ $(document).ready(function(js2){
 				}, 5000);
 
 			}else{ */
-				if ($('#customerMasterString_t').length > 0) {
+				/* 
+					if ($('#customerMasterString_t').length > 0) {
 					var customerDetails = $("#customerMasterString_t").val();
-					console.log(customerDetails);
 					// if (customerDetails === "" && $('#fileAttachmentBSID_t').val() == "") {
 					if (customerDetails === "") {
 						return true;
@@ -172,7 +197,8 @@ $(document).ready(function(js2){
 						$('.search-cust_wrapper').hide();
 					}
 
-				}
+				} 
+				*/
 			// }
 
 			/* 
@@ -195,11 +221,11 @@ $(document).ready(function(js2){
 			if (customerDetails.length > 0) {
 				localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
 			} else {
-				customerDetails = (localStorage.getItem("frequentlyAccessedCustomers_t") !=  null ? localStorage.getItem("frequentlyAccessedCustomers_t") : "" );
+				customerDetails = (typeof localStorage.getItem("frequentlyAccessedCustomers_t") != 'undefined' ? localStorage.getItem("frequentlyAccessedCustomers_t") : "" );
 			}
 			$("#frequentlyAccessedCustomers_t").val("");
 			//console.log('frequentlyAccessedCustomers_t customerDetails  PR 1.0  =====>>>>>>> ', customerDetails);
-			if(customerDetails.length == 0){
+			if ( customerDetails == null || customerDetails.length == 0 ){
 				return true;
 			} else {
 				showCustomerList(customerDetails);
@@ -282,6 +308,29 @@ var changeCust = function(){
 		*/
 		$("#selectedCustomerDetail").val(newCustId);
 		//PH-47 : Only once to change customer 6/4/2018, Zainal Arifin
+		var check_nationality = function (nationality) {
+			var countryEle = document.getElementById('userSalesOrg_t');
+			if (countryEle == null) { //this is for material page.
+				countryEle = $('input[name="userSalesOrg_PL"]').val();
+				countryCode = countryEle;
+			} else {
+				var countryCode = parseInt(countryEle.value);
+			}
+
+			if (typeof countryCode == "undefined") {
+				countryCode = "2601";
+			}
+			if (nationality == 2600) {
+				nationality = 2601;
+			}
+
+			var valid = false;
+			if (nationality == countryCode || countryCode == 2601) {
+				valid = true;
+			}
+
+			return valid;
+		}
 		if(!check_nationality(2500)){
 			$("#customerMasterString_t").val("");
 		}
@@ -343,8 +392,16 @@ var delete_line_item_func = function(selectedCustShipID){
 			} else {
 				var countryCode = parseInt(countryEle.value);
 			}
+
+			if (typeof countryCode == "undefined") {
+				countryCode = "2601";
+			}
+			if (nationality == 2600) {
+				nationality = 2601;
+			}
+
 			var valid = false;
-			if (nationality == countryCode) {
+			if (nationality == countryCode || countryCode == 2601) {
 				valid = true;
 			}
 
@@ -378,6 +435,15 @@ var loadAjax = function() {
 	var parts = fullUrl.split('.');
 	var sub = parts[0];
 	var dataSet = [];
+	var fileAttachmentBSID_t = $("input[name='fileAttachmentBSID_t']").val();
+	var ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master";
+	//NEW AJAX URL FOR TAIWAN CSTEAM START
+	if (userCountry === 'TW') {
+		ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master_2800";
+	} else if (userCountry == "PH") {
+		ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master_2500";
+	}
+	/*
 	var ajaxUrl = "https://"+sub+".bigmachines.com/rest/v3/customCustomer_Master";
 	//NEW AJAX URL FOR TAIWAN CSTEAM START
 	if(userCountry === 'TW'){
@@ -385,7 +451,7 @@ var loadAjax = function() {
 	}else if(userCountry == "PH"){
 		ajaxUrl = "https://"+sub+".bigmachines.com/rest/v3/customCustomer_Master_2500";
 	}
-
+	*/
 	//NEW AJAX URL FOR TAIWAN CSTEAM END
 	var param = 'q={"custmasterstring":{$regex:"/' + encodeURIComponent($("#searchCustomerInput").val()) + '/i"}}&orderby=customer_name:asc';
 	var ua = window.navigator.userAgent;
@@ -414,7 +480,8 @@ var loadAjax = function() {
 									item.customer_corp_group, 
 									item.cust_shpto_add1, 
 									item.cust_shpto_addr2, 
-									item.customer_ship_phone, item.customer_shpto_pcode 
+									item.customer_ship_phone,
+									item.customer_shpto_pcode 
 								];
 
 				if(userCountry == "TW"){
@@ -934,8 +1001,7 @@ var showCustomerList = function(customerDetails) {
 				subDataSet = ['', colArr[2], colArr[0], colArr[1], colArr[3]];
 			}else if (userDetectFunc() === 'TW') {
 				subDataSet = ['', colArr[0], colArr[1], colArr[2], colArr[3], colArr[4]];
-			}
-			else{
+			}else{
 				subDataSet = ['', colArr[0], colArr[1],"",""];
 			}
 		}

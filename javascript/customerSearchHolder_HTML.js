@@ -813,7 +813,13 @@ var searchCustList = function(dataSet, seachCustomer) {
 				    File Location : $BASE_PATH$/image/javascript/js-ezrx.js
 				    Layout : Tablet
 				*/
-				seachCustomer.search(js2(this).val()).draw();
+				var keywordCustomer = js2(this).val();
+				if (keywordCustomer.indexOf("%") != -1) {
+					keywordCustomer = keywordCustomer.replace(/%/g, " ");
+					seachCustomer.search(keywordCustomer, true, true).draw();										
+				}else{
+					seachCustomer.search(keywordCustomer).draw();
+				}
 				/*
 				    End : 15 Nov 2017
 				    Task  : Customer Type-ahead Search

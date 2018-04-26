@@ -82,6 +82,7 @@
                 waiter = setInterval(function () {
                     if (xhr.readyState && xhr.readyState == 4) {
                         var checkingUrl = xhr.responseURL.split("/");
+                        console.log( checkingUrl[checkingUrl.length - 1], "ConfigDwr.updateArraySize.dwr", checkingUrl[checkingUrl.length - 1] == "ConfigDwr.updateArraySize.dwr" );
                         if (checkingUrl[checkingUrl.length - 1] == "ConfigDwr.updateArraySize.dwr") {
                             $('#update')[0].click();
                         }
@@ -91,6 +92,11 @@
             return nativeSendWrapper.apply(this, arguments);
         }
     }
+
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.textContent = "(" + Interceptor + ")(XMLHttpRequest.prototype.open, XMLHttpRequest.prototype.send);";
+    document.documentElement.appendChild(script);    
 
     /* $(document).ajaxComplete(function (event, xhr, settings) {
         console.log("Ajax COmplete");
@@ -465,24 +471,28 @@
                             sumResult = materialDetails;
                             
                             if ( check_nationality(2800) ) {
-                                $.ajax({
-                                    type: "GET",
-                                    url: ajaxUrl2,
-                                    dataType: "text",
-                                    /* success: function (materialDetails) {
-                                        materialSearch(materialDetails);
-                                    } */
-                                }).done(function (materialDetails2) {
-
-                                    if (sumResult.length > 0) {
-                                        sumResult += materialDetails2;
-                                        console.log(sumResult, "long of material details", sumResult.length);
-                                    } else {
-                                        console.log("materialDetails is empty");
-                                    }
-                                    materialSearch(sumResult);
-                                    
-                                });
+                                var materialDetailsFlag2 = $("input[name='materialDetailsFlag2']").val().toLowerCase();
+                                if(materialDetailsFlag2 == "true"){
+                                    $.ajax({
+                                        type: "GET",
+                                        url: ajaxUrl2,
+                                        dataType: "text",
+                                        /* success: function (materialDetails) {
+                                            materialSearch(materialDetails);
+                                        } */
+                                    }).done(function (materialDetails2) {
+    
+                                        if (sumResult.length > 0) {
+                                            sumResult += materialDetails2;
+                                            console.log(sumResult, "long of material details", sumResult.length);
+                                        } else {
+                                            console.log("materialDetails is empty");
+                                        }
+                                        materialSearch(sumResult); 
+                                    });
+                                }else{
+                                    materialSearch(sumResult);                                    
+                                }
                             }else{
                                 materialSearch(sumResult);                                
                             }
@@ -952,18 +962,22 @@
             var quantityObj = clonedTrObj.insertCell(1);
 
             tabNum++;
-
+            console.log(clonedTrObj);
             // console.log('tabNum', tabNum);
             clonedTrObj.deleteCell(0); //Delete 1st column
-            clonedTrObj.deleteCell(3);
+            
             if($('input[name="userSalesOrg_PL"]').val()=="2800"){
                 console.log('taiwan only ,delete last 2 column');
+                clonedTrObj.deleteCell(2); // 
+                clonedTrObj.deleteCell(3); 
                 clonedTrObj.deleteCell(3);
                 clonedTrObj.deleteCell(3);
                 if(zPUserType=='principal'){
                     clonedTrObj.deleteCell(3);
                 }
                 
+            }else{
+                clonedTrObj.deleteCell(3);
             }
             tableObj.appendChild(clonedTrObj);
             itemBonusObj.innerHTML = '<select name="itemBonus" id="itemBonus" style="width:100%"><option value=""></option>' + optionHtml + '</select>';
@@ -1263,7 +1277,8 @@
         }
 
         ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
-        ajaxData = 'q=\{ $and: [ { "masterstring":{$regex:"/' + encodeURIComponent(searchStr).replace(/%27/g, "%5C%27") + '/i"}}, { sales_org: { $eq:' + salesOrg + '} }, { dwnld_to_dss: { $eq: "Y"} } ] }&orderby=material:asc';        
+        console.log(encodeURIComponent(searchStr), encodeURIComponent(searchStr).replace(/%27/g, "%5C%27"));        
+        ajaxData = 'q=\{ $and: [ { "masterstring":{$regex:"/' + encodeURIComponent(searchStr).replace(/%27/g, "%5C%27").replace(/'/g, "%5C%27") + '/i"}}, { sales_org: { $eq:' + salesOrg + '} }, { dwnld_to_dss: { $eq: "Y"} } ] }&orderby=material:asc';        
 
         /*ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
         var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
@@ -1342,7 +1357,15 @@
                     } else {
                         var promo = "";
                     }
-                    subDataSet2 = ["", item.material, item.description, promo, item.principal_code, item.principal_name];
+                    subDataSet2 = [
+                                    "",
+                                    (item.material != null) ? item.material : "",
+                                    (item.alt_lang_desc != null) ? item.alt_lang_desc : "",
+                                    (item.description != null) ? item.description : "",
+                                    promo,
+                                    (item.principal_code != null) ? item.principal_code : "",
+                                    (item.principal_name != null) ? item.principal_name : ""
+                                ];
                 }
                 dataSet2.push(subDataSet2);
                 //console.log(subDataSet2);
@@ -1452,11 +1475,11 @@
                 }
                 var subDataSet = ["", colArr[0], colArr[1], colArr[2]];
                 if(userCountryMS === 'TW'){
-                     subDataSet = ["", colArr[0], colArr[1], colArr[2], colArr[3], colArr[4]];
+                    subDataSet = ["", colArr[0], colArr[6], colArr[1], colArr[2], colArr[3], colArr[4]];
                      //debugger;
                     //  console.log('userType',userType);
                     if(userType == 'principal'){
-                        subDataSet = ["", colArr[0], colArr[1], colArr[5], colArr[2], colArr[3], colArr[4]]; 
+                        subDataSet = ["", colArr[0], colArr[6], colArr[1], colArr[5], colArr[2], colArr[3], colArr[4]]; 
                     }
                     // console.log(subDataSet);
                 }
@@ -1484,6 +1507,9 @@
                 title: "Material Number"
             },
             {
+                title: "Material Description (ZH)"
+            },
+            {
                 title: "Material Description"
             },
             {
@@ -1497,7 +1523,7 @@
             }];
 
             if(userType == 'principal'){
-                material_column.splice(3, 0, {title: "Principal Material Code"}); 
+                material_column.splice(4, 0, {title: "Principal Material Code"}); 
             }
         }
 		
@@ -1593,6 +1619,7 @@
                         subDataSet = [
                                         "", 
                                         (item.material != null)? item.material : "", 
+                                        (item.alt_lang_desc != null) ? item.alt_lang_desc : "",
                                         (item.description != null)? item.description : "", 
                                         (promo != null)? promo : "", 
                                         (item.principal_code != null)? item.principal_code : "", 
@@ -1725,8 +1752,10 @@
                         if (materialSearch.indexOf("%") !== -1) {
                             materialSearch = materialSearch.replace(/%/g, ' ');
                         }
-                        materialSearch.trim();
-                        materialList.search(materialSearch).order([2, 'asc']).draw();
+                        // materialSearch.trim();
+                        // materialList.search(materialSearch).order([2, 'asc']).draw();
+                        materialList.search(materialSearch.trim(), true, true).order([2, 'asc']).draw();
+                        
                     }
 
 
@@ -1962,7 +1991,7 @@
             $('#searchCustomerInput').keyup(function() {
                 var inputLength = $('#searchCustomerInput').val().length;
                 if (inputLength === 3 || inputLength > 3) {
-                    seachCustomer.search($(this).val()).draw();
+                    seachCustomer.search($(this).val(), true, true).draw();
                     $('.search-cust_wrapper').show();
                 } else {
                     $('.search-cust_wrapper').hide();
@@ -3024,22 +3053,27 @@
                 sumResult = materialDetails;
                 console.log(sumResult, "long of material details", sumResult.length);
                 if ( check_nationality(2800) ) {
-                    $.ajax({
-                        type: "GET",
-                        url: ajaxUrl2,
-                        dataType: "text",
-                        success: function (materialDetails2) {
-
-                        }
-                    }).done(function (materialDetails2) {
-                        if (sumResult.length > 0) {
-                            sumResult += materialDetails2;
-                            console.log(sumResult, "long of material details", sumResult.length);
-                        } else {
-                            console.log("materialDetails is empty");
-                        }
-                        materialSearch(sumResult);
-                    });
+                    var materialDetailsFlag2 = $("input[name='materialDetailsFlag2']").val().toLowerCase();
+                    if(materialDetailsFlag2 == "true"){
+                        $.ajax({
+                            type: "GET",
+                            url: ajaxUrl2,
+                            dataType: "text",
+                            success: function (materialDetails2) {
+    
+                            }
+                        }).done(function (materialDetails2) {
+                            if (sumResult.length > 0) {
+                                sumResult += materialDetails2;
+                                console.log(sumResult, "long of material details", sumResult.length);
+                            } else {
+                                console.log("materialDetails is empty");
+                            }
+                            materialSearch(sumResult);
+                        });
+                    }else{
+                        materialSearch(sumResult);                        
+                    }
                 }else{
                     materialSearch(sumResult);                    
                 }
@@ -3363,6 +3397,7 @@
                     $('#jg-submenu-myorders').addClass('active');
                     localStorage.removeItem("frequentlyAccessedCustomers_t");
                     transform_orderspage();
+                    $(".jg-box-topbar").append("<div style='position:absolute; right: 30px; top: 20px;font-size: 17px;' >" + window._BM_USER_LOGIN + "</div>");                    
                     
                     var hideMenuForCreditControlUser = function(){
                         $('#jg-overlay').show();
@@ -6029,6 +6064,9 @@
                     transform_orderspage();
                     mobile_commerce_management();
                     mobile_modifyMenu();
+                    $(".topMenuModified").css("float", "none");
+                    $(".jg-item-mainmenu").css("width", "70px");
+                    $(".jg-box-topbar").append("<div style='float:right; font-size: 14px; padding: 20px;' >" + window._BM_USER_LOGIN + "</div>");
                 } else if (pagetitle == "zuellig pharma products" || pagetitle == "zuellig pharma order processData") {
                     console.log('zuellig pharma products');
                 } else if (pagetitle == 'zuellig pharma order process') {

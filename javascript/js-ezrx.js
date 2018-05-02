@@ -5849,9 +5849,29 @@
                 e.preventDefault();
                 localStorage.removeItem("flag");
                 setTimeout(function(){
+                    window.open('', '_self', '');
                     window.close();
                 }, 1000);
             });
+
+            if($("#readonly_1_status_t").text().toLowerCase() == "in process"){
+                var table_home = $("#"+target_button).closest("table");
+                var href_create_order = "https://"+instanceName+".bigmachines.com/commerce/buyside/document.jsp?formaction=create&process=oraclecpqo&sso=Post&flag=rightnow#";
+                var html_create_order = '<table class="form-action" cellspacing="0" cellpadding="0" style="margin: 0px 10px; cursor: pointer;">\
+                                            <tbody>\
+                                                <tr>\
+                                                    <td class="button-left">&nbsp;</td>\
+                                                    <td class="button-middle" nowrap="true">\
+                                                        <div style="margin:0px 0px 1px 0px;">\
+                                                            <a class="button-text" name="create_order" id="create_order" href="'+href_create_order+'">Create Order</a>\
+                                                        </div>\
+                                                    </td>\
+                                                    <td class="button-right">&nbsp;</td>\
+                                                </tr>\
+                                            </tbody>\
+                                        </table>';
+                $(table_home).after( html_create_order );
+            }
 
              var jg_box_mainarea = document.querySelector('.jg-box-mainarea');
              if(jg_box_mainarea !== null){
@@ -5881,7 +5901,6 @@
                 $('#header').css('background-color','#00575D');
                 $('#header>a[href*="nav-menu-popup"]').hide();
            }
-            
            
         } else {
            console.log('URL parameter flag=rightnow, NOT EXIST');

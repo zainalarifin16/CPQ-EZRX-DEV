@@ -11,8 +11,17 @@ $(document).ready(function() {
 		} else {
 			var countryCode = parseInt(countryEle.value);
 		}
+				
+		if (typeof countryCode == "undefined" || countryCode == "" || isNaN(countryCode)) {		
+			countryCode = "2601";
+		}
+		if (nationality == 2600) {
+			nationality = 2601;
+		}
+
+		console.log("countryCode", typeof countryCode, countryCode, typeof countryCode == "undefined");		
 		var valid = false;
-		if (nationality == countryCode) {
+		if (nationality == countryCode || countryCode == 2601 || countryCode == 2600) {
 			valid = true;
 		}
 
@@ -22,6 +31,14 @@ $(document).ready(function() {
 	var isLoadingDone = function(){
 		return $("#jg-overlay").css("display") == "none"? true : false;
 	}
+
+	var getZPUserType = function() {
+        if ($("#zPUserType").length > 0 || $("input[name='zPUserType']").length > 0 ){
+            return ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+        }else{
+            return "";
+        }
+    }
 
 	function getQueryVariableUrl(variable) {
 		var query = window.location.search.substring(1);
@@ -592,7 +609,7 @@ $(document).ready(function() {
 									Layout        :- Desktop
 								*/
 
-								if(check_nationality(2600) || check_nationality(2500)){
+								if (check_nationality(2600) || check_nationality(2500)) {
 									$($(elementToMove[2])).hide();
 								}else{
 									$( $(elementToMove[2]) ).appendTo("#swipe-sidebar-content");
@@ -840,7 +857,7 @@ $(document).ready(function() {
 					
 					/* 
 						Created By    :- Created By Zainal Arifin, Date : 31 March 2018
-						Task          :- after adding materials focus should go to shopping cart table in shopping cart page
+						Task          :- SG-20 after adding materials focus should go to shopping cart table in shopping cart page
 						Page          :- Model Configuration
 						File Location :- $BASE_PATH$/javascript/js-tablet.js
 						Layout        :- Desktop
@@ -868,14 +885,20 @@ $(document).ready(function() {
 
 					/* 
 						Created By    :- Created By Zainal Arifin, Date : 31 March 2018
-						Task          :- after adding materials focus should go to shopping cart table in shopping cart page
+						Task          :- SG-20 after adding materials focus should go to shopping cart table in shopping cart page
 						Page          :- Model Configuration
 						File Location :- $BASE_PATH$/javascript/js-tablet.js
 						Layout        :- Desktop
 					*/
 
 					
-
+					 /* 
+					 	Created By    :- Created By Zainal Arifin
+						Task          :- SG-16 Alignment of my fav section is distorted in shopping cart. Please check screen shot
+						Page          :- Model Configuration
+						File Location :- $BASE_PATH$/javascript/js-tablet.js
+						Layout        :- Tablet
+					 */
 					function reStylingTableShoppingCart(){
 						setTimeout(function(){
 							if(isLoadingDone()){
@@ -1172,40 +1195,11 @@ $(document).ready(function() {
 							Layout        :- Desktop
 						*/
 
-            			var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+						var zpUserType = getZPUserType();
+            			// var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
 						
 						if (zpUserType != "csteam") {
 							$("#order-allorders").hide();
-						}
-
-						
-
-						if(check_nationality(2600)){
-							/* 
-								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
-								Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
-								Page          :- Order Page
-								File Location :- $BASE_PATH$/javascript/js-ezrx.js
-								Layout        :- Desktop
-							*/
-
-							var isCompleteOrSubmitted = $("input[name='status_t']").val().trim().toLowerCase();
-							if (isCompleteOrSubmitted == "completed" || isCompleteOrSubmitted == "submitted" || isCompleteOrSubmitted == "in process") {
-								var isSaveAsTemplate = $("input[name='isATestOrder_t']").val().trim().toLowerCase();
-								if (isSaveAsTemplate == "true") {
-									$($("input[name='isATestOrder_t']").siblings()[0]).text("Yes");
-								} else {
-									$($("input[name='isATestOrder_t']").siblings()[0]).text("No");
-								}
-							}
-
-							/* 
-								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
-								Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
-								Page          :- Order Page
-								File Location :- $BASE_PATH$/javascript/js-ezrx.js
-								Layout        :- Desktop
-							*/
 						}
 
 						/* 
@@ -1225,18 +1219,15 @@ $(document).ready(function() {
 								Layout        :- Desktop
 							*/
 
-								if (isMobile()) {
-									var isCompleteOrSubmitted = $("#attribute-status_t").find("span.form-field").text().trim().toLowerCase();
-									if (isCompleteOrSubmitted == "completed" || isCompleteOrSubmitted == "submitted" || isCompleteOrSubmitted == "in process") {
-										var isSaveAsTemplate = $("#attribute-isATestOrder_t").find("span.form-field").text().trim().toLowerCase();
-										if (isSaveAsTemplate == "true") {
-											$("#attribute-isATestOrder_t").find("span.form-field").text("Yes");
-										} else {
-											$("#attribute-isATestOrder_t").find("span.form-field").text("No");
-										}
-									}
+							var isCompleteOrSubmitted = $("input[name='status_t']").val().trim().toLowerCase();
+							if (isCompleteOrSubmitted == "completed" || isCompleteOrSubmitted == "submitted" || isCompleteOrSubmitted == "in process") {
+								var isSaveAsTemplate = $("input[name='isATestOrder_t']").val().trim().toLowerCase();
+								if (isSaveAsTemplate == "true") {
+									$($("input[name='isATestOrder_t']").siblings()[0]).text("Yes");
+								} else {
+									$($("input[name='isATestOrder_t']").siblings()[0]).text("No");
 								}
-
+							}
 
 							/* 
 								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
@@ -1314,7 +1305,7 @@ $(document).ready(function() {
 
 										if (getQueryVariableUrl("flag") == "rightnow") {
 											$("#sticky-actions").find(".action-type-modify:contains('Home')").show();
-										} else {
+										}else{
 											$("#sticky-actions").find(".action-type-modify:contains('Home')").hide();
 										}
 
@@ -1360,7 +1351,7 @@ $(document).ready(function() {
 
 										}
 
-										if ($("#customerSoldToId_t").length > 0){
+										if ($("input[name='status_t']").val() != ""){
 											collapsedCustomerSearch();
 										}
 

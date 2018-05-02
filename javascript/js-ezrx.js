@@ -68,23 +68,24 @@
     function Interceptor(nativeOpenWrapper, nativeSendWrapper) {
         XMLHttpRequest.prototype.open = function () {
             // Code here to intercept XHR
-            console.log(this, arguments);
+            // console.log(this, arguments);
             return nativeOpenWrapper.apply(this, arguments);
         }
         XMLHttpRequest.prototype.send = function () {
             this.onloadend = function () {
                 if (this.capture) {
-                    console.log(this.responseText);
+                    // console.log(this.responseText);
                 }
             }
-            console.log(this, arguments);
+            // console.log(this, arguments);
             var xhr = this,
                 waiter = setInterval(function () {
                     if (xhr.readyState && xhr.readyState == 4) {
-                        var checkingUrl = xhr.responseURL.split("/");
-                        console.log( checkingUrl[checkingUrl.length - 1], "ConfigDwr.updateArraySize.dwr", checkingUrl[checkingUrl.length - 1] == "ConfigDwr.updateArraySize.dwr" );
-                        if (checkingUrl[checkingUrl.length - 1] == "ConfigDwr.updateArraySize.dwr") {
-                            $('#update')[0].click();
+                        if(xhr.responseURL != null){
+                            var checkingUrl = xhr.responseURL.split("/");
+                            if( checkingUrl[ checkingUrl.length - 1 ] == "ConfigDwr.updateArraySize.dwr" ){
+                                $('#update')[0].click();
+                            }
                         }
                         clearInterval(waiter);
                     }
@@ -93,31 +94,13 @@
         }
     }
 
+    //	Injects the code via a dynamic script tag
+    
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.textContent = "(" + Interceptor + ")(XMLHttpRequest.prototype.open, XMLHttpRequest.prototype.send);";
+    
     document.documentElement.appendChild(script);    
-
-    /* $(document).ajaxComplete(function (event, xhr, settings) {
-        console.log("Ajax COmplete");
-        console.log(event);
-        console.log(xhr);
-        console.log(settings);
-    });
-
-    $(document).ajaxSuccess(function (event, xhr, settings) {
-        console.log("Ajax Success");
-        console.log(event);
-        console.log(xhr);
-        console.log(settings);
-    });
-
-    $(document).ajaxStop(function (event, xhr, settings) {
-        console.log("Ajax Stop");
-        console.log(event);
-        console.log(xhr);
-        console.log(settings);
-    }); */
 
     var check_nationality = function (nationality) {
         var countryEle = document.getElementById('userSalesOrg_t');
@@ -438,8 +421,9 @@
 
                 var pageTitle = $('#tab-material-content #group-39792374 .group-header span').text(); //commented by suresh
                 var materialHTML = '<div class="materialSearchWrapper"> <div class="normalPopupCont flLeft" id="leftPanel"> <table id="resultsTable" style="width: 100%;"></table> </div><div class="normalPopupCont1 flRight" id="rightPanel"> <div class="popupHeader1 bigHeader">Selected Materials</div><div class="accountstable" id="selectedResultsTable"> <div class="accountstable" id="selectedMatTableDiv" style="overflow-y: auto;height: 400px;"> <table id="selectedMatTable" style="background-color: white !important;"> <thead> <tr> <th style="width:5%">Qty</th><th style="width:18%">Material Number</th> <th style="width:50%">Material Description</th><th style="width:22%">Comm. Item for Bonus</th> <th style="width:5%"></th> </tr></thead> <tbody id="selectedMatTableBody"> </tbody> </table> <a href="#" id="addMaterialBtn" name="addMaterialBtn" class="jg-btn addMat-btn" style="width: auto; margin-top: 50px; display: inline-block;">Add</a> </div></div></div></div>';
-                var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                            
-
+                var userType = getZPUserType();
+                                
+                // var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                            
 
                 if ($('#tab-material-content').length > 0) {
                     pageTitle = "model configuration";
@@ -467,12 +451,12 @@
 							/* success: function (materialDetails) {
 								materialSearch(materialDetails);
 							}*/
-                        }).done(function (materialDetails) {
+                        }).done(function(materialDetails) {
                             sumResult = materialDetails;
-                            
-                            if ( check_nationality(2800) ) {
+                            if ( check_nationality(2800) ){
+
                                 var materialDetailsFlag2 = $("input[name='materialDetailsFlag2']").val().toLowerCase();
-                                if(materialDetailsFlag2 == "true"){
+                                if (materialDetailsFlag2 == "true") {
                                     $.ajax({
                                         type: "GET",
                                         url: ajaxUrl2,
@@ -488,11 +472,14 @@
                                         } else {
                                             console.log("materialDetails is empty");
                                         }
+
                                         materialSearch(sumResult); 
+
                                     });
-                                }else{
+                                } else {
                                     materialSearch(sumResult);                                    
                                 }
+
                             }else{
                                 materialSearch(sumResult);                                
                             }
@@ -500,13 +487,17 @@
                         });
 					}
                    
+                    maxCheckingDataTable = 100;                    
                     var isDataTableCreated = function () {
-                        console.log("isDataTableCreated");
+
                         setTimeout(function () {
                             if ($('.materialSearchWrapper .dataTables_scroll').length > 0) {
                                 materialAddItem();
                             } else {
-                                isDataTableCreated();
+                                if (maxCheckingDataTable > 0){
+                                    maxCheckingDataTable--;
+                                    isDataTableCreated();
+                                }
                             }
                         }, 500);
                     }
@@ -681,10 +672,6 @@
                     console.log(' == overridePrice setting YES to need update ==>> overridePrice');
                 });
 
-                /* var timeOut = 3000;
-                if (check_nationality(2800)) {
-                    timeOut = 5000;
-                } */
                 // shoppingcart Remove item
                 $("#materialArrayset .array-remove").click(function() { //auto update when material is deleted
                     // alert('REMOVE MOBILE');
@@ -693,14 +680,14 @@
                     /* setTimeout(function() {
                         $('#update')[0].click();
                         // alert('UPDATE IS CLICK');
-                    }, timeOut); */
+                    }, 5000); */
                 });
                 $("#additionalMaterialArrayset .array-remove").click(function() { //auto update when material is deleted
                     //set all materials tab to collapse
                     localStorage.setItem('allMaterialsTabState', 'collapsed');
                     /* setTimeout(function() {
                         $('#update')[0].click();
-                    }, timeOut); */
+                    }, 5000); */
                 });
 
 
@@ -952,9 +939,10 @@
             var tableObj = document.getElementById("selectedMatTableBody"); //Selected Materials Table
             var clonedTrObj = trObj.cloneNode(true); //Clone ROW
 
-            var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                        
+            var zPUserType = getZPUserType();
+            
 
-
+            // var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                        
             console.log('clonedTrObj', clonedTrObj);
 
             var itemBonusObj = clonedTrObj.insertCell(-1);
@@ -962,10 +950,9 @@
             var quantityObj = clonedTrObj.insertCell(1);
 
             tabNum++;
-            console.log(clonedTrObj);
+
             // console.log('tabNum', tabNum);
             clonedTrObj.deleteCell(0); //Delete 1st column
-            
             if($('input[name="userSalesOrg_PL"]').val()=="2800"){
                 console.log('taiwan only ,delete last 2 column');
                 clonedTrObj.deleteCell(2); // 
@@ -1277,8 +1264,8 @@
         }
 
         ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
-        console.log(encodeURIComponent(searchStr), encodeURIComponent(searchStr).replace(/%27/g, "%5C%27"));        
-        ajaxData = 'q=\{ $and: [ { "masterstring":{$regex:"/' + encodeURIComponent(searchStr).replace(/%27/g, "%5C%27").replace(/'/g, "%5C%27") + '/i"}}, { sales_org: { $eq:' + salesOrg + '} }, { dwnld_to_dss: { $eq: "Y"} } ] }&orderby=material:asc';        
+        console.log( encodeURIComponent(searchStr) , encodeURIComponent(searchStr).replace(/%27/g, "%5C%27") );
+        ajaxData = 'q=\{ $and: [ { "masterstring":{$regex:"/' + encodeURIComponent(searchStr).replace(/%27/g, "%5C%27") + '/i"}}, { sales_org: { $eq:' + salesOrg + '} }, { dwnld_to_dss: { $eq: "Y"} } ] }&orderby=material:asc';
 
         /*ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
         var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
@@ -1335,10 +1322,7 @@
         $.ajax({
             url: ajaxURL,
             data: ajaxData,
-
-
-        })
-        .done(function(response) {
+        }).done(function(response) {
             //console.dir(response);
             var data = response.items;
 
@@ -1361,18 +1345,16 @@
                                     "",
                                     (item.material != null) ? item.material : "",
                                     (item.alt_lang_desc != null) ? item.alt_lang_desc : "",
-                                    (item.description != null) ? item.description : "",
+                                    (item.description != null)? item.description : "",
                                     promo,
                                     (item.principal_code != null) ? item.principal_code : "",
                                     (item.principal_name != null) ? item.principal_name : ""
                                 ];
                 }
                 dataSet2.push(subDataSet2);
-                //console.log(subDataSet2);
             });
-            //console.dir(dataSet2);
-
         }).always(function() {
+            console.log(dataSet2);
 
             ajaxSearchMaterialProcess = [];
             materialList.clear().draw();
@@ -1422,7 +1404,7 @@
         var materialDetails = dataMaterialAjax;
 		var custArr = null;
         var totalRecs = null;
-		var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
+		var userType = getZPUserType();
 		if (userType !== 'csteam'){
 
             /* 
@@ -1475,7 +1457,8 @@
                 }
                 var subDataSet = ["", colArr[0], colArr[1], colArr[2]];
                 if(userCountryMS === 'TW'){
-                    subDataSet = ["", colArr[0], colArr[6], colArr[1], colArr[2], colArr[3], colArr[4]];
+
+                    subDataSet = ["", colArr[0], colArr[6], colArr[1], colArr[2], colArr[3], colArr[4] ];
                      //debugger;
                     //  console.log('userType',userType);
                     if(userType == 'principal'){
@@ -1576,11 +1559,13 @@
             /* ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
             var ajaxData = "orderby=material_desc:asc"; */
             
-            // if (salesOrg != 2600 && typeof salesOrg != 'undefined') {
-            // if (typeof salesOrg != 'undefined') {
+            /* if (salesOrg != 2600 && typeof salesOrg != 'undefined') {
+                ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customMaterial_Master";
+                // if (typeof salesOrg != 'undefined') {
+                ajaxData = "q=\{ $and: [ { sales_org: { $eq:" + salesOrg + "} }, { dwnld_to_dss: { $eq: 'Y'} } ] }&orderby=material:asc";
                 // ajaxData = "q=\{ $and: [ { sales_org: { $eq:" + salesOrg + "} }, { dwnld_to_dss: { $eq: 'Y'} } ] }&orderby=material:asc";
                 // ajaxData = "q=\{\"sales_org\":\"" + salesOrg + "\"}&orderby=material:asc";
-            // }
+            } */
 
              // var ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
             // var ajaxData = "orderby=material_desc:asc";
@@ -1607,7 +1592,7 @@
                                         "", 
                                         (item.material != null)? item.material : "", 
                                         (item.description != null)? item.description : "", 
-                                        (item.principal_name != null)? item.principal_name : ""
+                                        (item.principal_name != null)? item.principal_name : "",
                                     ];
                     if($('input[name="userSalesOrg_PL"]').val()=="2800"){
                         if(item.material_group_5 == 500 && item.materialgroup != "ZGM"){
@@ -1649,13 +1634,12 @@
             //console.log('materialSearch',materialSearch);
 
             if ((userType === 'csteam') && (materialSearch.length > 2) && enableOldMaterialSearch == "false") {
-
+                console.log( materialSearch.slice(-1) );                
                 if (materialSearch.slice(-1) === '%') {
                     materialSearch = materialSearch.substring(0, materialSearch.length - 1);
                     materialSearch = materialSearch.replace(/%/g, ' ');
                     materialList.search(materialSearch).order([2, 'asc']).draw();
                 } else {
-                    // ajaxSearchMaterialProcess.abort();
                     var i = 0;
                     while (ajaxSearchMaterialProcess.length) {
                         ajaxSearchMaterialProcess[i++].abort();
@@ -1692,8 +1676,9 @@
                     File Location : $BASE_PATH$/image/javascript/js-ezrx.js
                     Layout : Desktop
                 */
-                materialSearch.trim();
-                materialList.search(materialSearch).order([2, 'asc']).draw();
+               materialList.search(materialSearch.trim(), true, true).order([2, 'asc']).draw();               
+                // materialSearch.trim();
+                // materialList.search(materialSearch).order([2, 'asc']).draw();
                 /*
                     Start : 10 Nov 2017
                     Task  : Material Type-ahead Search: Sorting should be in Alphabetical Order
@@ -1787,7 +1772,8 @@
             }
         });
 
-        var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
+        var zPUserType = getZPUserType();        
+        // var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
 
         if (zPUserType === 'csteam') {
             $('#searchCustomerInput').keyup(function() {
@@ -1910,7 +1896,8 @@
     var searchCustList = function(dataSet, seachCustomer) {
         console.log('searchCustList');
 
-        var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+        var zPUserType = getZPUserType();        
+        // var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
 
         if (zPUserType !== 'csteam') {
             // console.log('split table');
@@ -3022,8 +3009,10 @@
                                     </div>\
                                 </div>\
                             </div>';
-        var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+        var userType = getZPUserType();                            
+        // var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
         $('#attribute-materialSearch').append().html(materialHTML);
+        $('#attribute-materialSearch').hide();        
         
         if ( userType === 'csteam') {
             /* 4 April 2018, Zainal : Add localstorage for scroll to shopping cart */
@@ -3034,6 +3023,7 @@
             /* 4 April 2018, Zainal : Add localstorage for scroll to shopping cart */
 
             console.log('mobile_materialSearch');
+            $('#attribute-materialSearch').show();            
             materialSearch();
 
         }else{
@@ -3052,16 +3042,18 @@
             }).done(function(materialDetails){
                 sumResult = materialDetails;
                 console.log(sumResult, "long of material details", sumResult.length);
-                if ( check_nationality(2800) ) {
+                if( check_nationality(2800) ){
+                    
                     var materialDetailsFlag2 = $("input[name='materialDetailsFlag2']").val().toLowerCase();
+
                     if(materialDetailsFlag2 == "true"){
                         $.ajax({
                             type: "GET",
                             url: ajaxUrl2,
                             dataType: "text",
-                            success: function (materialDetails2) {
+                            /* success: function (materialDetails2) {
     
-                            }
+                            } */
                         }).done(function (materialDetails2) {
                             if (sumResult.length > 0) {
                                 sumResult += materialDetails2;
@@ -3070,25 +3062,33 @@
                                 console.log("materialDetails is empty");
                             }
                             materialSearch(sumResult);
+                            $('#attribute-materialSearch').show();                            
                         });
                     }else{
-                        materialSearch(sumResult);                        
+                        materialSearch(sumResult);
+                        $('#attribute-materialSearch').show();                                             
                     }
+
                 }else{
-                    materialSearch(sumResult);                    
+                    materialSearch(sumResult);
+                    $('#attribute-materialSearch').show();                                        
                 }
             });
         }
 
 
         //mobile_hide_unwanted_arrow();
+        var maxCheckingDataTable = 100;        
         var isDataTableCreated = function(){
             console.log( "isDataTableCreated" );
             setTimeout(function(){
                 if( $('.materialSearchWrapper .dataTables_scroll').length > 0 ){
                     materialAddItem();
                 }else{
-                    isDataTableCreated();
+                    if (maxCheckingDataTable > 0){
+                        maxCheckingDataTable--;
+                        isDataTableCreated();
+                    }
                 }
             }, 500);
         }
@@ -3218,7 +3218,8 @@
 
         $("#attribute-customerSearchHolder_HTML").html(searchCustomerWrapper);
 
-        var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
+        var zPUserType = getZPUserType();        
+        // var zPUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
 
         if (zPUserType === 'csteam') {
             searchCustomerList();
@@ -3589,8 +3590,9 @@
                         File Location :- $BASE_PATH$/javascript/js-ezrx.js
                         Layout        :- Desktop
                     */
-                    var zpUserType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                    
-                    if ( zpUserType.length > 0 ){
+                   var zpUserType = getZPUserType();                   
+                    
+                   if ( zpUserType.length > 0 ){
                         if ( zpUserType != "csteam"){
                             $("#order-allorders").hide();
                         }
@@ -4183,7 +4185,7 @@
             }
         });
         $('#jg-tool-select').html($('select[name=new_search_id]').html());
-        $('#jg-tool-select').change(function() {
+        $('#jg-tool-select').change(function () {
             var selectval = $(this).val();
             $('select[name=new_search_id]').val(selectval);
             $('a.list-field')[0].click();
@@ -4203,7 +4205,7 @@
                 }
             }, 1000);
         }
-        if(window.localStorage.getItem("new_search_id") == "true"){
+        if (window.localStorage.getItem("new_search_id") == "true") {
             readyOrderPage(); 
         }
 
@@ -4916,7 +4918,7 @@
                 localStorage.setItem("orderItem_" + trans_id, isUserHaveModifySC);
             }
             
-            var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+            var zpUserType = getZPUserType();            
 
             if ( zpUserType != "csteam") {
                 if ( $("#line-item-grid").find(".line-item-show:not(.parent-line-item)").length > 0 ){
@@ -6119,7 +6121,7 @@
                       File Location :- $BASE_PATH$/javascript/js-ezrx.js
                       Layout        :- Desktop
                     */
-                } else if (pagetitle == "change password") {
+                } else if (pagetitle == "change password"){
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 27 Feb 2018
                         Task          :- Hide Feature "Enable Old Material"
@@ -6130,14 +6132,19 @@
 
                     console.log("change password script");
 
-                    var readyChangePasswordPage = function () {
-                        setTimeout(function () {
+                    var readyChangePasswordPage = function(){
+                        setTimeout(function(){
                             if (isLoadingDone()) {
                                 $("h1.ui-title").css({ "background": "#00575d", "color": "#ffffff" });
                                 $("#main-content").attr("style", "margin-top: 70px!important");
-                                $("#change-pw-form").css("height", "450px");
+                                $("#change-pw-form").css("height", "550px");
                                 $("#errors").after($("<div id='error_js' style='width: 41%;margin: auto auto 10px;' ></div>"));
                                 $("#submit").attr("style", "background: #005E63!important;color: #ffffff;padding: 5px 10px;font-size: 20px;");
+                                var html_password_restriction = '<fieldset style="margin-left: 5px;margin-top: 100px;position:relative;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: groove;border-right-style: groove;border-bottom-style: groove;border-left-style: groove;padding: 10px;">\
+                                                                    <legend class="form-label" style="font-weight: bold;" >&nbsp;Password Restrictions&nbsp;</legend>\
+                                                                    Password must be between 8 to 30 characters long and it should start with a letter. Password must have at least one upper case letter, at least one number and at least one special character.\
+                                                                </fieldset>';
+                                $("#submit").after(html_password_restriction);
 
                                 $("#change-pw-form").on("submit", function (e) {
                                     // e.preventDefault();
@@ -6658,7 +6665,7 @@
             } else if (filterPage.search("edit_profile.jsp") != -1) {
                 //Profile
                 console.log("Profile page");
-            } else if (filterPage.search("change-password") != -1) {
+            } else if (filterPage.search("change-password") != -1){
                 /* 
                     Created By    :- Created By Zainal Arifin, Date : 27 Feb 2018
                     Task          :- Hide Feature "Enable Old Material"
@@ -6674,9 +6681,15 @@
                         if (isLoadingDone()) {
                             $("h1.ui-title").css({ "background": "#00575d", "color": "#ffffff" });
                             $("#main-content").attr("style", "margin-top: 70px!important");
-                            $("#change-pw-form").css("height", "450px");
+                            $("#change-pw-form").css("height", "550px");
                             $("#errors").after($("<div id='error_js' style='width: 41%;margin: auto auto 10px;' ></div>"));
                             $("#submit").attr("style", "background: #005E63!important;color: #ffffff;padding: 5px 10px;font-size: 20px;");
+
+                            var html_password_restriction = '<fieldset style="margin-left: 5px;margin-top: 100px;position:relative;border-top-width: 2px;border-right-width: 2px;border-bottom-width: 2px;border-left-width: 2px;border-top-style: groove;border-right-style: groove;border-bottom-style: groove;border-left-style: groove;padding: 10px;">\
+                                                                    <legend class="form-label" style="font-weight: bold;" >&nbsp;Password Restrictions&nbsp;</legend>\
+                                                                    Password must be between 8 to 30 characters long and it should start with a letter. Password must have at least one upper case letter, at least one number and at least one special character.\
+                                                                </fieldset>';
+                            $("#submit").after(html_password_restriction);
 
                             $("#change-pw-form").on("submit", function (e) {
                                 // e.preventDefault();

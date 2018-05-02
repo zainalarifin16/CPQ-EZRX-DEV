@@ -422,6 +422,59 @@
                 var pageTitle = $('#tab-material-content #group-39792374 .group-header span').text(); //commented by suresh
                 var materialHTML = '<div class="materialSearchWrapper"> <div class="normalPopupCont flLeft" id="leftPanel"> <table id="resultsTable" style="width: 100%;"></table> </div><div class="normalPopupCont1 flRight" id="rightPanel"> <div class="popupHeader1 bigHeader">Selected Materials</div><div class="accountstable" id="selectedResultsTable"> <div class="accountstable" id="selectedMatTableDiv" style="overflow-y: auto;height: 400px;"> <table id="selectedMatTable" style="background-color: white !important;"> <thead> <tr> <th style="width:5%">Qty</th><th style="width:18%">Material Number</th> <th style="width:50%">Material Description</th><th style="width:22%">Comm. Item for Bonus</th> <th style="width:5%"></th> </tr></thead> <tbody id="selectedMatTableBody"> </tbody> </table> <a href="#" id="addMaterialBtn" name="addMaterialBtn" class="jg-btn addMat-btn" style="width: auto; margin-top: 50px; display: inline-block;">Add</a> </div></div></div></div>';
                 var userType = getZPUserType();
+
+                var searchMaterialFAID = function () {
+                    var fileAttachmentID = ($("input[name='fileAttachmentID']").length > 0) ? $("input[name='fileAttachmentID']").val() : $("input[name='fileAttachmentBSID_t']").val();
+                    console.log("materialDetails in desktop", fileAttachmentID);
+                    var ajaxUrl = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails?docId=36244074&docNum=1";
+                    var ajaxUrl2 = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails2?docId=36244074&docNum=1";
+                    var sumResult = "";
+                    $.ajax({
+                        type: "GET",
+                        url: ajaxUrl,
+                        dataType: "text",
+                        /* success: function (materialDetails) {
+                            materialSearch(materialDetails);
+                        }*/
+                    }).done(function (materialDetails) {
+                        sumResult = materialDetails;
+                        if (check_nationality(2800)) {
+
+                            var materialDetailsFlag2 = "false";
+                            if ($("input[name='materialDetailsFlag2']").length > 0) {
+                                materialDetailsFlag2 = $("input[name='materialDetailsFlag2']").val().toLowerCase();
+                            }
+
+                            if (materialDetailsFlag2 == "true") {
+                                $.ajax({
+                                    type: "GET",
+                                    url: ajaxUrl2,
+                                    dataType: "text",
+                                    /* success: function (materialDetails) {
+                                        materialSearch(materialDetails);
+                                    } */
+                                }).done(function (materialDetails2) {
+
+                                    if (sumResult.length > 0) {
+                                        sumResult += materialDetails2;
+                                        console.log(sumResult, "long of material details", sumResult.length);
+                                    } else {
+                                        console.log("materialDetails is empty");
+                                    }
+
+                                    materialSearch(sumResult);
+
+                                });
+                            } else {
+                                materialSearch(sumResult);
+                            }
+
+                        } else {
+                            materialSearch(sumResult);
+                        }
+
+                    });
+                }
                                 
                 // var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();                            
 
@@ -437,54 +490,13 @@
                     console.log("pageTitle=================" + pageTitle)
 
 					if(userType === 'csteam'){
-						materialSearch();
+						if(!check_nationality(2800)){
+						    materialSearch();                            
+                        }else{
+                            searchMaterialFAID();
+                        }
 					}else{
-                        var fileAttachmentID = ($("input[name='fileAttachmentID']").length >0 )? $("input[name='fileAttachmentID']").val() : $("input[name='fileAttachmentBSID_t']").val();
-                        console.log( "materialDetails in desktop", fileAttachmentID );
-                        var ajaxUrl = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails?docId=36244074&docNum=1";
-                        var ajaxUrl2 = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails2?docId=36244074&docNum=1";
-                        var sumResult = "";
-                        $.ajax({
-                            type: "GET",
-                            url: ajaxUrl,
-                            dataType: "text",
-							/* success: function (materialDetails) {
-								materialSearch(materialDetails);
-							}*/
-                        }).done(function(materialDetails) {
-                            sumResult = materialDetails;
-                            if ( check_nationality(2800) ){
-
-                                var materialDetailsFlag2 = $("input[name='materialDetailsFlag2']").val().toLowerCase();
-                                if (materialDetailsFlag2 == "true") {
-                                    $.ajax({
-                                        type: "GET",
-                                        url: ajaxUrl2,
-                                        dataType: "text",
-                                        /* success: function (materialDetails) {
-                                            materialSearch(materialDetails);
-                                        } */
-                                    }).done(function (materialDetails2) {
-    
-                                        if (sumResult.length > 0) {
-                                            sumResult += materialDetails2;
-                                            console.log(sumResult, "long of material details", sumResult.length);
-                                        } else {
-                                            console.log("materialDetails is empty");
-                                        }
-
-                                        materialSearch(sumResult); 
-
-                                    });
-                                } else {
-                                    materialSearch(sumResult);                                    
-                                }
-
-                            }else{
-                                materialSearch(sumResult);                                
-                            }
-
-                        });
+                        searchMaterialFAID();                        
 					}
                    
                     maxCheckingDataTable = 100;                    

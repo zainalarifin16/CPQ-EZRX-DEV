@@ -7430,7 +7430,7 @@ console.log("check_nationality", check_nationality(2601) );
                     console.log(qty_l, "isInStock", isInStock);                
                     if (isInStock == "yes") {
                         console.log($(qty_l).val(), ">", $("input[id='stockQty-" + id + "']").val());
-                        if ($(qty_l).val() > $("input[id='stockQty-" + id + "']").val()) {
+                        if (parseInt($(qty_l).val()) > parseInt($("input[id='stockQty-" + id + "']").val()) ) {
                             $(qty_l).css("color", redColor);
                         }
                     } else {
@@ -7448,11 +7448,11 @@ console.log("check_nationality", check_nationality(2601) );
                 }
                 if (overridePriceValue != basic_value_price) {
                     $("#" + overridePriceString + id + "-display").css("color", redColor);
-                    if (!isMobile()) {
+                    /* if (!isMobile()) {
                         $("#totalPrice_currency-" + id).css("color", redColor);
                     } else {
                         $("#" + var_totalPrice_Currency.replace("td.", "") + "-" + id).find(".form-field").css({ "color": redColor });
-                    }
+                    } */
                     // $("#" + var_qty.replace("td.cell-", "") + "-" + id).css("color", redColor);                
                 } else {
                     $("#" + overridePriceValue + id + "-display").css("color", blackColor);
@@ -7466,7 +7466,7 @@ console.log("check_nationality", check_nationality(2601) );
                 var typeMaterial = $(parent).find("input[id='type-"+ id +"']").val().trim().toLowerCase();
                 if(typeMaterial != "bonus"){
                     if (isInStock == "yes") {
-                        if ($(data).val() > $("input[id='stockQty-" + id + "']").val()) {
+                        if (parseInt($(data).val()) > parseInt($("input[id='stockQty-" + id + "']").val())) {
                             $(data).css("color", redColor);
                         }
                     } else {
@@ -7485,12 +7485,12 @@ console.log("check_nationality", check_nationality(2601) );
                 console.log(overridePriceValue, "==", basic_value_price, overridePriceValue != basic_value_price);
                 if (overridePriceValue != basic_value_price) {
                     $(data).css("color", redColor);
-                    if (!isMobile()) {
+                    /* if (!isMobile()) {
                         $("#totalPrice_currency-" + id).parent().find(".attribute-field.read-only").css("color", redColor);
                     } else {
                         console.log("#" + var_totalPrice_Currency.replace("td.", "") + "-" + id);
                         $("#" + var_totalPrice_Currency.replace("td.", "") + "-" + id).find(".form-field").css({ "color": redColor });
-                    }
+                    } */
                 }
             }
 

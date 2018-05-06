@@ -147,11 +147,11 @@ $(document).ready(function(){
                         $("#attr_wrapper_1_customerShipToId_t").closest(".column-layout").before( element_column_layout.clone() ); //move cloned a row Label to correct row
                         $("#attr_wrapper_1_shipToAddress_html_t").remove(); //remove first element Ship To Address
 
-                        $("#attr_wrapper_1_customerSoldToId_New").closest(".column-layout").children()[0].remove(); //remove spacer from element
+                        $( $("#attr_wrapper_1_customerSoldToId_New").closest(".column-layout").children()[0] ).remove(); //remove spacer from element
 
-                        $("#attr_wrapper_1_shipToAddress_html_t").closest(".column-layout").children()[0].remove(); //remove element Draft order detail on cloned
+                        $( $("#attr_wrapper_1_shipToAddress_html_t").closest(".column-layout").children()[0] ).remove(); //remove element Draft order detail on cloned
                         $("#attr_wrapper_1_shipToAddress_html_t").closest(".column-layout").prepend( $($(".spacer-column")[0]).clone() ); //clone spacer to element
-                        $("#attr_wrapper_1_shipToAddress_html_t").closest(".column").children()[0].remove(); //remove label Ship To Address
+                        $( $("#attr_wrapper_1_shipToAddress_html_t").closest(".column").children()[0] ).remove(); //remove label Ship To Address
 
                         $("#attr_wrapper_1_customerSoldToId_New").closest(".column").css("margin-left", "0px");
                         $($("#field_wrapper_1_customerShipToId_t").closest(".column-layout").children()[0]).css("display", "block"); //clone spacer to element
@@ -184,7 +184,7 @@ $(document).ready(function(){
                         */
 
                         //remove duplicate of frequentlyAccessedCustomers_t
-                        $("textarea[name='frequentlyAccessedCustomers_t']")[1].remove();
+                        $( $("textarea[name='frequentlyAccessedCustomers_t']")[1] ).remove();
 
                         //remove duplicate of saveQuoteRequired_t
                         $($("input[name='saveQuoteRequired_t']")[1]).remove();
@@ -786,22 +786,23 @@ $(document).ready(function(){
           
           setTimeout(function(){
             var orderNumber = $("#attribute-transactionID_t").find("div[role='heading']")[0];
-            $(orderNumber).css({ "width": "18%", "float": "left", "min-width": "40%" });
-            $($(orderNumber).siblings()[0]).css("width", "50%");
+            $(orderNumber).css({"width":"18%", "float":"left", "min-width": "40%"});
+            $( $(orderNumber).siblings()[0]).css("width", "50%");
 
             var processingStatus = $("#attribute-status_t").find("div[role='heading']")[0];
             $(processingStatus).css("float", "left");
             $($(processingStatus).siblings()[0]).css("width", "50%");
 
             var paymentTerm = $("#attribute-defaultPaymentTerm_t").find("div[role='heading']")[0];
-            $(paymentTerm).css({ "width": "18%" });
+            $(paymentTerm).css({"width":"18%"});
 
             var paymentTermDesc = $("#attribute-paymentTermDescription").find("div[role='heading']")[0];
-            $(paymentTermDesc).css({ "width": "18%" });
+            $(paymentTermDesc).css({"width":"18%"});
 
             var orderFailureReason = $("#attribute-OrderFailMessage").find("div[role='heading']")[0];
-            $(orderFailureReason).css({ "width": "18%" });
-          }, 1000);
+            $(orderFailureReason).css({"width":"18%"});
+
+          },1000);
 
         }
 
@@ -959,6 +960,119 @@ $(document).ready(function(){
           Layout        :- Desktop
         */
 
+        /* 
+          Created By    :- Created By Zainal Arifin, Date : 02 May 2018
+          Task          :- Change View Datepicker
+          Page          :- Model Configuration
+          File Location :- $BASE_PATH$/javascript/js-ezrx-ph.js
+          Layout        :- Desktop
+        */
+        
+      var datetime_picker = function(){
+        
+        if(isMobile()){
+          var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            if(dd<10){
+                    dd='0'+dd
+                } 
+                if(mm<10){
+                    mm='0'+mm
+                } 
+
+            today = yyyy+'-'+mm+'-'+dd;
+            $("#pODate").prop("max", today);
+        }else{
+          var form_date_podate_before = $("#attr_wrapper_1_pODate").find(".form-date");                    
+          $( form_date_podate_before ).hide();
+          
+          var valPoDate = $("#pODate").val();
+          $.getScript('https://zuelligpharmatest1.bigmachines.com/bmfsweb/zuelligpharmatest1/image/javascript/jquery-ui.min.js', function() {
+            
+            $( form_date_podate_before ).after("<input id='datepickerpodate' type='text' style='float: left;' >");
+            $.noConflict(true);
+            $( "#datepickerpodate" ).datepicker({
+              showOn: "button",
+              buttonImage: "https://zuelligpharmatest1.bigmachines.com/bmfsweb/zuelligpharmatest1/image/images/calendar_black.png",
+              buttonImageOnly: true,
+              maxDate: '0',
+            });
+
+            if(valPoDate.length > 0){
+              $("#datepickerpodate").datepicker("setDate", new Date( valPoDate ) );
+            }
+
+            $(".ui-datepicker-trigger").css({"width":"20px"});
+
+            $(".ui-datepicker-trigger").on("click", function(){
+              $(".ui-widget-header").css({ "background": "#1d727b","border": "0px", "color": "#ffffff"});
+
+              $(".ui-datepicker-calendar").find("thead").find("tr").css({"color": "#005e63"});
+
+              $(".ui-state-default, .ui-widget-content .ui-state-default").css({"background": "#1d727b", "font-weight": "bold","font-style": "normal","font-stretch": "normal", "line-height": "normal", "letter-spacing": "normal","text-align": "left", "color": "#ffffff"});
+
+              $(".ui-state-highlight, .ui-widget-content .ui-state-highlight").css({ "background": "#c3d500", "font-weight": "bold", "font-style": "normal", "font-stretch": "normal", "line-height": "normal","letter-spacing": "normal", "text-align": "left", "color": "#ffffff", });
+            });
+            
+            $("#datepickerpodate").on("change", function(){
+              $("#pODate").val( $(this).val() );
+            });
+            
+          });
+        }
+
+      }
+      
+      /* 
+        Created By    :- Created By Zainal Arifin, Date : 02 May 2018
+        Task          :- Change View Datepicker
+        Page          :- Model Configuration
+        File Location :- $BASE_PATH$/javascript/js-ezrx-ph.js
+        Layout        :- Desktop
+      */
+      
+      /* 
+        Created By    :- Created By Zainal Arifin, Date : 02 May 2018
+        Task          :- Trigger Save after user enter value of "Customer PO Ref" and "PO Date"
+        Page          :- Model Configuration
+        File Location :- $BASE_PATH$/javascript/js-ezrx-ph.js
+        Layout        :- Desktop
+      */
+      
+      /* var trigger_save = function(){
+
+        var typingTimer;                //timer identifier
+        var doneTypingInterval = 3000;  //time in ms, 5 second for example
+        var input = "#datepickerpodate, #customerPORef_t";
+
+        $( input ).on("keyup", function(){
+          clearTimeout(typingTimer);
+          typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        });
+        
+        $( input ).on("keydown", function(){
+          clearTimeout(typingTimer);
+        });
+
+        function doneTyping () {
+          if( $("#datepickerpodate").val().length > 0 && $("#orderingRequestNoMoreThan90Characters_t").val().length > 0 )
+          {
+            $("a[name='save']").click();
+          }
+        }
+
+      } */
+      
+      /* 
+        Created By    :- Created By Zainal Arifin, Date : 02 May 2018
+        Task          :- Trigger Save after user enter value of "Customer PO Ref" and "PO Date"
+        Page          :- Model Configuration
+        File Location :- $BASE_PATH$/javascript/js-ezrx-ph.js
+        Layout        :- Desktop
+      */
+
         if (navigator.userAgent.match(/Android/i) ||
             navigator.userAgent.match(/webOS/i) ||
             navigator.userAgent.match(/iPhone/i) ||
@@ -985,6 +1099,7 @@ $(document).ready(function(){
                   onShoppingCartSwipe();
                   reposition_order_mobile();
                   orderPageComponent();
+                  datetime_picker();                  
                 } else {
                   loadOderPageScript();
                 }
@@ -1033,7 +1148,8 @@ $(document).ready(function(){
                         get full url split it to get subdomain, and generate url of assets.
                     */
 
-                            sold_to_address();
+                    sold_to_address();
+
                     /*
                         End   : 03 Jan 2018
                         Task  : Ship To Address header name to Sold to Address for PH.
@@ -1041,7 +1157,9 @@ $(document).ready(function(){
                         File Location : $BASE_PATH$/javascript/js-ezrx.js
                         Layout : Both
                     */
-                    orderPageComponent();                   
+                    orderPageComponent();        
+                    datetime_picker();
+                    // trigger_save();           
                   } else {
                     loadOderPageScript();
                   }

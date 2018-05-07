@@ -423,7 +423,7 @@
                 var materialHTML = '<div class="materialSearchWrapper"> <div class="normalPopupCont flLeft" id="leftPanel"> <table id="resultsTable" style="width: 100%;"></table> </div><div class="normalPopupCont1 flRight" id="rightPanel"> <div class="popupHeader1 bigHeader">Selected Materials</div><div class="accountstable" id="selectedResultsTable"> <div class="accountstable" id="selectedMatTableDiv" style="overflow-y: auto;height: 400px;"> <table id="selectedMatTable" style="background-color: white !important;"> <thead> <tr> <th style="width:5%">Qty</th><th style="width:18%">Material Number</th> <th style="width:50%">Material Description</th><th style="width:22%">Comm. Item for Bonus</th> <th style="width:5%"></th> </tr></thead> <tbody id="selectedMatTableBody"> </tbody> </table> <a href="#" id="addMaterialBtn" name="addMaterialBtn" class="jg-btn addMat-btn" style="width: auto; margin-top: 50px; display: inline-block;">Add</a> </div></div></div></div>';
                 var userType = getZPUserType();
 
-                var searchMaterialFAID = function(){
+                var searchMaterialFAID = function(materialList){
                     var fileAttachmentID = ($("input[name='fileAttachmentID']").length >0 )? $("input[name='fileAttachmentID']").val() : $("input[name='fileAttachmentBSID_t']").val();
                     console.log( "materialDetails in desktop", fileAttachmentID );
                     var ajaxUrl = "https://" + instanceName + ".bigmachines.com/rest/v1/commerceProcesses/oraclecpqo/transactions/" + fileAttachmentID + "/attachments/materialDetails?docId=36244074&docNum=1";
@@ -462,15 +462,15 @@
                                         console.log("materialDetails is empty");
                                     }
 
-                                    materialSearch(sumResult);
+                                    materialSearch(materialList, sumResult);
 
                                 });
                             } else {
-                                materialSearch(sumResult);
+                                materialSearch(materialList, sumResult);
                             }
 
                         }else{
-                            materialSearch(sumResult);
+                            materialSearch(materialList, sumResult);
                         }
 
                     });
@@ -488,12 +488,12 @@
 					$("#attribute-enableOldMaterialSearch").hide();
                     $('#attribute-materialSearch').append().html(materialHTML);
                     console.log("pageTitle=================" + pageTitle)
-          materialSearch("init")
+                    var materialList = initMaterialList([]);                    
 
 					if(userType === 'csteam'){
-						materialSearch();
+						materialSearch(materialList);
 					}else{
-                        searchMaterialFAID();                        
+                        searchMaterialFAID(materialList);                        
 					}
                    
                     maxCheckingDataTable = 100;                    
@@ -1395,7 +1395,67 @@
 
     };
     
-    var initMaterialList = function(dataSet, pageLen, lenMenu, material_column){
+    var initMaterialList = function(dataSet){
+
+        var userCountryMS = null;
+        if($('input[name="userSalesOrg_PL"]').val()=="2800"){
+          var userCountryMS = null;
+          userCountryMS = 'TW'; 
+        }
+
+        if(userCountryMS === 'TW'){
+            material_column = [{
+                title: ""
+            },
+            {
+                title: "Material Number"
+            },
+            {
+                title: "Material Description (ZH)"
+            },
+            {
+                title: "Material Description"
+            },
+            {
+                title: "Promo"
+            },
+            {
+                title: "Principal Code"
+            },
+            {
+                title: "Principal Name"
+            }
+            ];
+
+            if(userType == 'principal'){
+                material_column.splice(4, 0, {title: "Principal Material Code"}); 
+            }
+        }else{
+            material_column = [{
+                title: ""
+              },
+              {
+                title: "Material Number"
+              },
+              {
+                title: "Material Description"
+              },
+              {
+                title: "Principal Name"
+              }];
+        }
+		
+		var pageLen = 10;
+		var lenMenu = [ 10, 25, 50, 75, 100];
+		if(isMobileVersion){//added for mobile version
+			pageLen = 5;
+			lenMenu = [3,5, 10, 25, 50, 75, 100];
+        }
+        
+        var loading = '<p class="loader-material" style="text-align: center; margin: 10px 0; display: none;">Loading...</p>';        
+        // append loading message after initialised datatable.
+        $('.dataTables_scrollBody').prepend(loading);
+
       var materialList = $('#resultsTable').DataTable({
         scrollY: "400px",
         scrollCollapse: true,
@@ -1431,25 +1491,14 @@
 
     */
 
-    var materialSearch = function(dataMaterialAjax) {
+   var materialSearch = function(materialList, dataMaterialAjax) {    
         console.log('materialSearch function');
-        var materialList = null;
-        var material_column = [{
-        title: ""
-        },
-        {
-        title: "Material Number"
-        },
-        {
-        title: "Material Description"
-        },
-        {
-        title: "Principal Name"
-        }];
-        if(dataMaterialAjax === "init"){
+        // var materialList = null;
+        
+        /* if(dataMaterialAjax === "init"){
           return materialList = initMaterialList([], 0, 0, material_column);
-        }
-        $('#resultsTable').DataTable().clear().destroy();
+        } */
+        //$('#resultsTable').DataTable().clear().destroy();
         var userCountryMS = null;
         if($('input[name="userSalesOrg_PL"]').val()=="2800"){
         var userCountryMS = null;
@@ -1460,24 +1509,6 @@
         var totalRecs = null;
 		var userType = getZPUserType();
 		if (userType !== 'csteam'){
-
-            /* 
-				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
-				Task          :- Search Customer from materialDetails.txt From URL
-				Page          :- Shopping Cart
-				File Location :- $BASE_PATH$/javascript/js-ezrx.js
-				Layout        :- Global
-            */
-
-            // materialDetails = $("#actualMasterString").html();
-
-            /* 
-				Created By    :- Created By Zainal Arifin, Date : 18 March 2018
-				Task          :- Search Material from MaterialDetails.txt From URL
-				Page          :- Shopping Cart
-				File Location :- $BASE_PATH$/javascript/js-ezrx.js
-				Layout        :- Global
-			*/
 
             custArr = materialDetails.split("##");
 			totalRecs = custArr.length;
@@ -1523,45 +1554,6 @@
                 dataSet.push(subDataSet);
             }
         }
-
-        if(userCountryMS === 'TW'){
-            material_column = [{
-                title: ""
-            },
-            {
-                title: "Material Number"
-            },
-            {
-                title: "Material Description (ZH)"
-            },
-            {
-                title: "Material Description"
-            },
-            {
-                title: "Promo"
-            },
-            {
-                title: "Principal Code"
-            },
-            {
-                title: "Principal Name"
-            }];
-
-            if(userType == 'principal'){
-                material_column.splice(4, 0, {title: "Principal Material Code"}); 
-            }
-        }
-		
-		var pageLen = 10;
-		var lenMenu = [ 10, 25, 50, 75, 100];
-		if(isMobileVersion){//added for mobile version
-			pageLen = 5;
-			lenMenu = [3,5, 10, 25, 50, 75, 100];
-		}
-      materialList = initMaterialList(dataSet, pageLen, lenMenu, material_column);
-      
-        // append loading message after initialised datatable.
-        $('.dataTables_scrollBody').prepend(loading);
 
         if (userType === 'csteam' && enableOldMaterialSearch == "false") {
             
@@ -1621,9 +1613,13 @@
                     materialList.columns.adjust().draw();
                 });
             
+        }else{
+            materialList.clear().draw();
+            materialList.rows.add(dataSet);
+            materialList.columns.adjust().draw();
         }
 
-        //console.dir(dataSet);
+
 
         $('#resultsTable_filter').find('input').on('keyup', function() {
             //console.info('desktop ss');
@@ -3013,7 +3009,7 @@
         // var userType = ($("#zPUserType").length > 0) ? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
         $('#attribute-materialSearch').append().html(materialHTML);
         $('#attribute-materialSearch').hide();        
-        materialSearch("init");
+        var materialList = initMaterialList([]);        
         
         if ( userType === 'csteam') {
             /* 4 April 2018, Zainal : Add localstorage for scroll to shopping cart */
@@ -3025,7 +3021,7 @@
 
             console.log('mobile_materialSearch');
             $('#attribute-materialSearch').show();            
-            materialSearch();
+            materialSearch(materialList);
 
         }else{
             var fileAttachmentID = ($("input[name='fileAttachmentID']").length > 0) ? $("input[name='fileAttachmentID']").val() : $("input[name='fileAttachmentBSID_t']").val();
@@ -3062,16 +3058,16 @@
                             } else {
                                 console.log("materialDetails is empty");
                             }
-                            materialSearch(sumResult);
+                            materialSearch(materialList, sumResult);                            
                             $('#attribute-materialSearch').show();                            
                         });
                     }else{
-                        materialSearch(sumResult);
+                        materialSearch(materialList, sumResult);                        
                         $('#attribute-materialSearch').show();                                             
                     }
 
                 }else{
-                    materialSearch(sumResult);
+                    materialSearch(materialList, sumResult);                    
                     $('#attribute-materialSearch').show();                                        
                 }
             });

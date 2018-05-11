@@ -219,12 +219,12 @@ $(document).ready(function() {
 				*/
 			}else{
 				/* 
-						Created By    :- Created By Zainal Arifin, Date : 26 March 2018
-						Task          :- SG-02 Show Material Desc next to Contract Bonus – After Swipe section
-						Page          :- Model Configuration
-						File Location :- $BASE_PATH$/javascript/js-tablet.js
-						Layout        :- Tablet
-					*/
+					Created By    :- Created By Zainal Arifin, Date : 26 March 2018
+					Task          :- SG-02 Show Material Desc next to Contract Bonus – After Swipe section
+					Page          :- Model Configuration
+					File Location :- $BASE_PATH$/javascript/js-tablet.js
+					Layout        :- Tablet
+				*/
 
 				if (sg_nationalty) {
 
@@ -236,22 +236,23 @@ $(document).ready(function() {
 						$(".cell-promotion").removeClass("hidden");
 					}
 
-          $(".config-array #attribute-materialDescription").css("width", "200px");
-          $("#attribute-materialDescription").removeClass("hidden");
-          if($("#attribute-material").hasClass("hidden") === false){
-            $("#attribute-materialDescription").insertAfter($("#attribute-material"));
-            $(".cell-materialDescription").map(function (index, data) {
-              var id = $(data).attr("id").replace("cell-materialDescription-", "");
-              $("#cell-materialDescription-" + id).insertAfter($("#cell-material-" + id));
-            });
-          }else if($("#attribute-addToFav").hasClass("hidden") === false){
-            $("#attribute-materialDescription").insertBefore($("#attribute-addToFav"));
-            $(".cell-materialDescription").map(function (index, data) {
-              var id = $(data).attr("id").replace("cell-materialDescription-", "");
-              $("#cell-materialDescription-" + id).insertBefore($("#cell-addToFav-" + id));
-            });
-          }
-          $(".cell-materialDescription").removeClass("hidden");
+					$(".config-array #attribute-materialDescription").css("width", "200px");
+					$("#attribute-materialDescription").removeClass("hidden");
+					if($("#attribute-material").hasClass("hidden") === false){
+						$("#attribute-materialDescription").insertAfter($("#attribute-material"));
+						$(".cell-materialDescription").map(function (index, data) {
+						var id = $(data).attr("id").replace("cell-materialDescription-", "");
+						$("#cell-materialDescription-" + id).insertAfter($("#cell-material-" + id));
+						});
+					}else if($("#attribute-addToFav").hasClass("hidden") === false){
+						$("#attribute-materialDescription").insertBefore($("#attribute-addToFav"));
+						$(".cell-materialDescription").map(function (index, data) {
+						var id = $(data).attr("id").replace("cell-materialDescription-", "");
+						$("#cell-materialDescription-" + id).insertBefore($("#cell-addToFav-" + id));
+						});
+					}
+					$(".cell-materialDescription").removeClass("hidden");
+					
 				}
 
 				/* 

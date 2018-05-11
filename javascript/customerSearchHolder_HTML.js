@@ -826,36 +826,14 @@ var searchCustList = function(dataSet, seachCustomer) {
 				    Layout : Tablet
 				*/
 				var keywordCustomer = js2(this).val();
+				seachCustomer.search('');								
 				if (keywordCustomer.indexOf("%") != -1) {
 					keywordCustomer = keywordCustomer.replace(/%/g, " ");
-
-					seachCustomer.search('');					
-					/* seachCustomer.column(1).search(keywordCustomer, true, true);
-					seachCustomer.column(2).search(keywordCustomer, true, true);
-					seachCustomer.column(3).search(keywordCustomer, true, true);
-					seachCustomer.draw(); */
-
+					// seachCustomer.column(3).search(keywordCustomer, true, true).draw();					
 					seachCustomer.search(keywordCustomer, true, true).draw();
-					// seachCustomer.fnMultiFilter( { 1: keywordCustomer, 2: keywordCustomer, 3: keywordCustomer } );
-					/* This function deprecated from DataTable */
-					/* seachCustomer.coloumn(1).search(keywordCustomer, true, true)
-								 .coloumn(2).search(keywordCustomer, true, true)
-								 .coloumn(3).search(keywordCustomer, true, true)
-								 .draw();										 */
 				}else{
-					seachCustomer.search('');
-					// seachCustomer.column(1).search(keywordCustomer);
-					// seachCustomer.column(2).search(keywordCustomer);
-					// seachCustomer.column(3).search(keywordCustomer);
-					// seachCustomer.draw();
-
-					seachCustomer.search(keywordCustomer).draw();					
-					// seachCustomer.fnMultiFilter( { 1: keywordCustomer, 2: keywordCustomer, 3: keywordCustomer } );					
-					/* This function deprecated from DataTable */					
-					/* seachCustomer.column(1).search(keywordCustomer)
-								 .column(2).search(keywordCustomer)
-								 .column(3).search(keywordCustomer)
-								 .draw(); */
+					seachCustomer.search(keywordCustomer).draw();	
+					// seachCustomer.column(3).search(keywordCustomer).draw();									
 				}
 				/*
 				    End : 15 Nov 2017

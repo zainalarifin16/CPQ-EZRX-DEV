@@ -8,8 +8,8 @@ $(document).ready(function() {
     }else{
         var countryCode = parseInt(countryEle.value);
     }
-
-    if(countryEle !== null && (countryEle != 2601 || countryEle != 2601) ){    
+    
+    if(typeof countryCode !== "undefined" && countryCode !== null && (countryCode != 2601 || countryCode != 2601) ){    
         
         var url_script;
 

@@ -1,0 +1,22 @@
+<div class="ui-field-contain attribute attr-type-single-menu" id="attribute-status_t" data-properties="{"$metatype":"menuAttr","variableName":"status_t","groupMenu":false,"label":"Processing Status","constrained":false,"attributeType":"SingleMenu","id":37570275,"readOnly":true,"invalid":false,"horizontal":false,"priceScore":false,"showLabel":true,"hidden":false,"value":"Not Submitted","required":false,"autoRunRuleType":"TRIGGER"}" >
+    <div data-role="controlgroup" class="ui-controlgroup ui-controlgroup-vertical ui-corner-all"><div role="heading" class="ui-controlgroup-label"><legend class="form-label">Processing Status:</legend></div><div class="ui-controlgroup-controls ">
+    
+    <div class="read-only">
+        
+        <span class="form-field">Not Submitted</span>
+        
+        <input type="hidden" name="status_t" value="Not Submitted">
+    </div>
+</div></div>
+
+
+    
+    <div class="messages">
+        <ul class="validation-messages">
+</ul>
+        <ul class="validation-rule-messages"></ul>
+        <ul class="autorun-rule-messages"></ul>
+    </div>
+</div>
+
+

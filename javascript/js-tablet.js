@@ -226,7 +226,7 @@ $(document).ready(function() {
 					Layout        :- Tablet
 				*/
 
-				if (sg_nationalty) {
+				/* if (sg_nationalty) {
 
 					if ($("#attribute-inStock").hasClass("hidden")){					
 						$("#attribute-promotion").addClass("hidden");
@@ -253,7 +253,7 @@ $(document).ready(function() {
 					}
 					$(".cell-materialDescription").removeClass("hidden");
 					
-				}
+				} */
 
 				/* 
 					Created By    :- Created By Zainal Arifin, Date : 26 March 2018
@@ -371,6 +371,25 @@ $(document).ready(function() {
              || navigator.userAgent.match(/BlackBerry/i)
              || navigator.userAgent.match(/Windows Phone/i)
              ){
+
+				var disableScrollUp = function(){
+					setTimeout(function(){
+						
+						if(isLoadingDone()){
+							// try to remove auto scroll up, Zainal Arifin 13 May 2018
+							if( $("#commerce.ui-page.ui-page-theme-a.ui-page-header-fixed.ui-page-footer-fixed.ui-page-active").length > 0 ){
+								$("#commerce.ui-page.ui-page-theme-a.ui-page-header-fixed.ui-page-footer-fixed.ui-page-active").off();
+							}
+							// try to remove auto scroll up, Zainal Arifin 13 May 2018
+						}else{
+							disableScrollUp();
+						}
+
+					}, 500)
+				}
+
+				disableScrollUp();				
+
 				 var pageTitle = "";
 				 if($("#materialArrayset").length > 0){
 					 pageTitle = "model configuration";
@@ -595,6 +614,8 @@ $(document).ready(function() {
 						function reposition_content(){
 							// $('#jg-overlay').show();
 							setTimeout(function() {
+								
+								$("#tab-content").css({"margin-bottom":"30px"});								
 								$("#price-section").hide();
 								$("#recommended-parts").hide();
 								
@@ -627,7 +648,21 @@ $(document).ready(function() {
 								*/
 
 								if (check_nationality(2600) || check_nationality(2500)) {
-									$($(elementToMove[2])).hide();
+									var maxLimitAttemp = 100;
+									var hide_recomended_material = function( elementRecomendMaterial ){
+										setTimeout(function(){
+											$($( elementRecomendMaterial )).hide();
+											console.log( "Recomend Material", $( elementRecomendMaterial ).css("display") );
+											if( $( elementRecomendMaterial ).css("display") != "none" || 
+												   typeof $( elementRecomendMaterial ).css("display") == "undefined" && 
+												   maxLimitAttemp > 0){											
+												maxLimitAttemp--;
+												hide_recomended_material( elementRecomendMaterial );
+											}
+										}, 500);
+									}
+
+									hide_recomended_material( elementToMove[2] );
 								}else{
 									$( $(elementToMove[2]) ).appendTo("#swipe-sidebar-content");
 								}
@@ -705,13 +740,13 @@ $(document).ready(function() {
 
 								/* 
 									Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-									Task          :- Reorder button in order page
+									Task          :- SG-05 Auto Collapse customer search
 									Page          :- Order Page
 									File Location :- $BASE_PATH$/javascript/js-ezrx.js
 									Layout        :- Desktop
 								*/
 
-								$("#tab-content").find(".ui-collapsible-heading-toggle").each(function (index, data) {
+								/* $("#tab-content").find(".ui-collapsible-heading-toggle").each(function (index, data) {
 									$(data).closest(".ui-collapsible-inset").removeClass("ui-collapsible-collapsed");
 									$(data).closest(".ui-collapsible-heading").removeClass("ui-collapsible-heading-collapsed");
 									var parent = $(data).closest(".ui-collapsible-inset");
@@ -727,11 +762,11 @@ $(document).ready(function() {
 										}
 									}
 
-								});
+								}); */
 
 								/* 
 									Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-									Task          :- Reorder button in order page
+									Task          :- SG-05 Auto Collapse customer search
 									Page          :- Order Page
 									File Location :- $BASE_PATH$/javascript/js-ezrx.js
 									Layout        :- Desktop
@@ -1080,22 +1115,22 @@ $(document).ready(function() {
 							Layout        :- Desktop
 						*/
 
-						 var isPageError = false;
-						 var exitingDataItems = $("#line-item-grid").attr('data-properties');
-						 var linesObj = JSON.parse(exitingDataItems);
-						 var noOfLines  = parseInt(linesObj.numRows);
-						 $("#sticky-actions .more-btns").hide();
-						 $("#lig-sticky-actions .more-btns").hide();
-						 $("#sticky-actions .more-btns").attr("executed","yes");
-						 applyOrderPageChanges();
-						 if(noOfLines > 0){
-							 $('#sticky-actions button.action-type-add-from-catalog[data-properties*="43393148"]').hide();
-							 $('#sticky-actions button.action-type-add-from-catalog[data-properties*="36393235"]').hide();
-						 }else{
-							 $('#sticky-actions button.action-type-add-from-catalog[data-properties*="43393148"]').show();
-							 $('#sticky-actions button.action-type-add-from-catalog[data-properties*="36393235"]').show();
-						 }
-						 $('#sticky-actions button.action-type-modify[data-properties*="47805212"]').click(function(e) {
+						var isPageError = false;
+						var exitingDataItems = $("#line-item-grid").attr('data-properties');
+						var linesObj = JSON.parse(exitingDataItems);
+						var noOfLines  = parseInt(linesObj.numRows);
+						$("#sticky-actions .more-btns").hide();
+						$("#lig-sticky-actions .more-btns").hide();
+						$("#sticky-actions .more-btns").attr("executed","yes");
+						applyOrderPageChanges();
+						if(noOfLines > 0){
+							$('#sticky-actions button.action-type-add-from-catalog[data-properties*="43393148"]').hide();
+							$('#sticky-actions button.action-type-add-from-catalog[data-properties*="36393235"]').hide();
+						}else{
+							$('#sticky-actions button.action-type-add-from-catalog[data-properties*="43393148"]').show();
+							$('#sticky-actions button.action-type-add-from-catalog[data-properties*="36393235"]').show();
+						}
+						$('#sticky-actions button.action-type-modify[data-properties*="47805212"]').click(function(e) {
 							e.preventDefault();
 							var selectedSearchId = '-1';
 							var token = $("input[name=token]").val();
@@ -1192,10 +1227,10 @@ $(document).ready(function() {
 										}
 										console.log("JS-TABLET 509  ======Show Customer Info add 22 start =======");
 										if($('#order-showorderdetails').length){
-										  console.log("JS-TABLET 513  ======Show Customer Info 22 PRESENT =======");
+										console.log("JS-TABLET 513  ======Show Customer Info 22 PRESENT =======");
 										}else{
-										  $("#duplicatefooterlig").append("<button id='order-showorderdetails' class='ui-btn ui-btn-inline ui-shadow ui-corner-all'>Show Customer Info</button>");
-									    }										
+										$("#duplicatefooterlig").append("<button id='order-showorderdetails' class='ui-btn ui-btn-inline ui-shadow ui-corner-all'>Show Customer Info</button>");
+										}										
 										console.log("JS-TABLET 511  ======Show Customer Info add 22 end =======");
 										
 										if($("#duplicatefooterlig").length > 0){
@@ -1247,7 +1282,7 @@ $(document).ready(function() {
 							$("button:contains('Add Material')").show();
 						}*/
 
-					 	/* 
+						/* 
 							Created By    :- Created By Zainal Arifin, Date : 2 April 2018
 							Task          :- Hide All Order button on order page for non CSTeam users
 							Page          :- Order Page
@@ -1256,7 +1291,7 @@ $(document).ready(function() {
 						*/
 
 						var zpUserType = getZPUserType();
-            			// var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
+						// var zpUserType = ( $("#zPUserType").length > 0 )? $("#zPUserType").val().toLowerCase() : $("input[name='zPUserType']").val().toLowerCase();
 						
 						if (zpUserType != "csteam") {
 							$("#order-allorders").hide();
@@ -1270,39 +1305,262 @@ $(document).ready(function() {
 							Layout        :- Desktop
 						*/
 
-						if(check_nationality(2600)){
-							/* 
-								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
-								Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
-								Page          :- Order Page
-								File Location :- $BASE_PATH$/javascript/js-ezrx.js
-								Layout        :- Desktop
-							*/
+						var select_customer = function(){
 
-							var isCompleteOrSubmitted = $("input[name='status_t']").val().trim().toLowerCase();
-							if (isCompleteOrSubmitted == "completed" || isCompleteOrSubmitted == "submitted" || isCompleteOrSubmitted == "in process") {
-								var isSaveAsTemplate = $("input[name='isATestOrder_t']").val().trim().toLowerCase();
-								if (isSaveAsTemplate == "true") {
-									$($("input[name='isATestOrder_t']").siblings()[0]).text("Yes");
-								} else {
-									$($("input[name='isATestOrder_t']").siblings()[0]).text("No");
+							if(check_nationality(2600)){
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+									Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
+									Page          :- Order Page
+									File Location :- $BASE_PATH$/javascript/js-ezrx.js
+									Layout        :- Desktop
+								*/
+
+								var isCompleteOrSubmitted = $("input[name='status_t']").val().trim().toLowerCase();
+								if (isCompleteOrSubmitted == "completed" || isCompleteOrSubmitted == "submitted" || isCompleteOrSubmitted == "in process") {
+									var isSaveAsTemplate = $("input[name='isATestOrder_t']").val().trim().toLowerCase();
+									if (isSaveAsTemplate == "true") {
+										$($("input[name='isATestOrder_t']").siblings()[0]).text("Yes");
+									} else {
+										$($("input[name='isATestOrder_t']").siblings()[0]).text("No");
+									}
 								}
+
+								/* 
+									Created By    :- Created By Zainal Arifin, Date : 17 April 2018
+									Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
+									Page          :- Order Page
+									File Location :- $BASE_PATH$/javascript/js-ezrx.js
+									Layout        :- Desktop
+								*/
 							}
 
+							$("body").on("click touchend","#order-showorderdetails",function(e){
+										e.preventDefault();			
+										$(".sidebar-handle").trigger("click");		
+										//$(".sidebar-handle-icon").trigger("swiperight");
+							});
+
 							/* 
-								Created By    :- Created By Zainal Arifin, Date : 17 April 2018
-								Task          :- 8000348146 Change Save as template order? attribute value true  to Yes , false to No in order page in Submitted/completed orders
-								Page          :- Order Page
-								File Location :- $BASE_PATH$/javascript/js-ezrx.js
+								Created By    :- Created By Zainal Arifin, Date : 29 March 2018
+								Task          :- Move Field orderingRequestNoMoreThan90Characters_t and customerPORef_t
+								Page          :- Model Configuration
+								File Location :- $BASE_PATH$/javascript/js-tablet.js
 								Layout        :- Desktop
 							*/
-						}
+							var reposisitonFieldOrderingReq = function () {
 
-						$("body").on("click touchend","#order-showorderdetails",function(e){
-									e.preventDefault();			
-									$(".sidebar-handle").trigger("click");		
-									//$(".sidebar-handle-icon").trigger("swiperight");
-						});
+								setTimeout(function () {
+									if (isLoadingDone()) {
+										/* $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".group-content").css({
+											"margin-top": "30px",
+											"padding-top": "30px",
+											"border-top": "solid 2px #ddd"
+										}); */
+
+										setTimeout(function () {
+
+											/* 
+												Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+												Task          :- Reorder button in order page
+												Page          :- Order Page
+												File Location :- $BASE_PATH$/javascript/js-ezrx.js
+												Layout        :- Desktop
+											*/
+											
+											$("#sticky-actions").find(".action-type-modify:contains('Home')").appendTo("#sticky-actions");
+
+											if (getQueryVariableUrl("flag") == "rightnow") {
+												$("#sticky-actions").find(".action-type-modify:contains('Home')").show();
+											}else{
+												$("#sticky-actions").find(".action-type-modify:contains('Home')").hide();
+											}
+
+											/* 
+												Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+												Task          :- Reorder button in order page
+												Page          :- Order Page
+												File Location :- $BASE_PATH$/javascript/js-ezrx.js
+												Layout        :- Desktop
+											*/
+
+											/* var parent = $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".ui-collapsible-content");
+											$("#attribute-orderingRequestNoMoreThan90Characters_t").prependTo(parent);
+											$("#attribute-customerPORef_t").prependTo(parent); */
+
+											/* SG-15 : Customer PO Ref is hiding behing keyboard when typing letters in order page, by Zainal Arifin */
+											$("#attribute-orderingRequestNoMoreThan90Characters_t").on("focus click", function(e){
+												e.preventDefault();
+												e.stopPropagation();
+												$(this).closest(".group-content").css("height", "1000px");
+											});
+
+											$("#attribute-orderingRequestNoMoreThan90Characters_t").on("blur", function(){
+												$(this).closest(".ui-collapsible-content").css("height", "auto");											
+											});
+											/* SG-15 : Customer PO Ref is hiding behing keyboard when typing letters in order page, by Zainal Arifin */
+
+											/* 
+												Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+												Task          :- SG-05 Auto Collapse customer search
+												Page          :- Order Page
+												File Location :- $BASE_PATH$/javascript/js-ezrx.js
+												Layout        :- Desktop
+											*/
+
+											$("#attribute-customerSearchHolder_HTML").removeClass("hidden");
+											function collapsedCustomerSearch(){
+												
+												setTimeout(function(){
+													var parent_customerSearchHolder = $("#attribute-customerSearchHolder_HTML").closest(".ui-collapsible-inset").addClass("ui-collapsible-collapsed");
+													if ($(parent_customerSearchHolder).hasClass("ui-collapsible-collapsed")) {
+														parent_customerSearchHolder.find(".ui-collapsible-heading").addClass("ui-collapsible-heading-collapsed");
+														parent_customerSearchHolder.find(".ui-collapsible-content").addClass("ui-collapsible-content-collapsed");
+														if (!$(parent_customerSearchHolder.find(".ui-collapsible-content")).hasClass("ui-collapsible-content-collapsed")) {
+															collapsedCustomerSearch();
+														}
+													} else {
+														collapsedCustomerSearch();
+													}
+												}, 500);
+
+											}
+
+											// if ($("input[name='status_t']").val() != ""){
+											if ($("input[name='customerSoldToId_New']").val() != "" || $("input[name='customerShipToId_t']").val() != "" ){
+												collapsedCustomerSearch();
+											}
+
+											/* 
+												Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+												Task          :- SG-05 Auto Collapse customer search
+												Page          :- Order Page
+												File Location :- $BASE_PATH$/javascript/js-ezrx.js
+												Layout        :- Desktop
+											*/
+
+											//hide sold to id
+											if ( !check_nationality(2600) ) {
+												$("#attribute-customerSoldToId_t").hide();
+											}else{
+												$("#attribute-customerSoldToId_t").show();				
+											}
+
+																					/* 
+												Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+												Task          :- SG-17 Open Shopping Cart after open order
+												Page          :- Order Page
+												File Location :- $BASE_PATH$/javascript/js-ezrx.js
+												Layout        :- Desktop
+											*/
+											/* if (check_nationality(2600)) {
+
+												var trans_id = $("input[name='transactionID_t']").val().replace(" ", "");
+												var isUserHaveModifySC = window.localStorage.getItem("orderItem_" + trans_id);
+												if (typeof isUserHaveModifySC == 'undefined') {
+													isUserHaveModifySC = false;
+													window.localStorage.setItem("orderItem_" + trans_id, isUserHaveModifySC);
+												}
+
+												if ($("#zPUserType").val().toLowerCase() != "csteam") {
+													if ($('#line-item-grid .lig-side-scroller>table tr.lig-row.child').length > 0) {
+														if (!isUserHaveModifySC) {
+
+															var autoSwipeIfLoadingDone = function () {
+																setTimeout(function () {
+																	if (isLoadingDone()) {
+
+																		if ($("#swipe-sidebar").hasClass("sidebar-state-0")) {
+																			$('.sidebar-handle').click();
+																			autoSwipeIfLoadingDone();
+																		} else {
+																			redirectConfigPage();
+																		}
+
+																		function redirectConfigPage() {
+
+																			if ($("#swipe-sidebar").hasClass("sidebar-state-1")) {
+
+																				// if have item on cart
+																				var sliderOut = setInterval(function () {
+																					if ($('.sidebar-state-1').attr('style').includes('right: 0px;')) {
+																						clearInterval(sliderOut);
+
+																						setTimeout(function () {
+																							if ($('#swipe-sidebar .lig-row').hasClass('parent')) {
+																								//    alert('have checkbox');
+																								var checkbox = $('.lig-row.parent td.lig-select .ui-checkbox input[name="_line_item_list"]');
+																								var ebtn = $('#button-bar #lig-sticky-actions button:contains("Edit Shopping Cart")');
+																								var ebtn2 = $('#popup-moreBtns-lig-popup li a.ui-btn:contains("Edit Shopping Cart")');
+																								checkbox.prop('checked', true);
+
+																								var checkboxInterval = setInterval(function () {
+
+																									var checkFirstChild = checkbox.is(':checked');
+																									if (checkFirstChild === true) {
+																										clearInterval(checkboxInterval);
+
+																										if (ebtn.length == 1) {
+																											ebtn.click();
+																										} else {
+																											ebtn2.click();
+																										}
+
+																									}
+
+																								}, 100);
+
+																							} else {
+
+																								$('#lig-sticky-actions button:visible').click();
+
+																							}
+																						}, 1000);
+																					}
+																				}, 100);
+																			}
+																		}
+																	} else {
+																		autoSwipeIfLoadingDone();
+																	}
+																}, 500);
+															}
+
+															autoSwipeIfLoadingDone();
+
+														}
+													}
+												}
+											} */
+
+											/* 
+												Created By    :- Created By Zainal Arifin, Date : 2 April 2018
+												Task          :- SG-17 Open Shopping Cart after open order
+												Page          :- Order Page
+												File Location :- $BASE_PATH$/javascript/js-ezrx.js
+												Layout        :- Desktop
+											*/
+
+										}, 2000);
+
+									} else {
+										reposisitonFieldOrderingReq();
+									}
+								}, 1000);
+
+							}
+
+							reposisitonFieldOrderingReq();
+
+							/* 
+								Created By    :- Created By Zainal Arifin, Date : 29 March 2018
+								Task          :- Move Field orderingRequestNoMoreThan90Characters_t and customerPORef_t
+								Page          :- Model Configuration
+								File Location :- $BASE_PATH$/javascript/js-tablet.js
+								Layout        :- Desktop
+							*/
+
+						}
 						
 						$("body").on("click touchend","#tab-orderAudit",function(e){
 							
@@ -1317,6 +1575,7 @@ $(document).ready(function() {
 										$( $("#auditTable table").closest(".ui-corner-all") ).children()[0].remove();
 										$($( $("#auditTable table").closest(".ui-corner-all") ).children()[0]).css("width", "100%");
 										$('#auditTable table').attr("style","width: 98%;");
+										select_customer();
 
 									}else{
 
@@ -1334,209 +1593,41 @@ $(document).ready(function() {
 
 						});
 						
-						/* 
-							Created By    :- Created By Zainal Arifin, Date : 29 March 2018
-							Task          :- Move Field orderingRequestNoMoreThan90Characters_t and customerPORef_t
-							Page          :- Model Configuration
-							File Location :- $BASE_PATH$/javascript/js-tablet.js
-							Layout        :- Desktop
-						*/
-						var reposisitonFieldOrderingReq = function () {
+						$("body").on("click touchend","#tab-draftOrder",function(e){
+							
 
-							setTimeout(function () {
-								if (isLoadingDone()) {
-									/* $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".group-content").css({
-										"margin-top": "30px",
-										"padding-top": "30px",
-										"border-top": "solid 2px #ddd"
-									}); */
+							/* restyling for draftorder, 13 May 2018, Zainal Arifin */
+							function draftOrder(){
 
-									setTimeout(function () {
+								setTimeout(function(){
 
-										/* 
-											Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-											Task          :- Reorder button in order page
-											Page          :- Order Page
-											File Location :- $BASE_PATH$/javascript/js-ezrx.js
-											Layout        :- Desktop
-										*/
+									if( $(".ui-loader.ui-corner-all").css("display") == "none" ){
 
-										$("#sticky-actions").find(".action-type-modify:contains('Home')").appendTo("#sticky-actions");
+										select_customer();
 
-										if (getQueryVariableUrl("flag") == "rightnow") {
-											$("#sticky-actions").find(".action-type-modify:contains('Home')").show();
-										}else{
-											$("#sticky-actions").find(".action-type-modify:contains('Home')").hide();
-										}
+									}else{
 
-										/* 
-											Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-											Task          :- Reorder button in order page
-											Page          :- Order Page
-											File Location :- $BASE_PATH$/javascript/js-ezrx.js
-											Layout        :- Desktop
-										*/
+										draftOrder();
 
-										/* var parent = $("#attribute-orderingRequestNoMoreThan90Characters_t").closest(".ui-collapsible-content");
-										$("#attribute-orderingRequestNoMoreThan90Characters_t").prependTo(parent);
-										$("#attribute-customerPORef_t").prependTo(parent); */
+									}
+				
+								}, 1000);
+								
+							}
 
-										/* SG-15 : Customer PO Ref is hiding behing keyboard when typing letters in order page, by Zainal Arifin */
-										$("#attribute-orderingRequestNoMoreThan90Characters_t").on("focus click", function(e){
-											e.preventDefault();
-											e.stopPropagation();
-											$(this).closest(".group-content").css("height", "1000px");
-										});
+							draftOrder();
+							
+							/* restyling for draftorder, 13 May 2018, Zainal Arifin */
 
-										$("#attribute-orderingRequestNoMoreThan90Characters_t").on("blur", function(){
-											$(this).closest(".ui-collapsible-content").css("height", "auto");											
-										});
-										/* SG-15 : Customer PO Ref is hiding behing keyboard when typing letters in order page, by Zainal Arifin */
+						});
 
-										$("#attribute-customerSearchHolder_HTML").removeClass("hidden");
-										function collapsedCustomerSearch(){
-											
-											setTimeout(function(){
-												var parent_customerSearchHolder = $("#attribute-customerSearchHolder_HTML").closest(".ui-collapsible-inset").addClass("ui-collapsible-collapsed");
-												if ($(parent_customerSearchHolder).hasClass("ui-collapsible-collapsed")) {
-													parent_customerSearchHolder.find(".ui-collapsible-heading").addClass("ui-collapsible-heading-collapsed");
-													parent_customerSearchHolder.find(".ui-collapsible-content").addClass("ui-collapsible-content-collapsed");
-													if (!$(parent_customerSearchHolder.find(".ui-collapsible-content")).hasClass("ui-collapsible-content-collapsed")) {
-														collapsedCustomerSearch();
-													}
-												} else {
-													collapsedCustomerSearch();
-												}
-											}, 500);
 
-										}
 
-										if ($("input[name='status_t']").val() != ""){
-											collapsedCustomerSearch();
-										}
-
-										//hide sold to id
-										if (check_nationality(2500) || check_nationality(2800)) {
-											$("#attribute-customerSoldToId_t").hide();
-										}
-
-																				/* 
-											Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-											Task          :- Open Shopping Cart after open order
-											Page          :- Order Page
-											File Location :- $BASE_PATH$/javascript/js-ezrx.js
-											Layout        :- Desktop
-										*/
-										if (check_nationality(2600)) {
-
-											var trans_id = $("input[name='transactionID_t']").val().replace(" ", "");
-											var isUserHaveModifySC = window.localStorage.getItem("orderItem_" + trans_id);
-											if (typeof isUserHaveModifySC == 'undefined') {
-												isUserHaveModifySC = false;
-												window.localStorage.setItem("orderItem_" + trans_id, isUserHaveModifySC);
-											}
-
-											if ($("#zPUserType").val().toLowerCase() != "csteam") {
-												if ($('#line-item-grid .lig-side-scroller>table tr.lig-row.child').length > 0) {
-													if (!isUserHaveModifySC) {
-
-														var autoSwipeIfLoadingDone = function () {
-															setTimeout(function () {
-																if (isLoadingDone()) {
-
-																	if ($("#swipe-sidebar").hasClass("sidebar-state-0")) {
-																		$('.sidebar-handle').click();
-																		autoSwipeIfLoadingDone();
-																	} else {
-																		redirectConfigPage();
-																	}
-
-																	function redirectConfigPage() {
-
-																		if ($("#swipe-sidebar").hasClass("sidebar-state-1")) {
-
-																			// if have item on cart
-																			var sliderOut = setInterval(function () {
-																				if ($('.sidebar-state-1').attr('style').includes('right: 0px;')) {
-																					clearInterval(sliderOut);
-
-																					setTimeout(function () {
-																						if ($('#swipe-sidebar .lig-row').hasClass('parent')) {
-																							//    alert('have checkbox');
-																							var checkbox = $('.lig-row.parent td.lig-select .ui-checkbox input[name="_line_item_list"]');
-																							var ebtn = $('#button-bar #lig-sticky-actions button:contains("Edit Shopping Cart")');
-																							var ebtn2 = $('#popup-moreBtns-lig-popup li a.ui-btn:contains("Edit Shopping Cart")');
-																							checkbox.prop('checked', true);
-
-																							var checkboxInterval = setInterval(function () {
-
-																								var checkFirstChild = checkbox.is(':checked');
-																								if (checkFirstChild === true) {
-																									clearInterval(checkboxInterval);
-
-																									if (ebtn.length == 1) {
-																										ebtn.click();
-																									} else {
-																										ebtn2.click();
-																									}
-
-																								}
-
-																							}, 100);
-
-																						} else {
-
-																							$('#lig-sticky-actions button:visible').click();
-
-																						}
-																					}, 1000);
-																				}
-																			}, 100);
-																		}
-																	}
-																} else {
-																	autoSwipeIfLoadingDone();
-																}
-															}, 500);
-														}
-
-														autoSwipeIfLoadingDone();
-
-													}
-												}
-											}
-										}
-
-										/* 
-											Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-											Task          :- Open Shopping Cart after open order
-											Page          :- Order Page
-											File Location :- $BASE_PATH$/javascript/js-ezrx.js
-											Layout        :- Desktop
-										*/
-
-									}, 2000);
-
-								} else {
-									reposisitonFieldOrderingReq();
-								}
-							}, 1000);
-
-						}
-
-						reposisitonFieldOrderingReq();
-
-						/* 
-							Created By    :- Created By Zainal Arifin, Date : 29 March 2018
-							Task          :- Move Field orderingRequestNoMoreThan90Characters_t and customerPORef_t
-							Page          :- Model Configuration
-							File Location :- $BASE_PATH$/javascript/js-tablet.js
-							Layout        :- Desktop
-						*/
+						select_customer();						
 
 				 }
 				
-			 }
+			}
 			 
 	}, 2500);
 });

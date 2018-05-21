@@ -556,6 +556,10 @@
                 $("input[name = _line_item_list]").change(function() {
                     itemCheckBonus($(this));
                 });
+                
+                $("a[name='delete_line_items']").on("click", function(){
+                    $("input[name='_line_item_list']:checked:disabled").attr("disabled", false);
+                });
 
                 // AUDIT LOG
                 $('div[name = materialAuditTableDiv]').each(function() {
@@ -831,8 +835,10 @@
             var childTr = currTr.nextUntil("tr.child-line-item").find('td:first-child').find('input[name*=_line_item_list]');
             if (checked === true) {
                 childTr.prop('checked', true);
+                childTr.prop('disabled', true);
             } else {
                 childTr.prop('checked', false);
+                childTr.prop('disabled', false);                          
             }
         } else if (type2 == 'Bonus') {
 
@@ -905,37 +911,48 @@
 
             // check shopping cart list
             for (var j = 0; j < cartRowLength; j++) {
-                var cartId = $($(cartRow[j]).find('td.cell-material input[name="material"]')).val();
-                var matDesc = $($(cartRow[j]).find('td.cell-materialDescription input[name="materialDescription"]')).val();
-                cartID.push(cartId);
-                currentCart.push({
-                    'cartId': cartId,
-                    'matDesc': matDesc
-                });
-                if (currentId === cartId) {
-                    showError();
-                    return;
+                if( $($(cartRow[j]).find('td.cell-type input[name="type"]')).val().toLowerCase() == "comm" ){
+                    var cartId = $($(cartRow[j]).find('td.cell-material input[name="material"]')).val();
+                    var matDesc = $($(cartRow[j]).find('td.cell-materialDescription input[name="materialDescription"]')).val();
+                    cartID.push(cartId);
+                    currentCart.push({
+                        'cartId': cartId,
+                        'matDesc': matDesc
+                    });
+                    if (currentId === cartId) {
+                        showError();
+                        return;
+                    }   
                 }
             }
 
+            var addedToBonus = [];
+            console.log(cartID);
             for (var k = 0; k < cartID.length; k++) {
                 var html = "";
-                // console.log( cartID, currentCart );
-                if (cartID[k + 1] !== cartID[k]) {
-                    if (cartID[k] !== undefined) {
-                        html += '<option value="' + currentCart[k].cartId + '">' + currentCart[k].cartId + ' ' + currentCart[k].matDesc + '</option>';
+                console.log(cartID[k], addedToBonus.indexOf(cartID[k]) == -1);
+                if(typeof(cartID[k]) !== 'undefined' ){
+                    if(addedToBonus.indexOf(cartID[k]) == -1 ){
+                        addedToBonus.push(cartID[k]);
+                        html += '<option value="' + currentCart[k].cartId + '">' + currentCart[k].cartId + ' ' + currentCart[k].matDesc + '</option>';                        
                     }
                 }
+                // console.log( cartID, currentCart );
+                // console.log( cartID[k + 1], cartID[k] );
+                /* if (cartID[k + 1] !== cartID[k]) {
+                    if (cartID[k] !== undefined) {
+                    }
+                } */
 
                 optionHtml.push(html);
             }
 
-            // console.log(optionHtml);
+            console.log("optionHTML", optionHtml);            
 
             addItem = true;
             if (addItem) {
                 hideError();
-                cloneItem();
+                cloneItem(optionHtml);
             }
 
         } else {
@@ -943,7 +960,7 @@
             cloneItem();
         }
 
-        function cloneItem() {
+        function cloneItem(optionHtml) {
            // debugger;
             var tableObj = document.getElementById("selectedMatTableBody"); //Selected Materials Table
             var clonedTrObj = trObj.cloneNode(true); //Clone ROW
@@ -976,7 +993,8 @@
                 clonedTrObj.deleteCell(3);
             }
             tableObj.appendChild(clonedTrObj);
-            itemBonusObj.innerHTML = '<select name="itemBonus" id="itemBonus" style="width:100%"><option value=""></option>' + optionHtml + '</select>';
+            console.log("optionHTML", optionHtml, optionHtml.join());            
+            itemBonusObj.innerHTML = '<select name="itemBonus" id="itemBonus" style="width:100%"><option value=""></option>' + optionHtml.join() + '</select>';
             removeObj.innerHTML = "<a href='#' class = 'selected-remove'><a>";
             quantityObj.innerHTML = '<input style="width: 40px;" class="text-field attribute-field" name="selectedQty" tabindex=" ' + tabNum + ' " value="" type="text">';
 
@@ -1231,20 +1249,20 @@
 
             if(check_nationality(2800)){
                 if (isMobile()) {
-                    $("#materialArrayset").find("input[name='materialAndDesc']").map(function (index, data) {
+                    /* $("#materialArrayset").find("input[name='materialAndDesc']").map(function (index, data) {
                         var materialDesc = $(data).closest("tr").find("input[name='materialDescription']").val();
                         var typeMaterialandCode = $(data).val().replace(materialDesc, "").split("-");
                         console.log( $("select[name='itemBonus']").find("option[value='" + typeMaterialandCode[1] + "']") );
                         $("select[name='itemBonus']").find("option[value='" + typeMaterialandCode[1] + "']").remove();
-                    });
+                    }); */
                 } else {
-                    $("#materialArrayset").find("input[name='type']").map(function (index, data) {
+                    /* $("#materialArrayset").find("input[name='type']").map(function (index, data) {
                         if ($(data).val().toLowerCase() == "bonus") {
                             var id = $(data).attr("id").replace("type-", "");
                             var code_material = $("#material-" + id).val();
                             $("select[name='itemBonus']").find("option[value='" + code_material + "']").remove();
                         }
-                    });
+                    }); */
                 }
             }
 
@@ -1825,11 +1843,13 @@
             ajaxUrl = "https://" + sub + ".bigmachines.com/rest/v3/customCustomer_Master_2800";
         }
 
+	    searchKeyword = $("#searchCustomerInput").val().replace(/%/gi, " ").trim();        
+
         $.ajax({
             //url: 'https://zuelligpharmatest1.bigmachines.com/rest/v3/customCustomer_Master?q={"contact_firstname":"Biomedical Science Institutes"}',
             url: ajaxUrl,
           //data: "q={'custmasterstring':{$regex:'/" + encodeURIComponent($('#searchCustomerInput').val()) + "/i'}}&orderby=customer_name:asc"
-            data: 'q={"custmasterstring":{$regex:"/' + encodeURIComponent($("#searchCustomerInput").val()) + '/i"}}&orderby=customer_name:asc'
+            data: 'q={"custmasterstring":{$regex:"/' + encodeURIComponent( searchKeyword ) + '/i"}}&orderby=customer_name:asc'
         }).done(function(response) {
             console.log('jquery done');
             var data = response.items;
@@ -1974,6 +1994,7 @@
             $('#searchCustomerInput').keyup(function() {
                 var inputLength = $('#searchCustomerInput').val().length;
                 if (inputLength === 3 || inputLength > 3) {
+
                     seachCustomer.search($(this).val(), true, true).draw();
                     $('.search-cust_wrapper').show();
                 } else {
@@ -2053,7 +2074,7 @@
                                 disabled = "disabled";
                             }
                             console.log(full);
-							data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '" data-suspended="'+full[13]+'" '+disabled+' >';
+							data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '" data-suspended="'+full[13]+'"  data-customersold="'+full[1]+'" '+disabled+' >';
 						}else if(check_nationality(2800)){
                             if( zPUserType == "principal" ){
 								data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2]+ '$$' + full[4] + '$$' +full[11] +'">';
@@ -2088,24 +2109,58 @@
                     }));
                 }
 
+                $("input[name='searchCust']").off();
+                $("input[name='searchCust']").on('click', function() {
+                    
+                    var selectCustomerSoldID = function(customersold){
+                        $("#selectedCustomerSoldtoID").val( customersold );					                    
+                    }
+        
+                    if( check_nationality(2500) ){
+                        selectCustomerSoldID( $(this).attr("data-customersold")  );
+                    }
+
+                    delete_line_item_func($(this).val());
+                    
+                });
+                
+
             },
         });
 
-        seachCustomer.on( 'draw', function () {
+        /* seachCustomer.on( 'draw', function () {
 
 			console.log("draw dt");
 			$("input[name='searchCust']").off();
 		    $("input[name='searchCust']").on('click', function() {
-	             //console.log('777.111111 ===>>> ',$(this).val());
+                 //console.log('777.111111 ===>>> ',$(this).val());
+                
+                var selectCustomerSoldID = function(customersold){
+                    //FORMAT soldtoid$$shiptoid$$billtoid
+					$("#selectedCustomerSoldtoID").val( customersold );					                    
+                }
+    
+                if( check_nationality(2500) ){
+                    selectCustomerSoldID( $(this).attr("data-customersold")  );
+                }
+
 				delete_line_item_func($(this).val());
 				
-			});
-
-        } );
+            });
+            
+        } ); */
         
-        $("#searchCustomer").on('click',"input[name='searchCust']", function() {
+        /* $("#searchCustomer").on('click',"input[name='searchCust']", function() {
         //$("input[name='searchCust']").on('click', function() {
-            mobile_delete_line_item_func($(this).val());
+            var selectCustomerSoldID = function(){
+                //FORMAT soldtoid$$shiptoid$$billtoid
+				$("#selectedCustomerSoldtoID").val( $(this).attr("data-customersold") );                
+            }
+
+            if( check_nationality(2500) ){
+                selectCustomerSoldID();
+            }
+            mobile_delete_line_item_func($(this).val()); */
 
             /*var selectedCustShipID = $(this).val();
             $("#selectedCustomerDetail").val(selectedCustShipID);
@@ -2118,7 +2173,7 @@
                     $('#popup-moreBtns-popup ul.popup-list li:first-child').click();
                 }
             }, 500);*/
-        });
+        // });
         /*
             Start : 10 Nov 2017
             Task  : Customer Type-ahead Search
@@ -2126,7 +2181,8 @@
             File Location : $BASE_PATH$/image/javascript/js-ezrx.js
             Layout : Tablet
         */
-        var searchCust99 = seachCustomer.column(3).search($('#searchCustomerInput').val(), true, true).draw();
+        var searchKeyword = $('#searchCustomerInput').val().replace(/%/gi, " ").trim();
+        var searchCust99 = seachCustomer.column(3).search(searchKeyword, false, false).draw();
         var info = searchCust99.page.info();
         if (info.recordsDisplay === 0) {
             seachCustomer2 = seachCustomer = $('#searchCustomer').DataTable({
@@ -2187,6 +2243,14 @@
 
             });
             $("input[name='searchCust']").on('click', function() {
+                
+                var selectCustomerSoldID = function(customersold){
+                    $("#selectedCustomerSoldtoID").val( customersold );					                    
+                }
+    
+                if( check_nationality(2500) ){
+                    selectCustomerSoldID( $(this).attr("data-customersold")  );
+                }
 
                 mobile_delete_line_item_func($(this).val());
                 /*var selectedCustShipID = $(this).val();
@@ -2776,7 +2840,7 @@
 
                                 // if have item on cart
                                 var sliderOut = setInterval(function () {
-                                    if ($('.sidebar-state-1').attr('style').includes('right: 0px;')) {
+                                    if ($('.sidebar-state-1').css('right').includes('right: 0px;')) {
                                         clearInterval(sliderOut);
 
                                         setTimeout(function () {
@@ -3186,6 +3250,14 @@
 
         $("input[name='topCust']").on('click', function() {
 
+            var selectCustomerSoldID = function(customersold){
+                $("#selectedCustomerSoldtoID").val( customersold );					                    
+            }
+
+            if( check_nationality(2500) ){
+                selectCustomerSoldID( $(this).attr("data-customersold")  );
+            }
+            
             mobile_delete_line_item_func($(this).val());
 
             /*var selectedCustShipID = $(this).val();
@@ -3366,6 +3438,26 @@
         }
     }
 
+    function getQueryVariableUrl(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) { return pair[1]; }
+        }
+        return (false);
+    }
+
+    function dss_view(){
+        $("#jg-tool-search").closest(".jg-item-tool").hide();
+        $("#jg-tool-manage").closest(".jg-item-tool").hide();
+        $("#jg-tool-refine").closest(".jg-item-tool").hide();
+        $("#jg-tool-folder-shoppingcart").closest(".jg-item-tool").hide();
+        $(".my_order").closest(".jg-item-tool").hide();
+        var parent = $(".new_order").closest(".jg-list-tool");
+        $( parent ).prepend( $(".new_order:contains('New Order')").closest(".jg-item-tool") );
+    }
+
     function desktop_newlayout() {
         /* UI */
         /*
@@ -3407,11 +3499,18 @@
                         var identificationUser = "https://" + instanceName + ".bigmachines.com/rest/v4/customBU_Identification";
                         var datauser = "q={%22login_id%22:%20%22" + userName + "%22}";
 
+                        var usernameGetCustomer = "CPQAPIUser";
+                        var passwordGetCustomer = "csC(#15^14";
+
                         $.ajax({
                             url: identificationUser,
                             data: datauser,
                             contentType: "application/json; charset=utf-8",
-                            type: 'GET'
+				            // header: { "Authorization": "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer) },                            
+                            type: 'GET',
+                            /* beforeSend: function (xhr) {
+                                xhr.setRequestHeader ("Authorization", "Basic " + btoa(usernameGetCustomer + ":" + passwordGetCustomer));
+                            }, */
                         }).done(function (resultIdentification) {
                             if (resultIdentification.items.length > 0) {
                                 var user = resultIdentification.items[0];
@@ -3441,6 +3540,15 @@
                     }
                     hideMenuForCreditControlUser();
                     clearStorageOrderItem();
+
+                    if(getQueryVariableUrl("flag") == "rightnow"){
+                        window.sessionStorage.setItem("flag", "rightnow");
+                    }
+
+                    var flag = window.sessionStorage.getItem("flag");
+                    if(flag == "rightnow"){
+                        dss_view();
+                    }
 
                 } else if (pagetitle == 'transaction') {
                     /*
@@ -3637,7 +3745,7 @@
 
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 17 April 2018
-                        Task          :- Disable user submit order repeatly
+                        Task          :- row#39 Disable user submit order repeatly
                         Page          :- Order Page
                         File Location :- $BASE_PATH$/javascript/js-ezrx.js
                         Layout        :- Desktop
@@ -3733,7 +3841,7 @@
       
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 17 April 2018
-                        Task          :- Disable user submit order repeatly
+                        Task          :- row#39 Disable user submit order repeatly
                         Page          :- Order Page
                         File Location :- $BASE_PATH$/javascript/js-ezrx.js
                         Layout        :- Desktop
@@ -3975,25 +4083,28 @@
         }
 
         /*  add description on hover menu   */
-        $("li.jg-item-mainmenu:not('.jg-separator')").each(function(i, data) {
-            var button = $(data).children();
-            var description = $(button).data('description');
-            $(this).mouseenter(function() {
-                var spanDescription = '<div>' + description + '</div>';
-                $('#myMenuModal').css({
-                    "background": "#FFFFFF",
-                    "box-shadow": "0 2px 4px 0 rgba(0,0,0,0.30)",
-                    "border-radius": "4px",
-                    "width": "100px",
-                    "text-align": "center",
-                });
-                $('#myMenuModal').addClass("hover-modal-content").html(spanDescription);
-                $('#myMenuModal').css("display", "block");
-                $(this).mouseleave(function() {
-                    $('#myMenuModal').css("display", "none");
+        if( $("li.jg-item-mainmenu:not('.jg-separator')").length > 0 )
+        {
+            $("li.jg-item-mainmenu:not('.jg-separator')").each(function(i, data) {
+                var button = $(data).children();
+                var description = $(button).data('description');
+                $(this).mouseenter(function() {
+                    var spanDescription = '<div>' + description + '</div>';
+                    $('#myMenuModal').css({
+                        "background": "#FFFFFF",
+                        "box-shadow": "0 2px 4px 0 rgba(0,0,0,0.30)",
+                        "border-radius": "4px",
+                        "width": "100px",
+                        "text-align": "center",
+                    });
+                    $('#myMenuModal').addClass("hover-modal-content").html(spanDescription);
+                    $('#myMenuModal').css("display", "block");
+                    $(this).mouseleave(function() {
+                        $('#myMenuModal').css("display", "none");
+                    });
                 });
             });
-        });
+        }
 
         /*
             Show modal Description of left side menu.
@@ -4235,11 +4346,34 @@
             )
 			.append($("<li class='jg-item-tool'><a href='/commerce/buyside/commerce_manager.jsp?bm_cm_process_id=36244034&from_hp=true&_bm_trail_refresh_=true' id='jg-submenu-myorders' class='jg-linkbtn my_order' data-description='All Orders' >All Orders</a></li>"))
             .append($("<li class='jg-item-tool'><a href='#' id='jg-submenu-copyorder' class='jg-linkbtn new_order'>Copy Order</a></li>"));
+        
+        function getQueryVariableUrl(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) { return pair[1]; }
+            }
+            return (false);
+        }
 
+        if(getQueryVariableUrl("flag") == "rightnow"){
+            window.sessionStorage.setItem("flag", "rightnow");
+        }
+
+        var flag = window.sessionStorage.getItem("flag");
+        var dss_showing_menu = [ "[past orders]", "[template orders]" ];
         // dropdown
+        // console.log( $('select[name=new_search_id]').find("option") );
         $('select[name=new_search_id]').find("option").each(function (index, data) {
+            console.log( $(data).text().trim().toLowerCase() );
             if ($(data).text().trim().toLowerCase() == "my approval search") {
                 $(data).remove();
+            }
+            if(flag == "rightnow"){
+                if( dss_showing_menu.indexOf( $(data).text().trim().toLowerCase() ) == -1 ){
+                    $(data).remove();                    
+                }
             }
         });
         $('#jg-tool-select').html($('select[name=new_search_id]').html());
@@ -4250,7 +4384,15 @@
             window.localStorage.setItem("new_search_id", "true");
         });
 
-        var readyOrderPage = function () {
+        /* 
+            Start : 27 April 2017
+            Task  : SG-42 - 8000349641 On selection of "Search By Date Ranges" or "Search By Customer and Status" from search views drop dow open Refine popup(Trigger click even on Refine icon).
+            Page  : Add Material Page
+            File Location : $BASE_PATH$/image/javascript/js-ezrx.js
+            Layout : Desktop
+        */
+
+        /* var readyOrderPage = function () {
             setTimeout(function () {
                 if (isLoadingDone()) {
                     var selectedNewSearchId = $('select[name=new_search_id] option:selected').text().trim().toLowerCase();
@@ -4265,7 +4407,15 @@
         }
         if (window.localStorage.getItem("new_search_id") == "true") {
             readyOrderPage(); 
-        }
+        } */
+
+        /* 
+            Start : 27 April 2017
+            Task  : SG-42 - 8000349641 On selection of "Search By Date Ranges" or "Search By Customer and Status" from search views drop dow open Refine popup(Trigger click even on Refine icon).
+            Page  : Add Material Page
+            File Location : $BASE_PATH$/image/javascript/js-ezrx.js
+            Layout : Desktop
+        */
 
         /*
             Start : 8 March 2017
@@ -4962,12 +5112,13 @@
 
         /* 
             Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-            Task          :- Open Shopping Cart after open order
+            Task          :- SG-17 Open Shopping Cart after open order
             Page          :- Order Page
             File Location :- $BASE_PATH$/javascript/js-ezrx.js
             Layout        :- Desktop
         */
-        if(check_nationality(2600)){
+        
+        /* if(check_nationality(2600)){
 
             var trans_id = ($("#readonly_1_transactionID_t").text().length > 0)? $("#readonly_1_transactionID_t").text() : $("#transactionID_t").val();
             var isUserHaveModifySC = window.localStorage.getItem("orderItem_" + trans_id);
@@ -4989,11 +5140,11 @@
                     }
                 }
             }
-        }
+        } */
 
         /* 
             Created By    :- Created By Zainal Arifin, Date : 2 April 2018
-            Task          :- Open Shopping Cart after open order
+            Task          :- SG-17 Open Shopping Cart after open order
             Page          :- Order Page
             File Location :- $BASE_PATH$/javascript/js-ezrx.js
             Layout        :- Desktop
@@ -5908,9 +6059,9 @@
         layout = layout || 'Desktop';//Tablet
 
         if( getQueryVariableUrl("flag") == "rightnow" ){
-            localStorage.setItem("flag", "rightnow");
+            window.sessionStorage.setItem("flag", "rightnow");
         }
-        var flag = localStorage.getItem("flag");
+        var flag = window.sessionStorage.getItem("flag");
 
         if( flag == "rightnow" ){
             var desktopMenu =  document.querySelector('.jg-box-sidenav');
@@ -5927,7 +6078,7 @@
             $("#"+target_button).closest("table").css({"float": "right"});
             $("#"+target_button).on("click", function(e){
                 e.preventDefault();
-                localStorage.removeItem("flag");
+                // window.sessionStorage.removeItem("flag");
                 setTimeout(function(){
                     window.open('', '_self', '');
                     window.close();
@@ -5963,7 +6114,7 @@
                 $(".action.action-type-modify").each(function (index, data) {
                    if ($(data).text().trim().toLowerCase() == "home" ){
                        $(data).on("click", function(){
-                           localStorage.removeItem("flag");
+                        //    localStorage.removeItem("flag");
                            window.close();
                        });
                    }
@@ -6191,6 +6342,15 @@
                     $(".topMenuModified").css("float", "none");
                     $(".jg-item-mainmenu").css("width", "70px");
                     $(".jg-box-topbar").append("<div style='float:right; font-size: 14px; padding: 20px;' >" + window._BM_USER_LOGIN + "</div>");
+                    if(getQueryVariableUrl("flag") == "rightnow"){
+                        window.sessionStorage.setItem("flag", "rightnow");
+                    }
+
+                    var flag = window.sessionStorage.getItem("flag");
+                    if(flag == "rightnow"){
+                        dss_view();
+                    }
+
                 } else if (pagetitle == "zuellig pharma products" || pagetitle == "zuellig pharma order processData") {
                     console.log('zuellig pharma products');
                 } else if (pagetitle == 'zuellig pharma order process') {
@@ -6224,7 +6384,7 @@
                 } else if (pagetitle == "change password"){
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 27 April 2018
-                        Task          :- Change Password for mobile
+                        Task          :- SG-40 Change Password for mobile
                         Page          :- Model Configuration
                         File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
                         Layout        :- Desktop
@@ -6289,7 +6449,7 @@
 
                     /* 
                         Created By    :- Created By Zainal Arifin, Date : 27 April 2018
-                        Task          :- Change Password for mobile
+                        Task          :- SG-40 Change Password for mobile
                         Page          :- Model Configuration
                         File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
                         Layout        :- Desktop
@@ -6319,24 +6479,42 @@
                 if ($("#tab-draftOrder").exists()) {
                     //[new] order
                     console.log("New order");
-                    mobile_orderpage();
-                    mobile_customerSearch();
-                    if ($('#frequentlyAccessedCustomers_t').length) {
-                        var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
-                        console.log("frequentlyAccessedCustomers_t is", (customerDetails.length > 0) ? "Not Empty" : "Empty", "The data is : " + customerDetails);                        
-                        if (customerDetails.length > 0) {
-                            window.localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
-                        } else {
-                            customerDetails = (window.localStorage.getItem("frequentlyAccessedCustomers_t") != null ? window.localStorage.getItem("frequentlyAccessedCustomers_t") : "");                            
-                        }
-                        $("#frequentlyAccessedCustomers_t").val("");
-                        if (customerDetails.length == 0) {
-                            return true;
-                        } else {
-                            mobile_topCustomerList(customerDetails);
-                            mobile_toggleTopCustomer();
+                    
+                    var customer_selection = function(){
+                        mobile_orderpage();
+                        mobile_customerSearch();
+                        if ($('#frequentlyAccessedCustomers_t').length) {
+                            var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
+                            console.log("frequentlyAccessedCustomers_t is", (customerDetails.length > 0) ? "Not Empty" : "Empty", "The data is : " + customerDetails);                        
+                            if (customerDetails.length > 0) {
+                                window.localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
+                            } else {
+                                customerDetails = (window.localStorage.getItem("frequentlyAccessedCustomers_t") != null ? window.localStorage.getItem("frequentlyAccessedCustomers_t") : "");                            
+                            }
+                            $("#frequentlyAccessedCustomers_t").val("");
+                            if (customerDetails.length == 0) {
+                                return true;
+                            } else {
+                                mobile_topCustomerList(customerDetails);
+                                mobile_toggleTopCustomer();
+                            }
                         }
                     }
+
+                    $("body").on("click touchend","#tab-draftOrder",function(e){
+                        function draftOrder(){
+                          setTimeout(function(){
+                            if( $(".ui-loader.ui-corner-all").css("display") == "none" ){
+                                customer_selection();
+                            }else{
+                              draftOrder();
+                            }
+                          }, 1000);
+                        }
+                        draftOrder();
+                    });
+                    
+                    customer_selection();
 
                     //VMLSINOZP-61 start
                     //console.log('VMLSINOZP-61',1);
@@ -6734,27 +6912,43 @@
                 //[process] order
                 console.log("Proses Order page");
 
-                mobile_orderpage();
-                mobile_customerSearch();
+                var customer_selection = function(){
+                    mobile_orderpage();
+                    mobile_customerSearch();
 
-                if ($('#frequentlyAccessedCustomers_t').length > 0) {
-                    var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
-                    console.log("frequentlyAccessedCustomers_t is", (customerDetails.length > 0) ? "Not Empty" : "Empty", "The data is : " + customerDetails);                    
-                    if (customerDetails.length > 0) {
-                        localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
-                    } else {
-                        customerDetails = (localStorage.getItem("frequentlyAccessedCustomers_t") != null ? localStorage.getItem("frequentlyAccessedCustomers_t") : "");                        
-                    }
-                    $("#frequentlyAccessedCustomers_t").val("");
-                    if (customerDetails.length == 0) {
-                        return true;
-                    } else {
-                        mobile_topCustomerList(customerDetails);
-                        mobile_toggleTopCustomer();
+                    if ($('#frequentlyAccessedCustomers_t').length > 0) {
+                        var customerDetails = $("#frequentlyAccessedCustomers_t").val().replace(/~/gi, "");
+                        console.log("frequentlyAccessedCustomers_t is", (customerDetails.length > 0) ? "Not Empty" : "Empty", "The data is : " + customerDetails);                    
+                        if (customerDetails.length > 0) {
+                            localStorage.setItem("frequentlyAccessedCustomers_t", customerDetails);
+                        } else {
+                            customerDetails = (localStorage.getItem("frequentlyAccessedCustomers_t") != null ? localStorage.getItem("frequentlyAccessedCustomers_t") : "");                        
+                        }
+                        $("#frequentlyAccessedCustomers_t").val("");
+                        if (customerDetails.length == 0) {
+                            return true;
+                        } else {
+                            mobile_topCustomerList(customerDetails);
+                            mobile_toggleTopCustomer();
+                        }
                     }
                 }
 
-
+                $("body").on("click touchend","#tab-draftOrder",function(e){
+                    function draftOrder(){
+                      setTimeout(function(){
+                        if( $(".ui-loader.ui-corner-all").css("display") == "none" ){
+                            customer_selection();
+                        }else{
+                          draftOrder();
+                        }
+                      }, 1000);
+                    }
+                    draftOrder();
+                });
+                
+                customer_selection();
+                
                 /* if filterPage contains with commerce_manager.jsp */
             } else if (filterPage.search("commerce_manager.jsp") != -1) {
                 //Commerce Management
@@ -6768,7 +6962,7 @@
             } else if (filterPage.search("change-password") != -1){
                 /* 
                     Created By    :- Created By Zainal Arifin, Date : 27 April 2018
-                    Task          :- Change Password for mobile
+                    Task          :- SG-40 Change Password for mobile
                     Page          :- Model Configuration
                     File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
                     Layout        :- Desktop
@@ -6834,7 +7028,7 @@
 
                 /* 
                     Created By    :- Created By Zainal Arifin, Date : 27 April 2018
-                    Task          :- Change Password for mobile
+                    Task          :- SG-40 Change Password for mobile
                     Page          :- Model Configuration
                     File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
                     Layout        :- Desktop
@@ -7158,11 +7352,13 @@
                     //recursive checking table has load data
                     waitShoppingCartLoad();
                 }
+                /* SG-20, On click of Edit Shopping cart throws 500 error. Created by Zainal Arifin */                
                 if ($("#line-item-grid table tr.parent").length > 0){
                     var docNum = $("#line-item-grid table tr.parent").find("input[name=_line_item_list]").val();
                 }else{
                     var docNum = $("#line-item-grid table").find("input[name=_line_item_list]").val();
                 }
+                /* SG-20, On click of Edit Shopping cart throws 500 error. Created by Zainal Arifin */                
 				if(docNum != undefined){
 					currentModelNumber = docNum;
                 }
@@ -7214,13 +7410,15 @@
 				if(isLineGirdOpen){
 					//if( $("#line-item-grid table tr.parent").legth > 0){
                         //documentNumber2 = $("#line-item-grid table tr.parent").clone();//$("tr[data-document-number='2']").clone();
+                    /* SG-20, On click of Edit Shopping cart throws 500 error. Created by Zainal Arifin */                        
                     if ($("#line-item-grid table tr.parent").length > 0 ){
 						currentModelNumber = $("#line-item-grid table tr.parent").find("input[name=_line_item_list]").val();
                     }else{
 						currentModelNumber = $("#line-item-grid table").find("input[name=_line_item_list]").val();
                     }
-                        $("#line-item-grid table tr.parent").find("input[name=_line_item_list]").hide();
+                    $("#line-item-grid table tr.parent").find("input[name=_line_item_list]").hide();
                     documentNumber2 = $("#line-item-grid table tr.parent").html();
+                    /* SG-20, On click of Edit Shopping cart throws 500 error. Created by Zainal Arifin */                        
 						console.log(">>>>"+currentModelNumber);
 					//}
 					mobile_checkItemOnCart();
@@ -7467,9 +7665,9 @@ console.log("check_nationality", check_nationality(2601) );
                     var updateMsg = "<div id='update-alert' class='updateMsg'>Please click 'update' to proceed.</div>";
                     $('#materialArrayset').after(updateMsg);
                     $("#update-alert").css("padding-bottom", "30px");
-                    if ($("#btn-cart-save").length > 0) {
+                    if ($("#btn-cart-save").length > 0 || $(".button-save").length > 0) {
                         if (isMobile()) {
-                            $(".button-save").attr("disabled");
+                            $(".button-save").attr("disabled", true);
                         } else {
                             $("#btn-cart-save").attr("disabled", true).css({ "background-color": "grey" });
                         }
@@ -7481,7 +7679,7 @@ console.log("check_nationality", check_nationality(2601) );
 
             function enabled_btn_save_remove_alert() {
                 $("#update-alert").remove();
-                if ($("#btn-cart-save").length > 0) {
+                if ($("#btn-cart-save").length > 0 || $(".button-save").length > 0) {
                     if (isMobile()) {
                         $(".button-save").removeAttr("disabled");
                     } else {
@@ -7497,6 +7695,7 @@ console.log("check_nationality", check_nationality(2601) );
             var var_qtyBonus = ($("td.cell-additionalMaterialQty").length > 0) ? "td.cell-additionalMaterialQty" : "td.cell-additionalMaterialQty";
             var var_bonusOverride = ($("td.cell-overrideBonusQty").length > 0) ? "td.cell-overrideBonusQty" : "td.cell-overrideBonusQty";
             var var_totalPrice_Currency = "td.cell-totalPrice_currency";
+            var var_comments = ($("td.cell-comments").length > 0) ? "td.cell-comments" : "td.cell-comments";            
 
             var redColor = "rgb(255, 0, 0)";
             var blackColor = "rgb(0, 0, 0)";
@@ -7506,7 +7705,7 @@ console.log("check_nationality", check_nationality(2601) );
             var listEditedField = {};
             var var_find_text = (isMobile()) ? ".form-field" : ".text-field";
 
-            $(var_qty + ", " + var_overrideprice + ", " + var_qtyBonus + ", " + var_bonusOverride).off();
+            $(var_qty + ", " + var_overrideprice + ", " + var_qtyBonus + ", " + var_bonusOverride + ", " + var_comments).off();
 
             function isStockAvailable(id){
                 id = Math.abs(id);
@@ -7534,7 +7733,10 @@ console.log("check_nationality", check_nationality(2601) );
                 var overridePriceVal = $("#" + overridePriceString + id + "-display").val();
                 if (!isMobile()) {
                     var overridePriceValue = (overridePriceVal != "") ? overridePriceVal.slice(1) : 0.0;
+                }else{
+                    overridePriceValue = overridePriceVal;
                 }
+
                 if (overridePriceValue != basic_value_price) {
                     $("#" + overridePriceString + id + "-display").css("color", redColor);
                     /* if (!isMobile()) {
@@ -7551,16 +7753,28 @@ console.log("check_nationality", check_nationality(2601) );
 
             function inStock(data, id) {
                 var parent = $(data).closest("tr");
-                var isInStock = $(parent).find("input[id='inStock-" + id + "']").val().trim().toLowerCase();
-                var typeMaterial = $(parent).find("input[id='type-"+ id +"']").val().trim().toLowerCase();
-                if(typeMaterial != "bonus"){
-                    if (isInStock == "yes") {
-                        if (parseInt($(data).val()) > parseInt($("input[id='stockQty-" + id + "']").val())) {
+                console.log( parent, id );                
+                if( $(parent).find("input[id='inStock-" + id + "']").length > 0 ){
+                    var isInStock = $(parent).find("input[id='inStock-" + id + "']").val().trim().toLowerCase();
+                    var typeMaterial = $(parent).find("input[id='type-"+ id +"']").val().trim().toLowerCase();
+                    if(typeMaterial != "bonus"){
+                        if (isInStock == "yes") {
+                            if (parseInt($(data).val()) > parseInt($("input[id='stockQty-" + id + "']").val())) {
+                                $(data).css("color", redColor);
+                            }
+                        } else {
                             $(data).css("color", redColor);
                         }
+                    }
+                }else{
+                    isInStock = $( parent ).find("td#cell-inStock-"+id.replace("qty", "")).find("input[name='inStock']").val().trim().toLowerCase();
+                    // var typeMaterial = $(parent).find("input[id='type-"+ id +"']").val().trim().toLowerCase();
+                    if (isInStock == "yes") {
+                        $(data).css("color", blackColor);                           
                     } else {
                         $(data).css("color", redColor);
-                    }
+                    }                 
+
                 }
 
             }
@@ -7597,6 +7811,12 @@ console.log("check_nationality", check_nationality(2601) );
                     }
 
                 } else {
+
+                    if ($(this).closest(var_qty.replace("td", "")).length > 0) {
+                        id = $(this).attr("id").replace(var_qty.replace("td.cell-", "") + "-", "");
+                        inStock($(this), id);
+                    }
+
                     if ($(this).closest(var_overrideprice.replace("td", "")).length > 0) {
                         id = $(this).attr("id").replace(var_overrideprice.replace("td.cell-", ""), "").replace("-display", "");
                         override_price($(this), id);
@@ -7690,7 +7910,7 @@ console.log("check_nationality", check_nationality(2601) );
 
             });
 
-            $( var_qty + ", " + var_overrideprice + ", " + var_qtyBonus).find(var_find_text).on("click focus focusin", function () {
+            $( var_qty + ", " + var_overrideprice + ", " + var_qtyBonus + ", " + var_comments).find(var_find_text).on("click focus focusin", function () {
 
                 var id = "";
                 if ($(this).closest(var_qty.replace("td", "")).length > 0) {
@@ -7720,7 +7940,7 @@ console.log("check_nationality", check_nationality(2601) );
 
             });
 
-            $( var_qty + ", " + var_overrideprice + ", " + var_qtyBonus).find(var_find_text).on("keyup blur", function () {
+            $( var_qty + ", " + var_overrideprice + ", " + var_qtyBonus + ", " + var_comments).find(var_find_text).on("keyup blur", function () {
 
                 var id = "";
                 if ($(this).closest(var_qty.replace("td", "")).length > 0) {
@@ -8636,7 +8856,7 @@ console.log("check_nationality", check_nationality(2601) );
                 } else {
                     $(this).addClass('open');
                     $('.table-tooltip').remove();
-                    var table = '<table class="table-tooltip">' +
+                    var table = '<table class="table-tooltip" style="border:1px solid;" >' +
                         '<thead style="padding:5px;font-weight:bold"><tr style="background-color:#EEE;">' +
                         '<th style="border: 1px solid #999;padding:5px;">Ordered Qty</th>' +
                         '<th style="border: 1px solid #999;padding:5px;">Bonus Material</th>' +
@@ -8805,8 +9025,9 @@ console.log("check_nationality", check_nationality(2601) );
                                 right: '50%',
                                 position: 'absolute',
                                 transform: 'translate(50%, -50%)',
-                                top: '50%',
-                                width: '500px'
+                                bottom: '25%',
+                                width: '500px',
+                                border: '1px solid!important',
                             });
                         }
                     }

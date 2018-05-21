@@ -353,7 +353,6 @@ var changeCust = function(){
 var delete_line_item_func = function(selectedCustShipID){
 
 	//console.error('userDetectFunc',userDetectFunc());
-
 	if(userDetectFunc() === 'TW'){
 		var selectedCustShipID_TW = selectedCustShipID;
 	}
@@ -463,11 +462,11 @@ var loadAjax = function() {
 		ajaxUrl = "https://"+sub+".bigmachines.com/rest/v3/customCustomer_Master_2500";
 	}
 	*/
-	if(userCountry === "TW"){
+	/* if(userCountry === "TW"){
 		searchKeyword = $("#searchCustomerInput").val().replace(/ /gi, "%");
-	}else{
-		searchKeyword = $("#searchCustomerInput").val();		
-	}
+	}else{ */
+	searchKeyword = $("#searchCustomerInput").val().replace(/%/gi, " ").trim();
+	// }
 	//NEW AJAX URL FOR TAIWAN CSTEAM END
 	var param = 'q={"custmasterstring":{$regex:"/' + encodeURIComponent( searchKeyword ) + '/i"}}&orderby=customer_name:asc';
 	var ua = window.navigator.userAgent;
@@ -747,7 +746,7 @@ var searchCustList = function(dataSet, seachCustomer) {
 							if(full[13] == "Y"){
 								disabled = "disabled";
 							}
-							data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '" data-suspended="' + full[13] + '" '+disabled+'>';
+							data = '<input type="radio" name="searchCust" id= "searchCust" value="' + full[2] + '" data-suspended="' + full[13] + '" data-customersold="'+full[1]+'" '+disabled+'>';
 						} 
 						else if(userCountry === 'TW'){
 
@@ -788,9 +787,20 @@ var searchCustList = function(dataSet, seachCustomer) {
 			console.log("draw dt");
 			$("input[name='searchCust']").off();
 		    $("input[name='searchCust']").on('click', function() {
+
+				var selectCustomerSoldID = function(customersold){
+					// console.log( "input[name='searchCust']", customersold);
+					$("#selectedCustomerSoldtoID").val( customersold );
+					// console.log("#selectedCustomerSoldtoID", $("#selectedCustomerSoldtoID").val() );
+				}
+
+				if(userCountry == "PH"){
+					selectCustomerSoldID( $(this).data("customersold") );
+				}
+				// alert("Debugger on going, please dont make an issue");
 	             //console.log('777.111111 ===>>> ',$(this).val());
 				delete_line_item_func($(this).val());
-				
+
 			});
 
 			/*if(userCountry === 'PH'){
@@ -814,17 +824,32 @@ var searchCustList = function(dataSet, seachCustomer) {
 
 		});
 
-		seachCustomer.on( 'draw', function () {
+		// seachCustomer.on( 'draw', function () {
 
-			console.log("draw dt");
-			$("input[name='searchCust']").off();
-		    $("input[name='searchCust']").on('click', function() {
-	             //console.log('777.111111 ===>>> ',$(this).val());
-				delete_line_item_func($(this).val());
+		// 	console.log("draw dt");
+		// 	$("input[name='searchCust']").off();
+		//     $("input[name='searchCust']").on('click', function() {
+		// 		 //console.log('777.111111 ===>>> ',$(this).val());
+		// 		var selectCustomerSoldID = function(){
+		// 			//FORMAT soldtoid$$shiptoid$$billtoid
+		// 			console.log( $(this) );
+		// 			console.log( "input[name='searchCust']", $(this).data("customersold"), $(this).val() );					
+		// 			$("#selectedCustomerSoldtoID").val( $(this).data("customersold") );
+		// 			console.log("#selectedCustomerSoldtoID", $("#selectedCustomerSoldtoID").val() );
+		// 		}
+
+		// 		console.log(userCountry);
 				
-			});
+		// 		if(userCountry == "PH"){
+		// 			selectCustomerSoldID();
+		// 		}
+		// 		alert("Debugger on going, please dont make an issue");
+		// 		return true;
+		// 		delete_line_item_func($(this).val());
+				
+		// 	});
 
-		} );
+		// } );
 
 		js2('#searchCustomerInput').keyup(function(){
 			var inputLength = js2('#searchCustomerInput').val().length;
@@ -837,16 +862,47 @@ var searchCustList = function(dataSet, seachCustomer) {
 				    File Location : $BASE_PATH$/image/javascript/js-ezrx.js
 				    Layout : Tablet
 				*/
-				var keywordCustomer = js2(this).val();
-				seachCustomer.search('');								
-				if (keywordCustomer.indexOf("%") != -1) {
-					keywordCustomer = keywordCustomer.replace(/%/g, " ");
+				
+				var keywordCustomer = js2(this).val().replace(/%/gi, " ").trim();
+				seachCustomer.search('');
+				seachCustomer.search(keywordCustomer, false, false).order([3, 'asc']).draw();
+
+				// if (keywordCustomer.indexOf("%") != -1) {
+					// keywordCustomer = keywordCustomer.replace(/%/g, " ");
 					// seachCustomer.column(3).search(keywordCustomer, true, true).draw();					
-					seachCustomer.search(keywordCustomer, true, true).draw();
-				}else{
-					seachCustomer.search(keywordCustomer).draw();	
+					// seachCustomer.search(keywordCustomer, true, true).order([3, 'asc']).draw();
+				// }else{
+					//customer logic for TW and other BUs
+					/* var check_nationality = function (nationality) {
+						var countryEle = document.getElementById('userSalesOrg_t');
+						if (countryEle == null) { //this is for material page.
+							countryEle = $('input[name="userSalesOrg_PL"]').val();
+							countryCode = countryEle;
+						} else {
+							var countryCode = parseInt(countryEle.value);
+						}
+						if (typeof countryCode == "undefined") {
+							countryCode = "2601";
+						}
+						if (nationality == 2600) {
+							nationality = 2601;
+						}
+				
+						var valid = false;
+						if (nationality == countryCode) {
+							valid = true;
+						}
+				
+						return valid;
+					} */
+
+					/* if(check_nationality(2800)){
+						seachCustomer.search(keywordCustomer, true, true).order([3, 'asc']).draw();							
+					}else{ */
+						// seachCustomer.search(keywordCustomer, false, false).order([3, 'asc']).draw();						
+					// }
 					// seachCustomer.column(3).search(keywordCustomer).draw();									
-				}
+				// }
 				/*
 				    End : 15 Nov 2017
 				    Task  : Customer Type-ahead Search
@@ -1081,6 +1137,15 @@ var showCustomerList = function(customerDetails) {
 		    File Location : $BASE_PATH$/image/javascript/js-ezrx.js
 		    Layout : Both
 			*/
+			
+			var selectCustomerSoldID = function(customersold){
+				$("#selectedCustomerSoldtoID").val( customersold );					                    
+			}
+
+			if( userCountry === "PH" ){
+				selectCustomerSoldID( $(this).attr("data-customersold")  );
+			}
+
             delete_line_item_func($(this).val());
             /*
 			    End : 11 Dec 2017

@@ -1,0 +1,38 @@
+var form_date_podate_before = $("#attr_wrapper_1_pODate").find(".form-date");                    
+$( form_date_podate_before ).hide();
+
+var valPoDate = $("#pODate").val();
+$.getScript('https://zuelligpharmatest1.bigmachines.com/bmfsweb/zuelligpharmatest1/image/javascript/jquery-ui.min.js', function() {
+
+$( form_date_podate_before ).after("<input id='datepickerpodate' type='text' style='float: left;' >");
+jQuery.noConflict(true);
+$( "#datepickerpodate" ).datepicker({
+    showOn: "button",
+    buttonImage: "https://zuelligpharmatest1.bigmachines.com/bmfsweb/zuelligpharmatest1/image/images/calendar_black.png",
+    buttonImageOnly: true,
+    maxDate: '0',
+});
+
+if(valPoDate.length > 0){
+    $("#datepickerpodate").datepicker("setDate", new Date( valPoDate ) );
+}else{
+    $("#datepickerpodate").datepicker("setDate", new Date() );
+}
+
+$(".ui-datepicker-trigger").css({"width":"20px"});
+
+$(".ui-datepicker-trigger").on("click", function(){
+    $(".ui-widget-header").css({ "background": "#1d727b","border": "0px", "color": "#ffffff"});
+
+    $(".ui-datepicker-calendar").find("thead").find("tr").css({"color": "#005e63"});
+
+    $(".ui-state-default, .ui-widget-content .ui-state-default").css({"background": "#1d727b", "font-weight": "bold","font-style": "normal","font-stretch": "normal", "line-height": "normal", "letter-spacing": "normal","text-align": "left", "color": "#ffffff"});
+
+    $(".ui-state-highlight, .ui-widget-content .ui-state-highlight").css({ "background": "#c3d500", "font-weight": "bold", "font-style": "normal", "font-stretch": "normal", "line-height": "normal","letter-spacing": "normal", "text-align": "left", "color": "#ffffff", });
+});
+
+$("#datepickerpodate").on("change", function(){
+    $("#pODate").val( $(this).val() );
+});
+
+});

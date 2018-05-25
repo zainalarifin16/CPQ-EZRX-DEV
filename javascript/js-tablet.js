@@ -1077,21 +1077,21 @@ $(document).ready(function() {
 
 											var base_loading_progress = 100;
 
-											var loadingProgressBar = function(){
-												base_loading_progress = (base_loading_progress == 450)? base_loading_progress-20 : base_loading_progress;
+											var loadingProgressBar = function () {
+												base_loading_progress = (base_loading_progress == 450) ? base_loading_progress - 20 : base_loading_progress;
 												$("#loading_moving").animate({
-													width: base_loading_progress+"px"
+													width: base_loading_progress + "px"
 												}, 2000);
 											}
 											loadingProgressBar();
-											var loopUntilComplete = function(){
-												setTimeout(function(){
-													if(base_loading_progress < 380){
+											var loopUntilComplete = function () {
+												setTimeout(function () {
+													if (base_loading_progress < 380) {
 														base_loading_progress += 70;
 														loadingProgressBar();
 														loopUntilComplete();
 													}
-												},1500);
+												}, 1000);
 											}
 											loopUntilComplete();
 										});
@@ -1370,7 +1370,9 @@ $(document).ready(function() {
 											
 											$("#sticky-actions").find(".action-type-modify:contains('Home')").appendTo("#sticky-actions");
 
-											if (getQueryVariableUrl("flag") == "rightnow") {
+											var flag = window.sessionStorage.getItem("flag", "rightnow");											
+
+											if (flag == "rightnow") {
 												$("#sticky-actions").find(".action-type-modify:contains('Home')").show();
 											}else{
 												$("#sticky-actions").find(".action-type-modify:contains('Home')").hide();

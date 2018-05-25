@@ -1014,6 +1014,8 @@ $(document).ready(function(){
               $("#datepickerpodate").datepicker("setDate", new Date( valPoDate ) );
             }else{
               $("#datepickerpodate").datepicker("setDate", new Date() );
+              today = new Date();
+              $("#pODate").val((today.getMonth() + 1) + "/" + today.getDate() + "/" + today.getFullYear());
             }
 
             $("#datepickerpodate").css({"width": "95%"});
@@ -1037,7 +1039,11 @@ $(document).ready(function(){
             });
             
             $("#datepickerpodate").on("change", function(){
-              $("#pODate").val( $(this).val() );
+              var selectedDate = new Date( $(this).val() );
+              var date = selectedDate.getDate();
+              var month = selectedDate.getMonth() + 1;
+              var year = selectedDate.getFullYear();
+              $("#pODate").val( month+"/"+date+"/"+year );
             });
             
           });
@@ -1063,6 +1069,8 @@ $(document).ready(function(){
               $("#datepickerpodate").datepicker("setDate", new Date( valPoDate ) );
             }else{
               $("#datepickerpodate").datepicker("setDate", new Date() );
+              today = new Date();
+              $("#pODate").val( (today.getMonth() + 1)+"/"+ today.getDate() +"/"+ today.getFullYear() );
             }
 
             $(".ui-datepicker-trigger").css({"width":"20px"});
@@ -1078,7 +1086,11 @@ $(document).ready(function(){
             });
             
             $("#datepickerpodate").on("change", function(){
-              $("#pODate").val( $(this).val() );
+              var selectedDate = new Date( $(this).val() );
+              var date = selectedDate.getDate();
+              var month = selectedDate.getMonth() + 1;
+              var year = selectedDate.getFullYear();
+              $("#pODate").val( month+"/"+date+"/"+year );
             });
             
           });

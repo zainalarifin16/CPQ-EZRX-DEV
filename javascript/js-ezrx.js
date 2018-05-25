@@ -111,7 +111,7 @@
             var countryCode = parseInt(countryEle.value);
         }
            
-        console.log( "countryCode", typeof countryCode, countryCode, typeof countryCode == "undefined" );
+        // console.log( "countryCode", typeof countryCode, countryCode, typeof countryCode == "undefined" );
         if (typeof countryCode == "undefined" || countryCode == "" || isNaN(countryCode) ){        
             countryCode = "2601";
         }
@@ -911,18 +911,42 @@
 
             // check shopping cart list
             for (var j = 0; j < cartRowLength; j++) {
-                if( $($(cartRow[j]).find('td.cell-type input[name="type"]')).val().toLowerCase() == "comm" ){
-                    var cartId = $($(cartRow[j]).find('td.cell-material input[name="material"]')).val();
-                    var matDesc = $($(cartRow[j]).find('td.cell-materialDescription input[name="materialDescription"]')).val();
-                    cartID.push(cartId);
-                    currentCart.push({
-                        'cartId': cartId,
-                        'matDesc': matDesc
-                    });
-                    if (currentId === cartId) {
-                        showError();
-                        return;
-                    }   
+
+                if(isMobile()){
+                    if ($($(cartRow[j]).find('td.cell-materialAndDesc input[name="materialAndDesc"]')).length > 0) {
+                        var dataMaterial = $(cartRow[j]).find('td.cell-materialAndDesc input[name="materialAndDesc"]').val().split("-");
+                        if(dataMaterial[0].toLowerCase() == "comm"){
+                            var cartId = dataMaterial[1];
+                            var matDesc = dataMaterial[2];
+                            cartID.push(cartId);
+                            currentCart.push({
+                                'cartId': cartId,
+                                'matDesc': matDesc
+                            });
+                            if (currentId === cartId) {
+                                showError();
+                                return;
+                            }
+                        }
+
+                    }
+
+                }else{
+                    if ($($(cartRow[j]).find('td.cell-type input[name="type"]')).length > 0) {
+                        if ($($(cartRow[j]).find('td.cell-type input[name="type"]')).val().toLowerCase() == "comm") {
+                            var cartId = $($(cartRow[j]).find('td.cell-material input[name="material"]')).val();
+                            var matDesc = $($(cartRow[j]).find('td.cell-materialDescription input[name="materialDescription"]')).val();
+                            cartID.push(cartId);
+                            currentCart.push({
+                                'cartId': cartId,
+                                'matDesc': matDesc
+                            });
+                            if (currentId === cartId) {
+                                showError();
+                                return;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -1294,6 +1318,19 @@
         // console.log( encodeURIComponent(searchStr) , encodeURIComponent(searchStr).replace(/%27/g, "%5C%27").replace(/ /gi, "%") );
         ajaxData = 'q=\{ $and: [ { "masterstring":{$regex:"/' + encodeURIComponent( searchStr.replace(/ /gi, "%") ).replace(/%27/g, "%5C%27") + '/i"}}, { sales_org: { $eq:' + salesOrg + '} }, { dwnld_to_dss: { $eq: "Y"} } ] }&orderby=material:asc';
 
+        var ms_ie = false;
+        var ua = window.navigator.userAgent;
+        var old_ie = ua.indexOf('MSIE ');
+        var new_ie = ua.indexOf('Trident/');
+
+        if ((old_ie > -1) || (new_ie > -1)) {
+            ms_ie = true;
+        }
+
+        if (ms_ie) {
+            ajaxData = "q=\{ $and: [ { 'masterstring':{$regex:'/".replace(/ /gi, "%20") + encodeURIComponent(searchStr.replace(/ /gi, "%")).replace(/%27/g, "%5C%27") + "/i'}}, { sales_org: { $eq:" + salesOrg + "} }, { dwnld_to_dss: { $eq: 'Y'} } ] }&orderby=material:asc".replace(/ /gi, "%20");            
+        }
+
         /*ajaxURL = "https://" + instanceName + ".bigmachines.com/rest/v4/customParts_Master_SG";
         var ajaxData = "q=\{'masterstring':{$regex:'/" + encodeURIComponent(searchStr) + "/i'}}&orderby=material_desc:asc";
         
@@ -1656,7 +1693,9 @@
                 } else {
                     var i = 0;
                     while (ajaxSearchMaterialProcess.length) {
-                        ajaxSearchMaterialProcess[i++].abort();
+                        ajaxSearchMaterialProcess[i].aborted = true;
+                        ajaxSearchMaterialProcess[i].abort();
+                        i++;
                     }
                     $('.dataTables_scrollBody .loader-material').show();
                     $('.dataTables_scrollBody #resultsTable').hide();
@@ -1850,6 +1889,7 @@
             url: ajaxUrl,
           //data: "q={'custmasterstring':{$regex:'/" + encodeURIComponent($('#searchCustomerInput').val()) + "/i'}}&orderby=customer_name:asc"
             data: 'q={"custmasterstring":{$regex:"/' + encodeURIComponent( searchKeyword ) + '/i"}}&orderby=customer_name:asc'
+            
         }).done(function(response) {
             console.log('jquery done');
             var data = response.items;
@@ -2120,7 +2160,7 @@
                         selectCustomerSoldID( $(this).attr("data-customersold")  );
                     }
 
-                    delete_line_item_func($(this).val());
+                    mobile_delete_line_item_func($(this).val());
                     
                 });
                 
@@ -3456,6 +3496,19 @@
         $(".my_order").closest(".jg-item-tool").hide();
         var parent = $(".new_order").closest(".jg-list-tool");
         $( parent ).prepend( $(".new_order:contains('New Order')").closest(".jg-item-tool") );
+
+        $("#jg-topbar-title").text("Create Order");
+
+        var parent_footer = $("#select_all").closest("table").closest("tbody");
+        var child_footer = $(parent_footer).find("td.bottom-bar");
+        $( child_footer[0] ).hide();
+        $( child_footer[1] ).hide();
+        $( child_footer[2] ).hide();
+        $( child_footer[3] ).hide();
+        $( child_footer[4] ).hide();
+
+        $(child_footer[6]).find("table").css("margin", "15px");
+
     }
 
     function desktop_newlayout() {
@@ -6062,7 +6115,7 @@
             window.sessionStorage.setItem("flag", "rightnow");
         }
         var flag = window.sessionStorage.getItem("flag");
-
+        console.log("FLAG", flag);
         if( flag == "rightnow" ){
             var desktopMenu =  document.querySelector('.jg-box-sidenav');
             var target_button = "home";
@@ -6109,10 +6162,12 @@
                 jg_box_mainarea.style.paddingLeft = 0;
              }
            }
+           console.log("Rightnownow", layout);
            if(layout == 'Tablet'){
                 
                 $(".action.action-type-modify").each(function (index, data) {
                    if ($(data).text().trim().toLowerCase() == "home" ){
+                       $(data).show();
                        $(data).on("click", function(){
                         //    localStorage.removeItem("flag");
                            window.close();
@@ -6334,6 +6389,7 @@
                 clearStorageOrderItem();
                 if (pagetitle == 'commerce management') {
                     console.log('commerce management');
+                    localStorage.removeItem("frequentlyAccessedCustomers_t");                    
                     $('html').addClass('jg-mobilelayout');
                     transform_mainlayout();
                     transform_orderspage();
@@ -6467,7 +6523,6 @@
             console.log('filterPage', filterPage);
             if ($("#line-item-grid").length > 0 && filterPage.search("copy_processing.jsp") == -1 ){
                 filterPage = "commerce";
-                localStorage.removeItem("frequentlyAccessedCustomers_t");                
 			}
 			if($("#materialArrayset").length > 0){
 				filterPage = "config";
@@ -6953,6 +7008,7 @@
             } else if (filterPage.search("commerce_manager.jsp") != -1) {
                 //Commerce Management
                 console.log("Commerce page");
+                localStorage.removeItem("frequentlyAccessedCustomers_t");
                 incompleteOrder();
 
                 /* if filterPage contains with edit_profile.jsp */

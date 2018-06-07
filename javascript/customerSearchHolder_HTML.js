@@ -52,7 +52,10 @@ $(document).ready(function(js2){
 
 		setTimeout(function () {
 			if(window.location.href.indexOf("copy_processing.jsp")!= -1 && $('#edit_shopping_cart').length >0){
+				
+				$('#line-item-grid tr:first-child').find('input[name="_line_item_list"]').prop("checked", true);				
 				$("#edit_shopping_cart").click();
+				
 			}
 			
 		}, 1000);

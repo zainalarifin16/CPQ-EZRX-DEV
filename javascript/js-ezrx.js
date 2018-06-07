@@ -3270,7 +3270,7 @@
                     if (type === 'display') {
                        // data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '">';
                         if (check_nationality(2500) ){
-                        data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '">';
+                        data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '" data-customersold="'+full[1]+'" >';
                         }else if(check_nationality(2800)){
                             console.log(full);
 							//FORMAT soldtoid$$shiptoid$$billtoid
@@ -3497,6 +3497,7 @@
         var parent = $(".new_order").closest(".jg-list-tool");
         $( parent ).prepend( $(".new_order:contains('New Order')").closest(".jg-item-tool") );
 
+        // DSS Portal #49         
         $("#jg-topbar-title").text("Create Order");
 
         var parent_footer = $("#select_all").closest("table").closest("tbody");
@@ -3899,8 +3900,10 @@
                         File Location :- $BASE_PATH$/javascript/js-ezrx.js
                         Layout        :- Desktop
                     */
+                    
+                    var flag = window.sessionStorage.getItem("flag");
 
-                    if (getQueryVariableUrl("flag") == "rightnow") {
+                    if (flag == "rightnow") {
                         $("a[name='home']").closest("table").show();
                     }else{
                         $("a[name='home']").closest("table").hide();

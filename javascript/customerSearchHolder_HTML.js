@@ -471,12 +471,16 @@ var loadAjax = function() {
 	searchKeyword = $("#searchCustomerInput").val().replace(/%/gi, " ").trim();
 	// }
 	//NEW AJAX URL FOR TAIWAN CSTEAM END
-	var param = 'q={"custmasterstring":{$regex:"/' + encodeURIComponent( searchKeyword ) + '/i"}}&orderby=customer_name:asc';
+	var param = 'q={$and:[{"custmasterstring":{$regex:"/' + encodeURIComponent( searchKeyword ) + '/i"}},{$or:[{"recrdflag" :{$eq: "A"}}, {"recrdflag" :{$exists:false}}]},{$or:[{"control_flag" :{$eq: "Y"}}, {"control_flag" :{$exists:false}}]}]}&orderby=customer_name:asc';
+		
+	// var param = 'q={$and:[{"custmasterstring":{$regex:"/' + encodeURIComponent( searchKeyword ) + '/i"}},{"recrdflag" :{$ne: "I"}},{"control_flag" :{$ne: "N"}}]}&orderby=customer_name:asc';
+	// var param = 'q={"custmasterstring":{$regex:"/' + encodeURIComponent( searchKeyword ) + '/i"}}&{RecrdFlag:{eq:{A}}&{Control_Flag:{ne:{N}}&orderby=customer_name:asc';
 	var ua = window.navigator.userAgent;
    //	console.log("ua====="+ua);
-    if (ua.indexOf("MSIE") > 0 || ua.indexOf("Trident") > 0){ // If Internet Explorer, return version number
-		
-		param = 'q={%22custmasterstring%22:{$regex:%22/' + encodeURIComponent( searchKeyword ) + '/i%22}}&orderby=customer_name:asc';
+	if (ua.indexOf("MSIE") > 0 || ua.indexOf("Trident") > 0){ // If Internet Explorer, return version number
+		param = 'q={$and:[{%22custmasterstring%22:{$regex:%22/' + encodeURIComponent( searchKeyword ) + '/i%22}},{$or:[{%22recrdflag%22 :{$eq:%20%22A%22}},%20{%22recrdflag%22%20:{$eq:%20%22null%22}}]},{$or:[{%22control_flag%22%20:{$eq:%20%22Y%22}},%20{%22control_flag%22%20:{$eq: %22null%22}}]}]}&orderby=customer_name:asc';	
+		// param = 'q={$and:[{%22custmasterstring%22:{$regex:%22/' + encodeURIComponent( searchKeyword ) + '/i%22}},{%22recrdflag%22%20:{$ne: %22I%22}},{%22control_flag%22%20:{$ne:%20%22N%22}}]}&orderby=customer_name:asc';
+		//param = 'q={%22custmasterstring%22:{$regex:%22/' + encodeURIComponent( searchKeyword ) + '/i%22}}&{RecrdFlag:{eq:{A}}&{Control_Flag:{ne:{N}}&orderby=customer_name:asc';
 	}
 	//console.log("param====="+param);
 	$.ajax({
@@ -1094,7 +1098,7 @@ var showCustomerList = function(customerDetails) {
 						////////////
 						if(userCountry === 'PH'){
 							console.log("PH - topCust");
-							data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '" >';
+							data = '<input type="radio" name="topCust" id= "topCust" value="' + full[2] + '" data-customersold="' + full[1] +'" >';
 						}else if(userCountry === 'TW'){
 							 //console.log(' 88 TW ======>>>> ',full[2]+ '$$' + full[4] + '$$' +full[6]);
 								//FORMAT soldtoid$$shiptoid$$billtoid
@@ -1140,6 +1144,21 @@ var showCustomerList = function(customerDetails) {
 		    File Location : $BASE_PATH$/image/javascript/js-ezrx.js
 		    Layout : Both
 			*/
+
+			var countryEle = document.getElementById('userSalesOrg_t');
+
+			if (countryEle !== null) {
+				var countryCode = parseInt(countryEle.value);
+				//console.log('=== userDetectFunc countryCode =====>>>> ',countryCode);
+
+				if (countryCode === 2500) {
+					userCountry = 'PH';
+				}
+				if (countryCode === 2800) {
+					userCountry = 'TW';
+				}
+
+			}
 			
 			var selectCustomerSoldID = function(customersold){
 				$("#selectedCustomerSoldtoID").val( customersold );					                    

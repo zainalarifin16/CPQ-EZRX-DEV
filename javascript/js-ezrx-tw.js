@@ -888,8 +888,7 @@ $(document).ready(function(){
                   File Location :- $BASE_PATH$/javascript/js-ezrx-tw.js
                   Layout        :- Both (Desktop/Mobile)
                 */
-                resizeTableMaterial();
-
+                resizeTableMaterial();                
               } else {
                 loadScriptOrderPage();
               }
@@ -902,6 +901,7 @@ $(document).ready(function(){
           function loadShoppingCartScript() {
             setTimeout(function () {
               if (isLoadingDone) {
+                textColorQty();
                 /* TW-17 Scroll bar adjustment in the Shopping cart page and the Commerce Page., Created By Zainal Arifin, Date : 13 April 2018 */
                 resizeTableShoppingCart();
                 /* TW-17 Scroll bar adjustment in the Shopping cart page and the Commerce Page., Created By Zainal Arifin, Date : 13 April 2018 */

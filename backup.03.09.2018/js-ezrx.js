@@ -825,19 +825,19 @@ var isMobileVersion = false;
   */
   var itemCheckBonus = function(currentItem) {
 
-      countCheck = 0;
-      $("input[name='_line_item_list']").each(function(index, data){
-        var lengthCheckbox = $("input[name='_line_item_list']").length;
-        if($(data).is(":checked")){
-            countCheck++;
-        }
-        
-        if(countCheck == lengthCheckbox){
-            $("input[name='_line_item_list_all']").prop("checked", true);
-        }else{
-            $("input[name='_line_item_list_all']").prop("checked", false);
-        }
-      });
+        banyakCheck = 0;
+        $("input[name='_line_item_list']").each(function(index, data){
+            var lengthCheckbox = $("input[name='_line_item_list']").length;
+            if($(data).is(":checked")){
+                banyakCheck++;
+            }
+            
+            if(banyakCheck == lengthCheckbox){
+                $("input[name='_line_item_list_all']").prop("checked", true);
+            }else{
+                $("input[name='_line_item_list_all']").prop("checked", false);
+            }
+        });
 
       var currTr = currentItem.parent().parent();
       var checked = currentItem.is(":checked");
@@ -3012,7 +3012,7 @@ var mobile_renameButton = function() {
                                               checkbox.prop('checked', true);
 
                                               var checkboxInterval = setInterval(function () {
-
+                                                console.log("Checkbox interval");
                                                   var checkFirstChild = checkbox.is(':checked');
                                                   //    alert(checkbox.is(':checked'));
                                                   if (checkFirstChild === true) {
@@ -3496,24 +3496,24 @@ var mobile_renameButton = function() {
 
   var mobile_itemCheckBonus = function(currentItem) {
 
-      countCheck = 0;
-      $("input[name='_line_item_list']").each(function(index, data){
-        var lengthCheckbox = $("input[name='_line_item_list']").length;
-        if($(data).is(":checked")){
-            countCheck++;
-        }
-        console.log(lengthCheckbox, "==", countCheck, countCheck == lengthCheckbox);
-        if(countCheck == lengthCheckbox){
-            console.log("_line_item_list_all was CHECKED");
-            setTimeout(function(){
-                $("input[name='_line_item_list_all']").prop("checked", true);
-            }, 1000);
-        }else{
-            setTimeout(function(){
-                $("input[name='_line_item_list_all']").prop("checked", false);
-            }, 1000);
-        }
-      });
+        banyakCheck = 0;
+        $("input[name='_line_item_list']").each(function(index, data){
+            var lengthCheckbox = $("input[name='_line_item_list']").length;
+            if($(data).is(":checked")){
+                banyakCheck++;
+            }
+            console.log(lengthCheckbox, "==", banyakCheck, banyakCheck == lengthCheckbox);
+            if(banyakCheck == lengthCheckbox){
+                console.log("_line_item_list_all was CHECKED");
+                setTimeout(function(){
+                    $("input[name='_line_item_list_all']").prop("checked", true);
+                }, 1000);
+            }else{
+                setTimeout(function(){
+                    $("input[name='_line_item_list_all']").prop("checked", false);
+                }, 1000);
+            }
+        });
 
       var currTr = currentItem.parent().parent().parent();
       var checked = currentItem.is(":checked");
@@ -4610,7 +4610,7 @@ var mobile_renameButton = function() {
           setTimeout(function () {
               if (isLoadingDone()) {
                   var selectedNewSearchId = $('select[name=new_search_id] option:selected').text().trim().toLowerCase();
-                  if (selectedNewSearchId == "search by date ranges" || selectedNewSearchId == "search by customer and status") {                    
+                  if (selectedNewSearchId == "searchÂ byÂ dateÂ ranges" || selectedNewSearchId == "searchÂ byÂ customerÂ andÂ status") {                    
                       window.localStorage.setItem("new_search_id", "false");                        
                       eval($(".jg-linkbtn.refine").attr("href"));
                   }

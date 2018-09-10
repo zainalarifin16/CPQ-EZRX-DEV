@@ -625,7 +625,7 @@ var searchCustList = function(dataSet, seachCustomer) {
 											colArr[14],
 										];
 					}else{
-
+						console.log(colArr);
 						subDataSet = [
 							'', 
 							(colArr[0] != null)? colArr[0] : "", 

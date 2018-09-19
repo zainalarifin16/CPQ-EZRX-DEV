@@ -1039,7 +1039,7 @@ $(document).ready(function() {
 									Layout        :- Desktop
 								*/
 
-					/* 		}else{
+							/* 		}else{
 								reStylingTableShoppingCart();
 							}
 						}, 1000);
@@ -1087,33 +1087,33 @@ $(document).ready(function() {
 											var successLoading = false;
 
 											$(".action.action-type-modify:contains('Submit Order')").on("click", function (e) {
-												$(this).attr("disabled", true);
-												var text_order_submission = "<p style='font-size: 30px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: 0.87;letter-spacing: normal;text-align: center;color: #005e63;' >Order submission is in progress ...</p>";
-	
-												var text_please_wait = "<p style='font-size: 22px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: 1.18;letter-spacing: normal;text-align: center;color: #9b9b9b; margin-bottom: 70px;' >Please wait</p>";
-	
-												var loading_bar = "<div style='width: 450px;height: 30px;object-fit: contain;border-radius: 15px;background-color: #d2d2d2;border: solid 1px #898989;margin: 20px auto;' ><div id='loading_moving' style='width: 0px;height: 30px;object-fit: contain;border-radius: 15px;background-color: #005e63;' ></div></div>";
-	
-												var text_dont_close = "<p style='font-size: 26px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: normal;letter-spacing: normal;text-align: center;color: #005e63;' >Do not close the browser or click back button</p>";
-	
-												var popup = $("<div style='width: 632px;height: 250px;border-radius: 8px;background-color: #ffffff;margin: 195px auto;padding:50px;' >" + text_order_submission + text_please_wait + loading_bar + text_dont_close + "</div>");
-												$(".ui-loader").css({ "background-color": "transparent", "opacity": "1" });
-												$(".ui-loader").find(".ui-icon-loading").css({"-webkit-transform": "rotateX(0)", "-webkit-transform": "translateZ(0)", "-webkit-perspective": "1000", "-webkit-backface-visibility": " hidden"});
-												$(".ui-loader").find("h1").after(popup);
-	
-												var bgloading = "<div id='bgloading' style='position: fixed;top: 0;right: 0;bottom: 0;left: 0;background-color: rgb(250, 255, 189);opacity: 0.35;' ></div>";
-												$(".ui-loader").find("h1").after(bgloading);
-	
-	
-												var base_loading_progress = 100;
-	
-												var loadingProgressBar = function (loading_progress) {
-													loading_progress = (loading_progress == 450) ? loading_progress - 20 : loading_progress;
-													$("#loading_moving").animate({
-														width: loading_progress + "px"
-													}, 2000);
-												}
-												loadingProgressBar(base_loading_progress);
+											$(this).attr("disabled", true);
+											var text_order_submission = "<p style='font-size: 30px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: 0.87;letter-spacing: normal;text-align: center;color: #005e63;' >Order submission is in progress ...</p>";
+
+											var text_please_wait = "<p style='font-size: 22px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: 1.18;letter-spacing: normal;text-align: center;color: #9b9b9b; margin-bottom: 70px;' >Please wait</p>";
+
+											var loading_bar = "<div style='width: 450px;height: 30px;object-fit: contain;border-radius: 15px;background-color: #d2d2d2;border: solid 1px #898989;margin: 20px auto;' ><div id='loading_moving' style='width: 0px;height: 30px;object-fit: contain;border-radius: 15px;background-color: #005e63;' ></div></div>";
+
+											var text_dont_close = "<p style='font-size: 26px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: normal;letter-spacing: normal;text-align: center;color: #005e63;' >Do not close the browser or click back button</p>";
+
+											var popup = $("<div style='width: 632px;height: 250px;border-radius: 8px;background-color: #ffffff;margin: 195px auto;padding:50px;' >" + text_order_submission + text_please_wait + loading_bar + text_dont_close + "</div>");
+											$(".ui-loader").css({ "background-color": "transparent", "opacity": "1" });
+											$(".ui-loader").find(".ui-icon-loading").css({"-webkit-transform": "rotateX(0)", "-webkit-transform": "translateZ(0)", "-webkit-perspective": "1000", "-webkit-backface-visibility": " hidden"});
+											$(".ui-loader").find("h1").after(popup);
+
+											var bgloading = "<div id='bgloading' style='position: fixed;top: 0;right: 0;bottom: 0;left: 0;background-color: rgb(250, 255, 189);opacity: 0.35;' ></div>";
+											$(".ui-loader").find("h1").after(bgloading);
+
+
+											var base_loading_progress = 100;
+
+											var loadingProgressBar = function (loading_progress) {
+												loading_progress = (loading_progress == 450) ? loading_progress - 20 : loading_progress;
+												$("#loading_moving").animate({
+													width: loading_progress + "px"
+												}, 2000);
+											}
+											loadingProgressBar(base_loading_progress);
 												var loopUntilComplete = function () {
 													console.log("LOOP UNTIL COMPLETE", base_loading_progress);
 													setTimeout(function () {
@@ -1123,67 +1123,11 @@ $(document).ready(function() {
 															loopUntilComplete();
 														}
 													}, 1000);
-												}
-												loopUntilComplete();
-											});
-
-											/* 
-											$("form[id='commerce-form']").on("submit", function(e){
-
-												var formSubmit = $(this);
-												if(successLoading == false){
-													e.preventDefault();																							
-												}
-
-												var text_order_submission = "<p style='font-size: 30px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: 0.87;letter-spacing: normal;text-align: center;color: #005e63;' >Order submission is in progress ...</p>";
-
-												var text_please_wait = "<p style='font-size: 22px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: 1.18;letter-spacing: normal;text-align: center;color: #9b9b9b; margin-bottom: 70px;' >Please wait</p>";
-
-												var loading_bar = "<div style='width: 450px;height: 30px;object-fit: contain;border-radius: 15px;background-color: #d2d2d2;border: solid 1px #898989;margin: 20px auto;' ><div id='loading_moving' style='width: 0px;height: 30px;object-fit: contain;border-radius: 15px;background-color: #005e63;' ></div></div>";
-
-												var text_dont_close = "<p style='font-size: 26px;font-weight: bold;font-style: normal;font-stretch: normal;line-height: normal;letter-spacing: normal;text-align: center;color: #005e63;' >Do not close the browser or click back button</p>";
-
-												var popup = $("<div style='width: 632px;height: 250px;border-radius: 8px;background-color: #ffffff;margin: 195px auto;padding:50px;' >" + text_order_submission + text_please_wait + loading_bar + text_dont_close + "</div>");
-												$(".ui-loader").css({ "background-color": "transparent", "opacity": "1" });
-												$(".ui-loader").find(".ui-icon-loading").css({"display":"none"});
-												// $(".ui-loader").find(".ui-icon-loading").css({"-webkit-transform": "rotateX(0)", "-webkit-transform": "translateZ(0)", "-webkit-perspective": "1000", "-webkit-backface-visibility": " hidden"});
-												$(".ui-loader").find("h1").after(popup);
-
-												var bgloading = "<div id='bgloading' style='position: fixed;top: 0;right: 0;bottom: 0;left: 0;background-color: rgb(250, 255, 189);opacity: 0.35;' ></div>";
-												$(".ui-loader").find("h1").after(bgloading);
-
-
-												var base_loading_progress = 100;
-
-												var loadingProgressBar = function (loading_progress) {
-													// loading_progress = (loading_progress == 450) ? loading_progress - 20 : loading_progress;
-													$("#loading_moving").animate({
-														width: loading_progress + "px"
-													}, 2000);
-												}
-												loadingProgressBar(base_loading_progress);
-												var loopUntilComplete = function () {
-													console.log("LOOP UNTIL COMPLETE", base_loading_progress);
-													setTimeout(function () {
-														if (base_loading_progress <= 380) {
-															base_loading_progress += 70;
-															loadingProgressBar(base_loading_progress);
-															loopUntilComplete();
-														}
-
-														if( base_loading_progress == 380 ){
-															console.log("SUCCESS");
-															successLoading = true;
-															$(formSubmit).submit();
-														}
-
-													}, 2000);
-												}
-												loopUntilComplete();
-
-											}); */
+											}
+											loopUntilComplete();
+										});
 										}else{
-											
+												
 										}
 									} else {
 										handleDisableSubmitBtn();
@@ -1416,7 +1360,7 @@ $(document).ready(function() {
 								if (isCompleteOrSubmitted == "completed" || isCompleteOrSubmitted == "submitted" || isCompleteOrSubmitted == "in process") {
 									if (isSaveAsTemplate == "true") {
 										$($("input[name='isATestOrder_t']").siblings()[0]).text("Yes");
-
+										
 									} else {
 										$($("input[name='isATestOrder_t']").siblings()[0]).text("No");
 									}
@@ -1444,9 +1388,9 @@ $(document).ready(function() {
 							}, 2000);
 
 							$("body").on("click touchend","#order-showorderdetails",function(e){
-								e.preventDefault();			
-								$(".sidebar-handle").trigger("click");		
-								//$(".sidebar-handle-icon").trigger("swiperight");
+										e.preventDefault();			
+										$(".sidebar-handle").trigger("click");		
+										//$(".sidebar-handle-icon").trigger("swiperight");
 							});
 
 							/* 

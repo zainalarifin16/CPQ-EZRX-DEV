@@ -155,7 +155,13 @@ $(document).ready(function(js2){
 			
 		}
 
-		$("#attr_wrapper_1_customerSearchHolder_HTML").html(topCustomerWrapper);
+		var statusOrder = $("#readonly_1_status_t").html().toLowerCase();
+		
+		if( !window.getZPUserType() == "salesrep" || statusOrder != "cs team review" ){
+
+			$("#attr_wrapper_1_customerSearchHolder_HTML").html(topCustomerWrapper);
+
+		}
 
 		/* 
 			Created By    :- Created By Zainal Arifin, Date : 14 March 2018

@@ -1476,6 +1476,14 @@
 
         //   if(userCountryMS === 'TW'){
         if( window.check_country("TW") || window.check_country("TH") || window.check_country("VN") || window.check_country("MY") ){
+
+            var globalTemplateFlag = ($("input[name='globalTemplateFlag']").val().toLowerCase() == 'true')? true : false;
+            var labelMaterialDesc = "Material Description (ZH)";
+
+            if( globalTemplateFlag ){
+                labelMaterialDesc = "Material Description (Local)";
+            }
+
             material_column = [{
                 title: ""
             },
@@ -1483,7 +1491,7 @@
                 title: "Material Number"
             },
             {
-                title: "Material Description (ZH)"
+                title: labelMaterialDesc
             },
             {
                 title: "Material Description"
